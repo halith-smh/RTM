@@ -1,0 +1,361 @@
+import { NavigationNode, Requirement, Stakeholder } from '@/types/rtm';
+
+export const navigationData: NavigationNode[] = [
+  {
+    id: 'proj-1',
+    name: 'MOLP FY25',
+    type: 'project',
+    children: [
+      {
+        id: 'scope-1',
+        name: 'Order to Cash',
+        type: 'scope',
+        children: [
+          {
+            id: 'proc-1',
+            name: 'Sales Order Management',
+            type: 'process',
+            children: [
+              { id: 'req-cat-1', name: 'In Scope', type: 'requirement', status: 'in-scope' },
+              { id: 'req-cat-2', name: 'Out of Scope', type: 'requirement', status: 'out-of-scope' },
+            ],
+          },
+          {
+            id: 'proc-2',
+            name: 'Billing & Invoicing',
+            type: 'process',
+            children: [
+              { id: 'req-cat-3', name: 'In Scope', type: 'requirement', status: 'in-scope' },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'scope-2',
+        name: 'Plan to Produce',
+        type: 'scope',
+        children: [
+          {
+            id: 'proc-3',
+            name: 'Production',
+            type: 'process',
+            children: [
+              { id: 'req-cat-4', name: 'In Scope', type: 'requirement', status: 'in-scope' },
+            ],
+          },
+          {
+            id: 'proc-4',
+            name: 'Demand to Supply',
+            type: 'process',
+            children: [
+              { id: 'req-cat-5', name: 'In Scope', type: 'requirement', status: 'in-scope' },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'scope-3',
+        name: 'Record to Report',
+        type: 'scope',
+        children: [
+          {
+            id: 'proc-5',
+            name: 'Financial Closing',
+            type: 'process',
+            children: [
+              { id: 'req-cat-6', name: 'In Scope', type: 'requirement', status: 'in-scope' },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'scope-4',
+        name: 'Hire to Retire',
+        type: 'scope',
+        children: [
+          {
+            id: 'proc-6',
+            name: 'Onboarding',
+            type: 'process',
+            children: [
+              { id: 'req-cat-7', name: 'In Scope', type: 'requirement', status: 'in-scope' },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+];
+
+const stakeholders: Stakeholder[] = [
+  { id: 's1', name: 'John Smith', role: 'BA' },
+  { id: 's2', name: 'Sarah Johnson', role: 'Dev' },
+  { id: 's3', name: 'Mike Chen', role: 'QA' },
+  { id: 's4', name: 'Emily Davis', role: 'Business' },
+  { id: 's5', name: 'Alex Kumar', role: 'PM' },
+];
+
+export const requirementsData: Requirement[] = [
+  {
+    id: '1',
+    reqId: 'REQ-001',
+    title: 'Sales Order Creation Workflow',
+    description: 'Implement the complete sales order creation workflow including validation, approval routing, and integration with inventory system.',
+    type: 'Business',
+    sourceOwner: 'John Smith',
+    priority: 'High',
+    status: 'Active',
+    scopeId: 'scope-1',
+    processId: 'proc-1',
+    tasks: [
+      { id: 't1', title: 'Design order form UI', status: 'Completed', assignee: 'Sarah Johnson', dueDate: '2025-01-15' },
+      { id: 't2', title: 'Implement validation logic', status: 'In Progress', assignee: 'Mike Chen', dueDate: '2025-01-20' },
+      { id: 't3', title: 'Setup approval workflow', status: 'Open', assignee: 'Alex Kumar', dueDate: '2025-01-25' },
+    ],
+    testCases: [
+      { id: 'tc1', title: 'Verify order creation with valid data', status: 'Ready', executionResult: 'Pass', lastRun: '2025-01-10', tester: 'Mike Chen' },
+      { id: 'tc2', title: 'Test validation error handling', status: 'Ready', executionResult: 'Pass', lastRun: '2025-01-10', tester: 'Mike Chen' },
+      { id: 'tc3', title: 'Verify approval notification', status: 'In Progress', tester: 'Mike Chen' },
+    ],
+    issues: [
+      { id: 'i1', title: 'Date picker not showing correctly on mobile', severity: 'Medium', status: 'In Progress', assignee: 'Sarah Johnson' },
+    ],
+    signOffs: [
+      { id: 'so1', role: 'Business Owner', stakeholder: 'Emily Davis', status: 'Approved', date: '2025-01-08' },
+      { id: 'so2', role: 'Technical Lead', stakeholder: 'Alex Kumar', status: 'Pending' },
+    ],
+    documents: [
+      { id: 'd1', name: 'Sales_Order_BRD.pdf', type: 'PDF', size: '2.4 MB', uploadedBy: 'John Smith', uploadedAt: '2025-01-05' },
+      { id: 'd2', name: 'UI_Mockups.figma', type: 'Figma', size: '1.2 MB', uploadedBy: 'Sarah Johnson', uploadedAt: '2025-01-06' },
+    ],
+    stakeholders: [stakeholders[0], stakeholders[1], stakeholders[2], stakeholders[3]],
+    auditHistory: [
+      { id: 'a1', field: 'Status', oldValue: 'New', newValue: 'Active', changedBy: 'John Smith', changedAt: '2025-01-07 14:30' },
+      { id: 'a2', field: 'Priority', oldValue: 'Medium', newValue: 'High', changedBy: 'Emily Davis', changedAt: '2025-01-06 10:15' },
+    ],
+    createdAt: '2025-01-01',
+    updatedAt: '2025-01-07',
+    lastUpdatedBy: 'John Smith',
+  },
+  {
+    id: '2',
+    reqId: 'REQ-002',
+    title: 'Customer Credit Check Integration',
+    description: 'Integrate with external credit verification system to validate customer creditworthiness before order confirmation.',
+    type: 'Technical',
+    sourceOwner: 'Sarah Johnson',
+    priority: 'High',
+    status: 'Active',
+    scopeId: 'scope-1',
+    processId: 'proc-1',
+    tasks: [
+      { id: 't4', title: 'API Integration Design', status: 'Completed', assignee: 'Sarah Johnson', dueDate: '2025-01-12' },
+      { id: 't5', title: 'Implement credit check service', status: 'In Progress', assignee: 'Sarah Johnson', dueDate: '2025-01-18' },
+    ],
+    testCases: [
+      { id: 'tc4', title: 'Test successful credit check', status: 'Not Started' },
+      { id: 'tc5', title: 'Test credit check timeout handling', status: 'Not Started' },
+    ],
+    issues: [],
+    signOffs: [
+      { id: 'so3', role: 'Technical Lead', stakeholder: 'Alex Kumar', status: 'Pending' },
+    ],
+    documents: [
+      { id: 'd3', name: 'Credit_API_Spec.yaml', type: 'YAML', size: '45 KB', uploadedBy: 'Sarah Johnson', uploadedAt: '2025-01-08' },
+    ],
+    stakeholders: [stakeholders[1], stakeholders[4]],
+    auditHistory: [
+      { id: 'a3', field: 'Status', oldValue: 'New', newValue: 'Active', changedBy: 'Sarah Johnson', changedAt: '2025-01-08 09:00' },
+    ],
+    createdAt: '2025-01-02',
+    updatedAt: '2025-01-08',
+    lastUpdatedBy: 'Sarah Johnson',
+  },
+  {
+    id: '3',
+    reqId: 'REQ-003',
+    title: 'Order Status Tracking Dashboard',
+    description: 'Create a real-time dashboard for tracking order status, with filters and export capabilities.',
+    type: 'Functional',
+    sourceOwner: 'Emily Davis',
+    priority: 'Medium',
+    status: 'New',
+    scopeId: 'scope-1',
+    processId: 'proc-1',
+    tasks: [
+      { id: 't6', title: 'Dashboard wireframes', status: 'Open', assignee: 'Sarah Johnson', dueDate: '2025-01-22' },
+    ],
+    testCases: [],
+    issues: [],
+    signOffs: [],
+    documents: [],
+    stakeholders: [stakeholders[3], stakeholders[0]],
+    auditHistory: [],
+    createdAt: '2025-01-05',
+    updatedAt: '2025-01-05',
+    lastUpdatedBy: 'Emily Davis',
+  },
+  {
+    id: '4',
+    reqId: 'REQ-004',
+    title: 'Invoice Generation Automation',
+    description: 'Automate invoice generation based on delivered orders with configurable billing rules.',
+    type: 'Business',
+    sourceOwner: 'John Smith',
+    priority: 'High',
+    status: 'Completed',
+    scopeId: 'scope-1',
+    processId: 'proc-2',
+    tasks: [
+      { id: 't7', title: 'Define billing rules engine', status: 'Completed', assignee: 'Alex Kumar', dueDate: '2025-01-05' },
+      { id: 't8', title: 'Implement invoice template', status: 'Completed', assignee: 'Sarah Johnson', dueDate: '2025-01-08' },
+      { id: 't9', title: 'Integration testing', status: 'Completed', assignee: 'Mike Chen', dueDate: '2025-01-10' },
+    ],
+    testCases: [
+      { id: 'tc6', title: 'Verify invoice calculation', status: 'Ready', executionResult: 'Pass', lastRun: '2025-01-10', tester: 'Mike Chen' },
+      { id: 'tc7', title: 'Test multi-currency support', status: 'Ready', executionResult: 'Pass', lastRun: '2025-01-10', tester: 'Mike Chen' },
+      { id: 'tc8', title: 'Verify PDF generation', status: 'Ready', executionResult: 'Pass', lastRun: '2025-01-10', tester: 'Mike Chen' },
+    ],
+    issues: [],
+    signOffs: [
+      { id: 'so4', role: 'Business Owner', stakeholder: 'Emily Davis', status: 'Approved', date: '2025-01-11' },
+      { id: 'so5', role: 'Technical Lead', stakeholder: 'Alex Kumar', status: 'Approved', date: '2025-01-11' },
+    ],
+    documents: [
+      { id: 'd4', name: 'Invoice_Template.docx', type: 'Word', size: '156 KB', uploadedBy: 'John Smith', uploadedAt: '2025-01-03' },
+      { id: 'd5', name: 'Billing_Rules.xlsx', type: 'Excel', size: '89 KB', uploadedBy: 'Emily Davis', uploadedAt: '2025-01-04' },
+    ],
+    stakeholders: [stakeholders[0], stakeholders[1], stakeholders[2], stakeholders[3], stakeholders[4]],
+    auditHistory: [
+      { id: 'a4', field: 'Status', oldValue: 'Active', newValue: 'Completed', changedBy: 'Alex Kumar', changedAt: '2025-01-11 16:45' },
+    ],
+    createdAt: '2024-12-20',
+    updatedAt: '2025-01-11',
+    lastUpdatedBy: 'Alex Kumar',
+  },
+  {
+    id: '5',
+    reqId: 'REQ-005',
+    title: 'Production Planning Module',
+    description: 'Implement production planning capabilities with capacity management and scheduling.',
+    type: 'Business',
+    sourceOwner: 'Alex Kumar',
+    priority: 'High',
+    status: 'Active',
+    scopeId: 'scope-2',
+    processId: 'proc-3',
+    tasks: [
+      { id: 't10', title: 'Capacity planning algorithm', status: 'In Progress', assignee: 'Sarah Johnson', dueDate: '2025-01-25' },
+      { id: 't11', title: 'Scheduling UI', status: 'Open', assignee: 'Sarah Johnson', dueDate: '2025-01-30' },
+    ],
+    testCases: [
+      { id: 'tc9', title: 'Test capacity allocation', status: 'Not Started' },
+    ],
+    issues: [
+      { id: 'i2', title: 'Performance issue with large datasets', severity: 'High', status: 'Open', assignee: 'Sarah Johnson' },
+    ],
+    signOffs: [],
+    documents: [
+      { id: 'd6', name: 'Production_Planning_Spec.pdf', type: 'PDF', size: '3.1 MB', uploadedBy: 'Alex Kumar', uploadedAt: '2025-01-02' },
+    ],
+    stakeholders: [stakeholders[4], stakeholders[1]],
+    auditHistory: [],
+    createdAt: '2025-01-02',
+    updatedAt: '2025-01-07',
+    lastUpdatedBy: 'Alex Kumar',
+  },
+  {
+    id: '6',
+    reqId: 'REQ-006',
+    title: 'Demand Forecasting Integration',
+    description: 'Integrate ML-based demand forecasting to optimize inventory levels.',
+    type: 'Technical',
+    sourceOwner: 'Sarah Johnson',
+    priority: 'Medium',
+    status: 'New',
+    scopeId: 'scope-2',
+    processId: 'proc-4',
+    tasks: [],
+    testCases: [],
+    issues: [],
+    signOffs: [],
+    documents: [],
+    stakeholders: [stakeholders[1]],
+    auditHistory: [],
+    createdAt: '2025-01-06',
+    updatedAt: '2025-01-06',
+    lastUpdatedBy: 'Sarah Johnson',
+  },
+  {
+    id: '7',
+    reqId: 'REQ-007',
+    title: 'Financial Period Close Process',
+    description: 'Automate month-end and year-end closing procedures with reconciliation workflows.',
+    type: 'Business',
+    sourceOwner: 'Emily Davis',
+    priority: 'High',
+    status: 'Active',
+    scopeId: 'scope-3',
+    processId: 'proc-5',
+    tasks: [
+      { id: 't12', title: 'Define closing checklist', status: 'Completed', assignee: 'Emily Davis', dueDate: '2025-01-10' },
+      { id: 't13', title: 'Implement reconciliation workflow', status: 'In Progress', assignee: 'Alex Kumar', dueDate: '2025-01-20' },
+    ],
+    testCases: [
+      { id: 'tc10', title: 'Verify closing procedure sequence', status: 'In Progress', tester: 'Mike Chen' },
+      { id: 'tc11', title: 'Test reconciliation matching', status: 'Not Started' },
+    ],
+    issues: [
+      { id: 'i3', title: 'Currency conversion rounding errors', severity: 'Low', status: 'Open', assignee: 'Sarah Johnson' },
+    ],
+    signOffs: [
+      { id: 'so6', role: 'Business Owner', stakeholder: 'Emily Davis', status: 'Pending' },
+    ],
+    documents: [
+      { id: 'd7', name: 'Closing_Procedures.pdf', type: 'PDF', size: '1.8 MB', uploadedBy: 'Emily Davis', uploadedAt: '2025-01-08' },
+    ],
+    stakeholders: [stakeholders[3], stakeholders[4], stakeholders[1]],
+    auditHistory: [],
+    createdAt: '2025-01-03',
+    updatedAt: '2025-01-09',
+    lastUpdatedBy: 'Emily Davis',
+  },
+  {
+    id: '8',
+    reqId: 'REQ-008',
+    title: 'Employee Onboarding Portal',
+    description: 'Self-service onboarding portal for new employees with document upload and task tracking.',
+    type: 'Functional',
+    sourceOwner: 'John Smith',
+    priority: 'Low',
+    status: 'Approved',
+    scopeId: 'scope-4',
+    processId: 'proc-6',
+    tasks: [
+      { id: 't14', title: 'Design onboarding workflow', status: 'Completed', assignee: 'John Smith', dueDate: '2024-12-20' },
+      { id: 't15', title: 'Implement document upload', status: 'Completed', assignee: 'Sarah Johnson', dueDate: '2024-12-28' },
+      { id: 't16', title: 'Build task checklist', status: 'Completed', assignee: 'Sarah Johnson', dueDate: '2025-01-05' },
+    ],
+    testCases: [
+      { id: 'tc12', title: 'Test document upload flow', status: 'Ready', executionResult: 'Pass', lastRun: '2025-01-06', tester: 'Mike Chen' },
+      { id: 'tc13', title: 'Verify task completion tracking', status: 'Ready', executionResult: 'Pass', lastRun: '2025-01-06', tester: 'Mike Chen' },
+    ],
+    issues: [],
+    signOffs: [
+      { id: 'so7', role: 'Business Owner', stakeholder: 'John Smith', status: 'Approved', date: '2025-01-07' },
+      { id: 'so8', role: 'Technical Lead', stakeholder: 'Alex Kumar', status: 'Approved', date: '2025-01-07' },
+      { id: 'so9', role: 'QA Lead', stakeholder: 'Mike Chen', status: 'Approved', date: '2025-01-07' },
+    ],
+    documents: [
+      { id: 'd8', name: 'Onboarding_Guide.pdf', type: 'PDF', size: '2.2 MB', uploadedBy: 'John Smith', uploadedAt: '2024-12-15' },
+      { id: 'd9', name: 'Screenshots.zip', type: 'ZIP', size: '5.4 MB', uploadedBy: 'Mike Chen', uploadedAt: '2025-01-06' },
+    ],
+    stakeholders: [stakeholders[0], stakeholders[1], stakeholders[2], stakeholders[4]],
+    auditHistory: [
+      { id: 'a5', field: 'Status', oldValue: 'Completed', newValue: 'Approved', changedBy: 'Alex Kumar', changedAt: '2025-01-07 11:30' },
+    ],
+    createdAt: '2024-12-10',
+    updatedAt: '2025-01-07',
+    lastUpdatedBy: 'Alex Kumar',
+  },
+];

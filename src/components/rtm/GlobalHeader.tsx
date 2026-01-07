@@ -1,0 +1,71 @@
+import { Search, Settings, HelpCircle, Bell } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import kternLogo from '@/assets/kternlogo.png';
+
+interface GlobalHeaderProps {
+  breadcrumb: string[];
+}
+
+export function GlobalHeader({ breadcrumb }: GlobalHeaderProps) {
+  return (
+    <div className="sticky top-0 z-50">
+      {/* Main Header */}
+      <header className="h-14 bg-background border-b border-border flex items-center justify-between px-4">
+        {/* Left: Logo */}
+        <div className="flex items-center gap-6">
+          <img src={kternLogo} alt="KTERN" className="h-8 w-auto object-contain" />
+
+          {/* Breadcrumb */}
+          <nav className="hidden md:flex items-center text-sm">
+            {breadcrumb.map((item, index) => (
+              <span key={index} className="flex items-center">
+                {index > 0 && <span className="breadcrumb-separator">/</span>}
+                <span className={index === breadcrumb.length - 1 ? 'text-foreground font-medium' : 'breadcrumb-item cursor-pointer'}>
+                  {item}
+                </span>
+              </span>
+            ))}
+          </nav>
+        </div>
+
+        {/* Center: Search */}
+        <div className="flex-1 max-w-lg mx-8 hidden lg:block">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Search scopes, processes, requirements, tasks..."
+              className="pl-10 h-9 bg-secondary/50 border-none focus-visible:ring-1 focus-visible:ring-primary/30"
+            />
+          </div>
+        </div>
+
+        {/* Right: Actions */}
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground">
+            <Settings className="h-4 w-4" />
+          </Button>
+          <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground">
+            <HelpCircle className="h-4 w-4" />
+          </Button>
+          <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground relative">
+            <Bell className="h-4 w-4" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full" />
+          </Button>
+          <div className="ml-2 pl-4 border-l border-border">
+            <Avatar className="h-8 w-8 cursor-pointer">
+              <AvatarFallback className="bg-primary text-primary-foreground text-xs font-medium">
+                KA
+              </AvatarFallback>
+            </Avatar>
+          </div>
+        </div>
+      </header>
+
+      {/* Red Accent Bar */}
+      <div className="accent-bar" />
+    </div>
+  );
+}

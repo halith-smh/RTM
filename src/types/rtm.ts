@@ -1,0 +1,114 @@
+// RTM Type Definitions
+
+export type Priority = 'High' | 'Medium' | 'Low';
+export type RequirementStatus = 'New' | 'Active' | 'Completed' | 'Approved';
+export type RequirementType = 'Business' | 'Functional' | 'Technical';
+export type TestStatus = 'Not Started' | 'In Progress' | 'Ready';
+export type ExecutionResult = 'Pass' | 'Fail' | 'Blocked' | 'Not Run';
+export type IssueSeverity = 'Critical' | 'High' | 'Medium' | 'Low';
+export type SignOffStatus = 'Pending' | 'Approved' | 'Rejected';
+
+export interface NavigationNode {
+  id: string;
+  name: string;
+  type: 'project' | 'scope' | 'process' | 'requirement';
+  children?: NavigationNode[];
+  status?: 'in-scope' | 'out-of-scope';
+}
+
+export interface Task {
+  id: string;
+  title: string;
+  status: 'Open' | 'In Progress' | 'Completed';
+  assignee: string;
+  dueDate: string;
+}
+
+export interface TestCase {
+  id: string;
+  title: string;
+  status: TestStatus;
+  executionResult?: ExecutionResult;
+  lastRun?: string;
+  tester?: string;
+}
+
+export interface Issue {
+  id: string;
+  title: string;
+  severity: IssueSeverity;
+  status: 'Open' | 'In Progress' | 'Resolved' | 'Closed';
+  assignee: string;
+}
+
+export interface SignOff {
+  id: string;
+  role: string;
+  stakeholder: string;
+  status: SignOffStatus;
+  date?: string;
+}
+
+export interface AuditEntry {
+  id: string;
+  field: string;
+  oldValue: string;
+  newValue: string;
+  changedBy: string;
+  changedAt: string;
+}
+
+export interface Stakeholder {
+  id: string;
+  name: string;
+  role: 'BA' | 'Dev' | 'QA' | 'Business' | 'PM';
+  avatar?: string;
+}
+
+export interface Document {
+  id: string;
+  name: string;
+  type: string;
+  size: string;
+  uploadedBy: string;
+  uploadedAt: string;
+}
+
+export interface Requirement {
+  id: string;
+  reqId: string;
+  title: string;
+  description: string;
+  type: RequirementType;
+  sourceOwner: string;
+  priority: Priority;
+  status: RequirementStatus;
+  scopeId: string;
+  processId: string;
+  
+  // Traceability links
+  tasks: Task[];
+  testCases: TestCase[];
+  issues: Issue[];
+  signOffs: SignOff[];
+  
+  // Resources
+  documents: Document[];
+  stakeholders: Stakeholder[];
+  
+  // Audit
+  auditHistory: AuditEntry[];
+  
+  // Metadata
+  createdAt: string;
+  updatedAt: string;
+  lastUpdatedBy: string;
+}
+
+export interface FilterState {
+  release: string;
+  businessGroup: string;
+  status: string;
+  owner: string;
+  view: 'Admin View' | 'Tester View' | 'Business View';
+}
