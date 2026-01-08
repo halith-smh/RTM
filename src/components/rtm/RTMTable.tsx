@@ -209,6 +209,8 @@ export function RTMTable({ requirements, onRequirementClick }: RTMTableProps) {
                         { label: 'Status', value: req.status },
                         { label: 'Tasks', value: req.tasks.length },
                         { label: 'Test Cases', value: req.testCases.length },
+                        { label: 'Issues', value: req.issues.length },
+                        { label: 'Sign-offs', value: req.signOffs.length },
                       ]}
                       footer={`Last updated by ${req.lastUpdatedBy} on ${req.updatedAt}`}
                     />
