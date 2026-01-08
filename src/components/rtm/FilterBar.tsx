@@ -255,20 +255,21 @@ export function FilterBar({ onViewChange }: FilterBarProps) {
               Import
             </Button>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="sm" className="h-9 gap-2 bg-primary hover:bg-primary/90">
-                <Plus className="h-4 w-4" />
-                Add Work Item
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>Add Requirement</DropdownMenuItem>
-              <DropdownMenuItem>Add Task</DropdownMenuItem>
-              <DropdownMenuItem>Add Test Case</DropdownMenuItem>
-              <DropdownMenuItem>Add Issue</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" className="h-8 gap-2 bg-primary hover:bg-primary/90">
+                  <Plus className="h-4 w-4" />
+                  Add Work Item
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem>Add Requirement</DropdownMenuItem>
+                <DropdownMenuItem>Add Task</DropdownMenuItem>
+                <DropdownMenuItem>Add Test Case</DropdownMenuItem>
+                <DropdownMenuItem>Add Issue</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
     </div>
