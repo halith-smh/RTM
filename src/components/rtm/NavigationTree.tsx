@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ChevronRight, ChevronDown, Folder, FolderOpen, FileText, Layers, Target, CheckCircle, XCircle } from 'lucide-react';
+import { ChevronRight, ChevronDown } from 'lucide-react';
 import { NavigationNode } from '@/types/rtm';
 import { cn } from '@/lib/utils';
 import {
@@ -35,23 +35,6 @@ function TreeNode({
   const isExpanded = expandedIds.has(node.id);
   const isSelected = selectedId === node.id;
 
-  const getIcon = () => {
-    switch (node.type) {
-      case 'project':
-        return isExpanded ? <FolderOpen className="h-4 w-4 text-primary" /> : <Folder className="h-4 w-4 text-primary" />;
-      case 'scope':
-        return <Layers className="h-4 w-4 text-status-info" />;
-      case 'process':
-        return <Target className="h-4 w-4 text-status-warning" />;
-      case 'requirement':
-        return node.status === 'in-scope'
-          ? <CheckCircle className="h-4 w-4 text-status-success" />
-          : <XCircle className="h-4 w-4 text-muted-foreground" />;
-      default:
-        return <FileText className="h-4 w-4" />;
-    }
-  };
-
   const handleClick = () => {
     if (hasChildren) {
       toggleExpand(node.id);
@@ -80,7 +63,6 @@ function TreeNode({
         ) : (
           <span className="w-4" />
         )}
-        {getIcon()}
         <span className="truncate flex-1">{node.name}</span>
       </div>
 
@@ -139,7 +121,6 @@ export function NavigationTree({ data, selectedId, onSelect }: NavigationTreePro
             {data.map((project) => (
               <SelectItem key={project.id} value={project.id}>
                 <div className="flex items-center gap-2">
-                  <Folder className="h-4 w-4 text-primary" />
                   <span className="font-medium">{project.name}</span>
                 </div>
               </SelectItem>
