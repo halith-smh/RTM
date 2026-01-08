@@ -63,7 +63,7 @@ const Index = () => {
         </div>
 
         {/* Collapse Toggle */}
-        <div className="relative flex-shrink-0">
+        <div className="relative flex-shrink-0 min-w-[24px]">
           <Button
             variant="ghost"
             size="icon"
@@ -118,7 +118,7 @@ const Index = () => {
           <FilterBar onViewChange={setCurrentView} />
 
           {/* RTM Table */}
-          <div className="flex-1 overflow-auto bg-background">
+          <div className="flex-1 overflow-auto bg-background pt-4">
             <RTMTable
               requirements={requirementsData}
               onRequirementClick={handleRequirementClick}
