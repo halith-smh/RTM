@@ -16,8 +16,8 @@ export const navigationData: NavigationNode[] = [
             name: 'Sales Order Management',
             type: 'process',
             children: [
-              { id: 'req-cat-1', name: 'In Scope', type: 'requirement', status: 'in-scope' },
-              { id: 'req-cat-2', name: 'Out of Scope', type: 'requirement', status: 'out-of-scope' },
+              { id: 'req-cat-1', name: 'Sales Order Validation', type: 'requirement', status: 'in-scope' },
+              { id: 'req-cat-2', name: 'Inventory Adjustment', type: 'requirement', status: 'out-of-scope' },
             ],
           },
           {
@@ -25,7 +25,7 @@ export const navigationData: NavigationNode[] = [
             name: 'Billing & Invoicing',
             type: 'process',
             children: [
-              { id: 'req-cat-3', name: 'In Scope', type: 'requirement', status: 'in-scope' },
+              { id: 'req-cat-3', name: 'Invoice Processing', type: 'requirement', status: 'in-scope' },
             ],
           },
         ],
@@ -40,7 +40,7 @@ export const navigationData: NavigationNode[] = [
             name: 'Production',
             type: 'process',
             children: [
-              { id: 'req-cat-4', name: 'In Scope', type: 'requirement', status: 'in-scope' },
+              { id: 'req-cat-4', name: 'Material Planning', type: 'requirement', status: 'in-scope' },
             ],
           },
           {
@@ -48,7 +48,7 @@ export const navigationData: NavigationNode[] = [
             name: 'Demand to Supply',
             type: 'process',
             children: [
-              { id: 'req-cat-5', name: 'In Scope', type: 'requirement', status: 'in-scope' },
+              { id: 'req-cat-5', name: 'Forecast Calculation', type: 'requirement', status: 'in-scope' },
             ],
           },
         ],
@@ -63,7 +63,7 @@ export const navigationData: NavigationNode[] = [
             name: 'Financial Closing',
             type: 'process',
             children: [
-              { id: 'req-cat-6', name: 'In Scope', type: 'requirement', status: 'in-scope' },
+              { id: 'req-cat-6', name: 'Ledger Reconciliation', type: 'requirement', status: 'in-scope' },
             ],
           },
         ],
@@ -78,7 +78,7 @@ export const navigationData: NavigationNode[] = [
             name: 'Onboarding',
             type: 'process',
             children: [
-              { id: 'req-cat-7', name: 'In Scope', type: 'requirement', status: 'in-scope' },
+              { id: 'req-cat-7', name: 'Document Verification', type: 'requirement', status: 'in-scope' },
             ],
           },
         ],

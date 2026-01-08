@@ -17,7 +17,7 @@ const Index = () => {
   const [isNavCollapsed, setIsNavCollapsed] = useState(false);
   const [currentView, setCurrentView] = useState('admin');
 
-  const breadcrumb = ['MOLP FY25', 'RTM', 'Plan to Produce', 'Production', 'In Scope'];
+  const breadcrumb = ['MOLP FY25', 'RTM', 'Plan to Produce', 'Production', 'Material Planning'];
 
   const handleNodeSelect = (node: NavigationNode) => {
     setSelectedNode(node);
@@ -40,15 +40,15 @@ const Index = () => {
       {/* Main Layout */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Navigation */}
-        <div 
+        <div
           className={cn(
             'transition-all duration-300 ease-in-out flex-shrink-0',
             isNavCollapsed ? 'w-0' : 'w-64'
           )}
         >
           {!isNavCollapsed && (
-            <NavigationTree 
-              data={navigationData} 
+            <NavigationTree
+              data={navigationData}
               selectedId={selectedNode?.id || null}
               onSelect={handleNodeSelect}
             />
@@ -93,7 +93,7 @@ const Index = () => {
 
           {/* RTM Table */}
           <div className="flex-1 overflow-auto bg-background">
-            <RTMTable 
+            <RTMTable
               requirements={requirementsData}
               onRequirementClick={handleRequirementClick}
             />
@@ -102,7 +102,7 @@ const Index = () => {
       </div>
 
       {/* Detail Panel */}
-      <DetailPanel 
+      <DetailPanel
         requirement={selectedRequirement}
         isOpen={isDetailPanelOpen}
         onClose={handleCloseDetailPanel}
