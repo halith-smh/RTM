@@ -115,7 +115,7 @@ export function NavigationTree({ data, selectedId, onSelect }: NavigationTreePro
     <div className="h-full bg-nav-background border-r border-nav-border overflow-hidden flex flex-col">
       {/* Header */}
       <div className="p-4 border-b border-nav-border">
-        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Project Hierarchy</h2>
+        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Process Hierarchy</h2>
       </div>
       
       {/* Tree */}
