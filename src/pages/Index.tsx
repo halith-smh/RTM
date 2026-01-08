@@ -1,21 +1,25 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { GlobalHeader } from '@/components/rtm/GlobalHeader';
 import { NavigationTree } from '@/components/rtm/NavigationTree';
 import { FilterBar } from '@/components/rtm/FilterBar';
 import { RTMTable } from '@/components/rtm/RTMTable';
-import { DetailPanel } from '@/components/rtm/DetailPanel';
 import { navigationData, requirementsData } from '@/data/mockData';
 import { NavigationNode, Requirement } from '@/types/rtm';
 import { ChevronLeft, ChevronRight, LayoutGrid, Link, List, BarChart3, GitBranch } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
+import { DetailPanel } from '@/components/rtm/DetailPanel';
+
 const Index = () => {
+  const navigate = useNavigate();
   const [selectedNode, setSelectedNode] = useState<NavigationNode | null>(null);
-  const [selectedRequirement, setSelectedRequirement] = useState<Requirement | null>(null);
-  const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false);
   const [isNavCollapsed, setIsNavCollapsed] = useState(false);
   const [currentView, setCurrentView] = useState('admin');
+  const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false);
+  const [selectedRequirement, setSelectedRequirement] = useState<Requirement | null>(null);
+  const [detailPanelTab, setDetailPanelTab] = useState('overview');
 
   const breadcrumb = ['MDLP FY25', 'RTM', 'Home'];
   const mockPath = ["MDLP FY25", "Order to cash", "Sales Order Management"];
@@ -30,17 +34,24 @@ const Index = () => {
     setSelectedNode(node);
   };
 
-  const handleRequirementClick = (req: Requirement) => {
-    setSelectedRequirement(req);
-    setIsDetailPanelOpen(true);
-  };
-
-  const handleCloseDetailPanel = () => {
-    setIsDetailPanelOpen(false);
+  const handleRequirementClick = (req: Requirement, tab?: string) => {
+    if (tab) {
+      setSelectedRequirement(req);
+      setDetailPanelTab(tab);
+      setIsDetailPanelOpen(true);
+    } else {
+      navigate(`/requirement/${req.reqId}`);
+    }
   };
 
   return (
-    <div className="h-screen bg-background flex flex-col overflow-hidden">
+    <div className="h-screen w-screen bg-background flex flex-col overflow-hidden">
+      <DetailPanel
+        requirement={selectedRequirement}
+        isOpen={isDetailPanelOpen}
+        onClose={() => setIsDetailPanelOpen(false)}
+        initialTab={detailPanelTab}
+      />
       {/* Global Header */}
       <GlobalHeader breadcrumb={breadcrumb} />
 
@@ -85,7 +96,7 @@ const Index = () => {
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
           {/* View Title */}
-          <div className="px-6 py-4 border-b border-border bg-background">
+          <div className="px-4 py-4 border-b border-border bg-background">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-primary/10 rounded-lg">
@@ -122,7 +133,7 @@ const Index = () => {
           <FilterBar onViewChange={setCurrentView} />
 
           {/* RTM Table */}
-          <div className="flex-1 overflow-auto bg-background">
+          <div className={cn("flex-1 bg-background p-4", isDetailPanelOpen ? "overflow-hidden" : "overflow-auto")}>
             <RTMTable
               requirements={requirementsData}
               onRequirementClick={handleRequirementClick}
@@ -130,13 +141,6 @@ const Index = () => {
           </div>
         </div>
       </div>
-
-      {/* Detail Panel */}
-      <DetailPanel
-        requirement={selectedRequirement}
-        isOpen={isDetailPanelOpen}
-        onClose={handleCloseDetailPanel}
-      />
     </div>
   );
 };

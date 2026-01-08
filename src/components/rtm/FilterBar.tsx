@@ -1,4 +1,4 @@
-import { Download, Upload, Plus, Save, Eye, Search, ChevronDown, Pin } from 'lucide-react';
+import { Download, Upload, Plus, Save, Eye, Search, ChevronDown, Pin, Maximize, RefreshCw, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
@@ -81,7 +81,7 @@ export function FilterBar({ onViewChange }: FilterBarProps) {
         { value: 'emily', label: 'Emily Davis' },
         { value: 'alex', label: 'Alex Kumar' }
       ],
-      isPinned: false,
+      isPinned: true,
       width: '140px'
     },
     {
@@ -114,7 +114,7 @@ export function FilterBar({ onViewChange }: FilterBarProps) {
   const displayedFilters = isExpanded ? filters : pinnedFilters;
 
   const togglePin = (filterId: string) => {
-    setFilters(prev => prev.map(f => 
+    setFilters(prev => prev.map(f =>
       f.id === filterId ? { ...f, isPinned: !f.isPinned } : f
     ));
   };
@@ -122,7 +122,7 @@ export function FilterBar({ onViewChange }: FilterBarProps) {
   const renderFilter = (filter: FilterOption) => (
     <div key={filter.id} className="flex items-center gap-1">
       <Select defaultValue="all">
-        <SelectTrigger 
+        <SelectTrigger
           className={cn(
             "h-8 text-sm border-muted-foreground/20 bg-background hover:border-muted-foreground/40 transition-colors",
             `w-[${filter.width}]`
@@ -156,20 +156,20 @@ export function FilterBar({ onViewChange }: FilterBarProps) {
   );
 
   return (
-    <div className="border-b border-border bg-muted/20 px-4 pt-2 pb-1">
+    <div className="border-b border-border bg-muted/20 px-4 pt-2 pb-2">
       <div className="flex flex-col gap-2">
         {/* First Row: Filters and Icon Group */}
         <div className="flex items-center justify-between gap-4">
           {/* Left: Filters */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 flex-wrap p-1 bg-background rounded-md">
+            <div className="flex items-center gap-3 flex-wrap">
               {displayedFilters.map(filter => renderFilter(filter))}
             </div>
           </div>
-          
+
           {/* Divider between filters and icon group */}
           <div className="h-8 w-px bg-border" />
-            
+
           {/* Right: Icon Group - Fixed Position */}
           <div className="flex items-center gap-1 flex-shrink-0">
             <Button
@@ -181,7 +181,7 @@ export function FilterBar({ onViewChange }: FilterBarProps) {
             >
               <ChevronDown className={cn("h-4 w-4 transition-transform", isExpanded && "rotate-180")} />
             </Button>
-            
+
             <Button
               variant="ghost"
               size="icon"
@@ -202,7 +202,7 @@ export function FilterBar({ onViewChange }: FilterBarProps) {
 
         {/* Second Row: Views and Action Buttons */}
         <div className="flex items-center justify-between gap-4">
-          {/* Left: Saved Views */}
+          {/* Left: Saved Views and Export/Import */}
           <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -232,43 +232,56 @@ export function FilterBar({ onViewChange }: FilterBarProps) {
                 </div>
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
 
-          {/* Right: Action Buttons */}
-          <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-8 gap-2 border border-muted-foreground/20 hover:border-muted-foreground/40">
                   <Download className="h-4 w-4" />
                   Export
+                  <ChevronDown className="h-3 w-3" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>Export to Excel</DropdownMenuItem>
-                <DropdownMenuItem>Export to CSV</DropdownMenuItem>
-                <DropdownMenuItem>Export to PDF</DropdownMenuItem>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem>
+                  <Download className="h-3 w-3 mr-2" />
+                  Export to Excel
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Download className="h-3 w-3 mr-2" />
+                  Export to CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Download className="h-3 w-3 mr-2" />
+                  Export to PDF
+                </DropdownMenuItem>
+                <div className="border-t border-border mt-1 pt-1">
+                  <DropdownMenuItem>
+                    <Upload className="h-3 w-3 mr-2" />
+                    Import Data
+                  </DropdownMenuItem>
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
+          </div>
 
-            <Button variant="ghost" size="sm" className="h-8 gap-2 border border-muted-foreground/20 hover:border-muted-foreground/40">
-              <Upload className="h-4 w-4" />
-              Import
+          {/* Center: Item Count */}
+          <div className="flex items-center">
+            <span className="text-sm text-muted-foreground">Showing 20 of 435 Items</span>
+          </div>
+
+          {/* Right: Action Buttons */}
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" className="h-8 w-8 border border-muted-foreground/20 hover:border-muted-foreground/40" title="Fullscreen">
+              <Maximize className="h-4 w-4" />
             </Button>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="sm" className="h-8 gap-2 bg-primary hover:bg-primary/90">
-                  <Plus className="h-4 w-4" />
-                  Add Work Item
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>Add Requirement</DropdownMenuItem>
-                <DropdownMenuItem>Add Task</DropdownMenuItem>
-                <DropdownMenuItem>Add Test Case</DropdownMenuItem>
-                <DropdownMenuItem>Add Issue</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button variant="ghost" size="icon" className="h-8 w-8 border border-muted-foreground/20 hover:border-muted-foreground/40" title="Refresh">
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+
+            <Button variant="ghost" size="icon" className="h-8 w-8 border border-muted-foreground/20 hover:border-muted-foreground/40" title="Advanced Filters">
+              <Filter className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </div>

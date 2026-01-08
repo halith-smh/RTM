@@ -85,20 +85,20 @@ export interface Requirement {
   status: RequirementStatus;
   scopeId: string;
   processId: string;
-  
+
   // Traceability links
   tasks: Task[];
   testCases: TestCase[];
   issues: Issue[];
   signOffs: SignOff[];
-  
+
   // Resources
   documents: Document[];
   stakeholders: Stakeholder[];
-  
+
   // Audit
   auditHistory: AuditEntry[];
-  
+
   // Metadata
   createdAt: string;
   updatedAt: string;
