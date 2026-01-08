@@ -78,7 +78,7 @@ const Index = () => {
             size="icon"
             onClick={() => setIsNavCollapsed(!isNavCollapsed)}
             className={cn(
-              "absolute top-[22.5px] h-8 w-4 rounded-r border border-l-0 border-border bg-background/90 backdrop-blur-sm shadow-sm hover:bg-muted hover:w-5 transition-all duration-300 group flex items-center justify-center",
+              "absolute top-[22px] h-8 w-4 rounded-r border border-l-0 border-border bg-background/90 backdrop-blur-sm shadow-sm hover:bg-muted hover:w-5 transition-all duration-300 group flex items-center justify-center",
               isNavCollapsed 
                 ? "left-0" 
                 : "-left-px"
@@ -96,7 +96,7 @@ const Index = () => {
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
           {/* View Title */}
-          <div className="px-4 py-4 border-b border-border bg-background">
+          <div className="pl-12 pr-6 py-4 border-b border-border bg-background">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-primary/10 rounded-lg">
