@@ -82,6 +82,8 @@ export function StatusBar({ segments, total, title, emptyText = '-', onViewDetai
       <PopoverContent
         className="w-[380px] p-0 shadow-2xl border-2 bg-popover"
         collisionPadding={16}
+        side="left"
+        align="center"
       >
         <div className="p-4 border-b border-border bg-muted/10">
           <div className="flex items-start justify-between gap-4">
@@ -99,7 +101,7 @@ export function StatusBar({ segments, total, title, emptyText = '-', onViewDetai
                   onViewDetails();
                   setIsOpen(false);
                 }}
-                className="text-muted-foreground hover:text-primary transition-colors p-1 hover:bg-muted rounded-full"
+                className="text-muted-foreground hover:text-primary transition-all p-1 hover:scale-110"
                 title="View Full Traceability"
               >
                 <Maximize2 className="h-4 w-4" />
