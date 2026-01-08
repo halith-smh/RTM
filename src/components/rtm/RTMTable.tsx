@@ -1,3 +1,4 @@
+import { useRef, useState, useEffect, useCallback } from 'react';
 import { Requirement, Priority, RequirementStatus, RequirementType } from '@/types/rtm';
 import { StatusBadge } from './StatusBadge';
 import { StatusBar, StatusSegment } from './StatusBar';
@@ -91,44 +92,77 @@ function getSignOffSegments(req: Requirement): StatusSegment[] {
 }
 
 export function RTMTable({ requirements, onRequirementClick }: RTMTableProps) {
+  // Minimum widths for each column to ensure data visibility
+  const minColumnWidths = [
+    90,  // Req ID
+    300, // Req Title
+    110, // Type
+    130, // Source Owner
+    110, // Priority
+    110, // Status
+    140, // Task
+    140, // Testcase
+    140, // Issues
+    140, // Sign-offs
+  ];
+
+  // Initial widths matching the minimums to prevent gaps
+  const [colWidths, setColWidths] = useState<number[]>([...minColumnWidths]);
+
+  const startResize = useCallback((index: number) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    const startX = e.pageX;
+    const startWidth = colWidths[index];
+    const minWidth = minColumnWidths[index];
+
+    const onMouseMove = (e: MouseEvent) => {
+      const newWidth = Math.max(minWidth, startWidth + (e.pageX - startX));
+      setColWidths(prev => {
+        const next = [...prev];
+        next[index] = newWidth;
+        return next;
+      });
+    };
+
+    const onMouseUp = () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  }, [colWidths]);
+
+  const renderHeader = (label: string, index: number, className: string = '') => (
+    <th
+      className={cn("relative border-b border-r border-border px-4 py-2 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground", className)}
+      style={{ width: colWidths[index] }}
+    >
+      <div className="flex items-center h-full overflow-hidden">
+        {label}
+      </div>
+      <div
+        className="absolute right-0 top-0 h-full w-1 cursor-col-resize bg-border hover:bg-primary/50 transition-colors"
+        onMouseDown={startResize(index)}
+      />
+    </th>
+  );
+
   return (
     <div className="overflow-x-auto border border-border rounded-lg">
-      <table className="w-full border-collapse bg-background">
+      <table className="w-full border-collapse bg-background table-fixed">
         <thead>
           <tr className="bg-muted/50">
-            <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 py-3 border-b border-r border-border whitespace-nowrap">
-              Req ID
-            </th>
-            <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 py-3 border-b border-r border-border min-w-[200px]">
-              Req Title
-            </th>
-            <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 py-3 border-b border-r border-border whitespace-nowrap">
-              Type
-            </th>
-            <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 py-3 border-b border-r border-border whitespace-nowrap">
-              Source Owner
-            </th>
-            <th className="text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 py-3 border-b border-r border-border whitespace-nowrap">
-              Priority
-            </th>
-            <th className="text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 py-3 border-b border-r border-border whitespace-nowrap">
-              Status
-            </th>
-            <th className="text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 py-3 border-b border-r border-border whitespace-nowrap">
-              Task
-            </th>
-            <th className="text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 py-3 border-b border-r border-border min-w-[140px]">
-              Testcase
-            </th>
-            <th className="text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 py-3 border-b border-r border-border min-w-[100px]">
-              Issues
-            </th>
-            <th className="text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 py-3 border-b border-r border-border min-w-[100px]">
-              Sign-offs
-            </th>
-            <th className="text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 py-3 border-b border-border min-w-[140px]">
-              Req Approval Status
-            </th>
+            {renderHeader("Req ID", 0, "whitespace-nowrap")}
+            {renderHeader("Req Title", 1, "min-w-[200px]")}
+            {renderHeader("Type", 2, "text-center whitespace-nowrap")}
+            {renderHeader("Source Owner", 3, "whitespace-nowrap")}
+            {renderHeader("Priority", 4, "text-center whitespace-nowrap")}
+            {renderHeader("Status", 5, "text-center whitespace-nowrap")}
+            {renderHeader("Task", 6, "text-center whitespace-nowrap")}
+            {renderHeader("TESTCASES", 7, "text-center min-w-[140px]")}
+            {renderHeader("Issues", 8, "text-center min-w-[100px]")}
+            {renderHeader("Sign-offs", 9, "text-center min-w-[100px]")}
           </tr>
         </thead>
         <tbody>
@@ -144,9 +178,9 @@ export function RTMTable({ requirements, onRequirementClick }: RTMTableProps) {
                 className="hover:bg-muted/30 transition-colors"
               >
                 {/* Req ID */}
-                <td className="px-4 py-3 border-b border-r border-border">
+                <td className="px-4 py-2 border-b border-r border-border truncate" style={{ width: colWidths[0] }}>
                   <span
-                    className="text-foreground font-medium text-sm hover:underline cursor-pointer"
+                    className="text-foreground font-medium text-xs whitespace-nowrap hover:underline cursor-pointer"
                     onClick={() => onRequirementClick(req)}
                   >
                     {req.reqId}
@@ -154,105 +188,113 @@ export function RTMTable({ requirements, onRequirementClick }: RTMTableProps) {
                 </td>
 
                 {/* Req Title with sub-info */}
-                <td className="px-4 py-3 border-b border-r border-border">
-                  <RTMHoverCard
-                    trigger={
-                      <div className="flex flex-col">
-                        <span
-                          className="text-foreground hover:underline cursor-pointer font-medium text-sm line-clamp-1"
-                          onClick={() => onRequirementClick(req)}
-                        >
-                          {req.title}
-                        </span>
-                        <span className="text-xs text-muted-foreground">{req.sourceOwner}</span>
-                      </div>
-                    }
-                    title={req.title}
-                    items={[
-                      { label: 'Type', value: req.type },
-                      { label: 'Priority', value: req.priority },
-                      { label: 'Status', value: req.status },
-                      { label: 'Tasks', value: req.tasks.length },
-                      { label: 'Test Cases', value: req.testCases.length },
-                    ]}
-                    footer={`Last updated by ${req.lastUpdatedBy} on ${req.updatedAt}`}
-                  />
+                <td className="px-4 py-2 border-b border-r border-border" style={{ width: colWidths[1] }}>
+                  <div className="truncate">
+                    <RTMHoverCard
+                      trigger={
+                        <div className="flex flex-col">
+                          <span
+                            className="text-foreground hover:underline cursor-pointer font-medium text-sm truncate"
+                            onClick={() => onRequirementClick(req)}
+                          >
+                            {req.title}
+                          </span>
+                          <span className="text-xs text-muted-foreground truncate">{req.sourceOwner}</span>
+                        </div>
+                      }
+                      title={req.title}
+                      items={[
+                        { label: 'Type', value: req.type },
+                        { label: 'Priority', value: req.priority },
+                        { label: 'Status', value: req.status },
+                        { label: 'Tasks', value: req.tasks.length },
+                        { label: 'Test Cases', value: req.testCases.length },
+                      ]}
+                      footer={`Last updated by ${req.lastUpdatedBy} on ${req.updatedAt}`}
+                    />
+                  </div>
                 </td>
 
                 {/* Type */}
-                <td className="px-4 py-3 border-b border-r border-border">
-                  <StatusBadge label={req.type} type={typeMap[req.type]} />
+                <td className="px-4 py-2 border-b border-r border-border truncate text-center" style={{ width: colWidths[2] }}>
+                  <div className="flex justify-center">
+                    <StatusBadge label={req.type} type={typeMap[req.type]} />
+                  </div>
                 </td>
 
                 {/* Source Owner */}
-                <td className="px-4 py-3 border-b border-r border-border text-sm">
+                <td className="px-4 py-2 border-b border-r border-border text-sm truncate" style={{ width: colWidths[3] }}>
                   {req.sourceOwner}
                 </td>
 
                 {/* Priority */}
-                <td className="px-4 py-3 border-b border-r border-border text-center">
-                  <StatusBadge label={req.priority} type={priorityMap[req.priority]} />
+                <td className="px-4 py-2 border-b border-r border-border text-center truncate" style={{ width: colWidths[4] }}>
+                  <div className="flex justify-center">
+                    <StatusBadge label={req.priority} type={priorityMap[req.priority]} />
+                  </div>
                 </td>
 
                 {/* Status */}
-                <td className="px-4 py-3 border-b border-r border-border text-center">
-                  <StatusBadge label={req.status} type={statusMap[req.status]} />
+                <td className="px-4 py-2 border-b border-r border-border text-center truncate" style={{ width: colWidths[5] }}>
+                  <div className="flex justify-center">
+                    <StatusBadge label={req.status} type={statusMap[req.status]} />
+                  </div>
                 </td>
 
                 {/* Task - Status Bar */}
-                <td className="px-3 py-3 border-b border-r border-border">
-                  <StatusBar
-                    segments={taskSegments}
-                    total={req.tasks.length}
-                    title="Tasks"
-                    onViewDetails={() => onRequirementClick(req)}
-                    reqId={req.reqId}
-                    reqTitle={req.title}
-                  />
+                <td className="px-3 py-2 border-b border-r border-border" style={{ width: colWidths[6] }}>
+                  <div className="overflow-hidden">
+                    <StatusBar
+                      segments={taskSegments}
+                      total={req.tasks.length}
+                      title="Tasks"
+                      onViewDetails={() => onRequirementClick(req)}
+                      reqId={req.reqId}
+                      reqTitle={req.title}
+                    />
+                  </div>
                 </td>
 
                 {/* Testcase - Status Bar */}
-                <td className="px-3 py-3 border-b border-r border-border">
-                  <StatusBar
-                    segments={executionSegments}
-                    total={req.testCases.length}
-                    title="Testcase"
-                    onViewDetails={() => onRequirementClick(req)}
-                    reqId={req.reqId}
-                    reqTitle={req.title}
-                  />
+                <td className="px-3 py-2 border-b border-r border-border" style={{ width: colWidths[7] }}>
+                  <div className="overflow-hidden">
+                    <StatusBar
+                      segments={executionSegments}
+                      total={req.testCases.length}
+                      title="TESTCASES"
+                      onViewDetails={() => onRequirementClick(req)}
+                      reqId={req.reqId}
+                      reqTitle={req.title}
+                    />
+                  </div>
                 </td>
 
                 {/* Issues - Status Bar */}
-                <td className="px-3 py-3 border-b border-r border-border">
-                  <StatusBar
-                    segments={issueSegments}
-                    total={req.issues.length}
-                    title="Issues"
-                    onViewDetails={() => onRequirementClick(req)}
-                    reqId={req.reqId}
-                    reqTitle={req.title}
-                  />
+                <td className="px-3 py-2 border-b border-r border-border" style={{ width: colWidths[8] }}>
+                  <div className="overflow-hidden">
+                    <StatusBar
+                      segments={issueSegments}
+                      total={req.issues.length}
+                      title="Issues"
+                      onViewDetails={() => onRequirementClick(req)}
+                      reqId={req.reqId}
+                      reqTitle={req.title}
+                    />
+                  </div>
                 </td>
 
                 {/* Sign-offs - Status Bar */}
-                <td className="px-3 py-3 border-b border-r border-border">
-                  <StatusBar
-                    segments={signOffSegments}
-                    total={req.signOffs.length}
-                    title="Sign-offs"
-                    onViewDetails={() => onRequirementClick(req)}
-                    reqId={req.reqId}
-                    reqTitle={req.title}
-                  />
-                </td>
-
-                {/* Requirement Approval Status */}
-                <td className="px-4 py-3 border-b border-border text-center">
-                  <StatusBadge
-                    label={req.signOffs.every(s => s.status === 'Approved') ? 'Approved' : req.signOffs.some(s => s.status === 'Rejected') ? 'Rejected' : 'Pending'}
-                    type={req.signOffs.every(s => s.status === 'Approved') ? 'success' : req.signOffs.some(s => s.status === 'Rejected') ? 'error' : 'info'}
-                  />
+                <td className="px-3 py-2 border-b border-r border-border" style={{ width: colWidths[9] }}>
+                  <div className="overflow-hidden">
+                    <StatusBar
+                      segments={signOffSegments}
+                      total={req.signOffs.length}
+                      title="Sign-offs"
+                      onViewDetails={() => onRequirementClick(req)}
+                      reqId={req.reqId}
+                      reqTitle={req.title}
+                    />
+                  </div>
                 </td>
               </tr>
             );

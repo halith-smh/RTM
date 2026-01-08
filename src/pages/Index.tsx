@@ -34,7 +34,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="h-screen w-screen bg-background flex flex-col overflow-hidden">
       {/* Global Header */}
       <GlobalHeader breadcrumb={breadcrumb} />
 
@@ -112,7 +112,7 @@ const Index = () => {
           <FilterBar onViewChange={setCurrentView} />
 
           {/* RTM Table */}
-          <div className="flex-1 overflow-auto bg-background pt-4">
+          <div className={cn("flex-1 bg-background", isDetailPanelOpen ? "overflow-hidden" : "overflow-auto")}>
             <RTMTable
               requirements={requirementsData}
               onRequirementClick={handleRequirementClick}
