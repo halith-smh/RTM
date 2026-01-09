@@ -7,6 +7,7 @@ import { ArrowLeft, Settings, HelpCircle, Bell, Copy, MoreVertical, ChevronDown,
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DiscussionsPanel } from '@/components/rtm/DiscussionsPanel';
+import { OverviewTab } from '@/components/rtm/OverviewTab';
 import { KnowledgeBaseTab } from '@/components/views/detail/KnowledgeBaseTab';
 import { StakeholdersTab } from '@/components/views/detail/StakeholdersTab';
 
@@ -264,11 +265,7 @@ const RequirementDetail = () => {
       {/* Main Content Area - Scrollable */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden bg-background lg:pr-[350px]">
         <div className="w-full h-full">
-           {activeTab === 'Overview' && (
-               <div className="flex items-center justify-center h-full p-6">
-                   <span className="text-lg text-muted-foreground">Overview Content (Placeholder)</span>
-               </div>
-           )}
+           {activeTab === 'Overview' && <OverviewTab requirementId="13061" />}
            {activeTab === 'Knowledge base' && <KnowledgeBaseTab requirementId="13061" />}
            {activeTab === 'Stakeholders' && <StakeholdersTab requirementId="13061" />}
            {!['Overview', 'Knowledge base', 'Stakeholders'].includes(activeTab) && (
