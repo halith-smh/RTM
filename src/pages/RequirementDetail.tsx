@@ -285,9 +285,9 @@ const RequirementDetail = () => {
               </div>
             </div>
             {/* Tab Content with Discussions Panel */}
-            <div className="flex-1 flex overflow-hidden">
-              {/* Main Tab Content - 65% */}
-              <div className="flex-1 w-[65%] overflow-auto">
+            <div className="flex flex-1 min-h-0 overflow-hidden">
+              {/* Main Tab Content - 75% */}
+              <div className="flex-1 w-[75%] overflow-y-auto">
                 {activeTab === 'Overview' ? (
                   <OverviewTab requirementId="13061" />
                 ) : (
@@ -297,8 +297,8 @@ const RequirementDetail = () => {
                 )}
               </div>
               
-              {/* Discussions Panel - 35% */}
-              <div className="w-[35%] flex-shrink-0">
+              {/* Discussions Panel - 25% */}
+              <div className="w-[25%] flex-shrink-0 h-full">
                 <DiscussionsPanel requirementId="13061" />
               </div>
             </div>
