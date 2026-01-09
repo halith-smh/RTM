@@ -186,15 +186,19 @@ export function FocusDrillSidebar({
         </div>
 
         {/* Sticky Footer */}
-        <div className="absolute bottom-0 left-0 right-0 p-3 bg-sidebar-background/60 backdrop-blur-xl border-t border-sidebar-border/30 z-10">
-          <Button 
+        <div className="absolute bottom-0 left-0 right-0 p-4 bg-sidebar-background/60 backdrop-blur-xl border-t border-sidebar-border/30 z-10">
+          {/* <Button 
             variant="outline" 
             onClick={onOpenFinder}
             className="w-full gap-2 h-10 border-sidebar-border/50 bg-background/50 hover:bg-primary/5 hover:text-primary hover:border-primary/30 transition-all font-semibold rounded-lg shadow-sm"
           >
             <Maximize2 className="h-4 w-4" />
             Explore Hierarchy
-          </Button>
+          </Button> */}
+          <div className="px-1 text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest flex items-center gap-2">
+            <div className="h-1.5 w-1.5 rounded-full bg-primary/40 animate-pulse" />
+            Context: <span className="text-foreground/80">MDLP FY25</span>
+          </div>
         </div>
       </div>
     </TooltipProvider>
