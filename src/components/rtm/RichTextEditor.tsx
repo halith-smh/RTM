@@ -13,7 +13,6 @@ interface RichTextEditorProps {
 
 export const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorProps) => {
   const [isFocused, setIsFocused] = useState(false);
-  const isEmpty = !value || value === '' || value === '<p></p>';
 
   const editor = useEditor({
     extensions: [
@@ -36,31 +35,9 @@ export const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorP
 
   return (
     <div className="rich-text-editor w-full">
-      {/* Editor - Always rendered */}
-      <div className="relative">
-        <EditorContent 
-          editor={editor} 
-          className={`w-full p-3 focus:outline-none text-foreground leading-relaxed text-base transition-all duration-200 ${
-            isFocused 
-              ? 'min-h-[60px] border border-border rounded-lg bg-background' 
-              : isEmpty 
-                ? 'min-h-[60px] border border-transparent hover:border-border rounded-lg cursor-text'
-                : 'min-h-[60px] border border-transparent hover:border-border rounded-lg'
-          }`}
-        />
-        {/* Custom placeholder overlay when empty and not focused */}
-        {isEmpty && !isFocused && (
-          <div 
-            className="absolute top-3 left-3 text-muted-foreground italic cursor-text hover:text-foreground transition-colors pointer-events-none"
-          >
-            {placeholder || 'Click to add content...'}
-          </div>
-        )}
-      </div>
-      
-      {/* Toolbar - Only visible when focused - Bottom position */}
+      {/* Toolbar - Only visible when focused */}
       {isFocused && (
-        <div className="flex items-center gap-1 p-2 border-t border-border bg-muted/20 mt-1">
+        <div className="flex items-center gap-1 p-3 border-b border-border bg-muted/20 mb-2">
           <Button
             type="button"
             variant="ghost"
@@ -108,6 +85,16 @@ export const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorP
           </Button>
         </div>
       )}
+      
+      {/* Editor */}
+      <EditorContent 
+        editor={editor} 
+        className={`w-full p-6 focus:outline-none text-foreground leading-relaxed text-base transition-all duration-200 ${
+          isFocused 
+            ? 'min-h-[400px] border border-border rounded-lg bg-background' 
+            : 'min-h-[400px] border border-transparent hover:border-border rounded-lg'
+        }`}
+      />
     </div>
   );
 };

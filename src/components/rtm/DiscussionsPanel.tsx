@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Send, Paperclip } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface Message {
   id: string;
@@ -19,6 +20,13 @@ interface DiscussionsPanelProps {
 export const DiscussionsPanel = ({ requirementId }: DiscussionsPanelProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
+      id: '1',
+      user: 'John Smith',
+      initials: 'JS',
+      message: 'I think we need to clarify the integration requirements with Outlook API.',
+      timestamp: '2 hours ago'
+    },
+    {
       id: '2',
       user: 'Sarah Johnson',
       initials: 'SJ',
@@ -26,11 +34,11 @@ export const DiscussionsPanel = ({ requirementId }: DiscussionsPanelProps) => {
       timestamp: '1 hour ago'
     },
     {
-      id: '1',
-      user: 'John Smith',
-      initials: 'JS',
-      message: 'I think we need to clarify the integration requirements with Outlook API.',
-      timestamp: '2 hours ago'
+      id: '3',
+      user: 'Mike Davis',
+      initials: 'MD',
+      message: 'The current implementation blocks the entire calendar. We might need a more granular approach.',
+      timestamp: '30 minutes ago'
     }
   ]);
   
@@ -45,7 +53,7 @@ export const DiscussionsPanel = ({ requirementId }: DiscussionsPanelProps) => {
         message: newMessage,
         timestamp: 'Just now'
       };
-      setMessages([message, ...messages]);
+      setMessages([...messages, message]);
       setNewMessage('');
     }
   };
@@ -59,14 +67,14 @@ export const DiscussionsPanel = ({ requirementId }: DiscussionsPanelProps) => {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Header - Fixed Height */}
-      <div className="h-16 flex-shrink-0 p-4 border-b border-border">
+      {/* Header */}
+      <div className="p-4 border-b border-border">
         <h3 className="font-semibold text-foreground">Discussions</h3>
         <p className="text-sm text-muted-foreground">REQ-{requirementId}</p>
       </div>
 
-      {/* Messages - Scrollable Middle */}
-      <div className="flex-1 overflow-y-auto p-4">
+      {/* Messages */}
+      <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
           {messages.map((message) => (
             <div key={message.id} className="flex gap-3">
@@ -85,10 +93,10 @@ export const DiscussionsPanel = ({ requirementId }: DiscussionsPanelProps) => {
             </div>
           ))}
         </div>
-      </div>
+      </ScrollArea>
 
-      {/* Input - Fixed Height */}
-      <div className="h-20 flex-shrink-0 p-4 bg-background border-t border-border">
+      {/* Input */}
+      <div className="p-4 border-t border-border">
         <div className="flex gap-2">
           <Input
             value={newMessage}
