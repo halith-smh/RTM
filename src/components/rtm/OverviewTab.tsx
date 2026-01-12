@@ -14,8 +14,67 @@ interface OverviewTabProps {
 }
 
 export const OverviewTab = ({ requirementId }: OverviewTabProps) => {
-  const [description, setDescription] = useState(`<p><strong>Business Context:</strong><br>The current SAP ECC 6.0 system integration with Microsoft Outlook calendar functionality is experiencing synchronization failures when users create calendar events through the SAP application interface. This impacts approximately 2,500 users across Finance (FI), Sales &amp; Distribution (SD), and Human Capital Management (HCM) modules.</p><p><strong>Problem Statement:</strong><br>When users create calendar events from within SAP applications (such as scheduling meetings for vendor negotiations, customer appointments, or employee reviews), the events are not properly synchronized with their Outlook calendars. This results in:</p><ul><li>Double-booking conflicts</li><li>Missed appointments and meetings</li><li>Manual calendar maintenance overhead</li><li>Reduced productivity and user satisfaction</li></ul><p><strong>Current State Analysis:</strong></p><ul><li>SAP GUI transactions: ME21N (Purchase Orders), VA01 (Sales Orders), PA30 (HR Master Data)</li><li>Integration method: SAP Business Connector (deprecated)</li><li>Affected user groups: Procurement team (450 users), Sales team (800 users), HR team (200 users), Management (150 users)</li><li>Error frequency: 35% of calendar events fail to sync</li><li>Business impact: 15-20 hours/week of manual calendar reconciliation</li></ul><p><strong>Root Cause Analysis:</strong></p><ol><li>Legacy SAP Business Connector lacks modern OAuth 2.0 authentication</li><li>Outlook API version compatibility issues (using deprecated Exchange Web Services)</li><li>Network timeout configurations causing sync failures</li><li>Missing error handling and retry mechanisms</li><li>Insufficient logging for troubleshooting sync issues</li></ol>`);
-  const [expectedOutcome, setExpectedOutcome] = useState(`<p><strong>Primary Objectives:</strong></p><p><strong>1. Seamless Calendar Integration</strong></p><ul><li>100% synchronization success rate for calendar events created from SAP</li><li>Real-time bidirectional sync between SAP and Outlook calendars</li><li>Support for recurring events, meeting invitations, and calendar sharing</li><li>Automatic conflict detection and resolution mechanisms</li></ul><p><strong>2. Enhanced User Experience</strong></p><ul><li>Single-click calendar event creation from SAP transactions</li><li>Unified calendar view showing both SAP-generated and personal events</li><li>Mobile device compatibility for calendar access</li><li>Intuitive user interface with minimal training requirements</li></ul><p><strong>3. Technical Implementation</strong></p><ul><li>Migration from SAP Business Connector to SAP Cloud Platform Integration (CPI)</li><li>Implementation of Microsoft Graph API for modern Outlook integration</li><li>OAuth 2.0 authentication with Azure Active Directory</li><li>Comprehensive error handling, logging, and monitoring capabilities</li></ul><p><strong>4. Business Value Delivery</strong></p><ul><li>Reduce manual calendar maintenance by 90% (from 20 hours to 2 hours per week)</li><li>Eliminate double-booking incidents (currently 25-30 per month)</li><li>Improve meeting attendance rates by 15-20%</li><li>Enhance user productivity and satisfaction scores</li></ul><p><strong>5. Compliance and Security</strong></p><ul><li>Maintain SOX compliance for financial calendar events</li><li>Implement GDPR-compliant data handling for personal calendar information</li><li>Ensure enterprise-grade security with encrypted data transmission</li><li>Audit trail for all calendar synchronization activities</li></ul><p><strong>Success Metrics:</strong></p><ul><li>Calendar sync success rate: &gt;99.5%</li><li>User adoption rate: &gt;95% within 3 months</li><li>Support ticket reduction: 80% decrease in calendar-related issues</li><li>System response time: &lt;2 seconds for calendar operations</li><li>User satisfaction score: &gt;4.5/5.0 in post-implementation survey</li></ul>`);
+  const [description, setDescription] = useState(`**Business Context:**
+The current SAP ECC 6.0 system integration with Microsoft Outlook calendar functionality is experiencing synchronization failures when users create calendar events through the SAP application interface. This impacts approximately 2,500 users across Finance (FI), Sales & Distribution (SD), and Human Capital Management (HCM) modules.
+
+**Problem Statement:**
+When users create calendar events from within SAP applications (such as scheduling meetings for vendor negotiations, customer appointments, or employee reviews), the events are not properly synchronized with their Outlook calendars. This results in:
+- Double-booking conflicts
+- Missed appointments and meetings
+- Manual calendar maintenance overhead
+- Reduced productivity and user satisfaction
+
+**Current State Analysis:**
+- SAP GUI transactions: ME21N (Purchase Orders), VA01 (Sales Orders), PA30 (HR Master Data)
+- Integration method: SAP Business Connector (deprecated)
+- Affected user groups: Procurement team (450 users), Sales team (800 users), HR team (200 users), Management (150 users)
+- Error frequency: 35% of calendar events fail to sync
+- Business impact: 15-20 hours/week of manual calendar reconciliation
+
+**Root Cause Analysis:**
+1. Legacy SAP Business Connector lacks modern OAuth 2.0 authentication
+2. Outlook API version compatibility issues (using deprecated Exchange Web Services)
+3. Network timeout configurations causing sync failures
+4. Missing error handling and retry mechanisms
+5. Insufficient logging for troubleshooting sync issues`);
+  const [expectedOutcome, setExpectedOutcome] = useState(`**Primary Objectives:**
+
+**1. Seamless Calendar Integration**
+- 100% synchronization success rate for calendar events created from SAP
+- Real-time bidirectional sync between SAP and Outlook calendars
+- Support for recurring events, meeting invitations, and calendar sharing
+- Automatic conflict detection and resolution mechanisms
+
+**2. Enhanced User Experience**
+- Single-click calendar event creation from SAP transactions
+- Unified calendar view showing both SAP-generated and personal events
+- Mobile device compatibility for calendar access
+- Intuitive user interface with minimal training requirements
+
+**3. Technical Implementation**
+- Migration from SAP Business Connector to SAP Cloud Platform Integration (CPI)
+- Implementation of Microsoft Graph API for modern Outlook integration
+- OAuth 2.0 authentication with Azure Active Directory
+- Comprehensive error handling, logging, and monitoring capabilities
+
+**4. Business Value Delivery**
+- Reduce manual calendar maintenance by 90% (from 20 hours to 2 hours per week)
+- Eliminate double-booking incidents (currently 25-30 per month)
+- Improve meeting attendance rates by 15-20%
+- Enhance user productivity and satisfaction scores
+
+**5. Compliance and Security**
+- Maintain SOX compliance for financial calendar events
+- Implement GDPR-compliant data handling for personal calendar information
+- Ensure enterprise-grade security with encrypted data transmission
+- Audit trail for all calendar synchronization activities
+
+**Success Metrics:**
+- Calendar sync success rate: >99.5%
+- User adoption rate: >95% within 3 months
+- Support ticket reduction: 80% decrease in calendar-related issues
+- System response time: <2 seconds for calendar operations
+- User satisfaction score: >4.5/5.0 in post-implementation survey`);
   const [definedRequirement, setDefinedRequirement] = useState('');
   const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
   const [sourceOwner, setSourceOwner] = useState('');
