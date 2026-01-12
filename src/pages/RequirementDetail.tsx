@@ -10,6 +10,7 @@ import { OverviewTab } from '@/components/rtm/OverviewTab';
 import { LinksTab } from '@/components/rtm/LinksTab';
 import { FilesTab } from '@/components/rtm/FilesTab';
 import { DiscussionsPanel } from '@/components/rtm/DiscussionsPanel';
+import { requirementsData } from '@/data/mockData';
 
 const RequirementDetail = () => {
   const navigate = useNavigate();
@@ -22,6 +23,9 @@ const RequirementDetail = () => {
   const [activeTab, setActiveTab] = useState('Overview');
   const tabs = ['Overview', 'Knowledge base', 'Stakeholders', 'Links', 'History', 'Files'];
   const [tags, setTags] = useState(['High Priority', 'Calendar', 'Integration']);
+  
+  // Get requirement data for REQ-001
+  const currentRequirement = requirementsData.find(req => req.reqId === 'REQ-001');
   const removeTag = (tagToRemove) => {
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
@@ -190,9 +194,9 @@ const RequirementDetail = () => {
                   </Button>
                   
                   {/* More Options */}
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground">
+                  {/* <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground">
                     <MoreVertical className="h-4 w-4" />
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
               
@@ -295,7 +299,7 @@ const RequirementDetail = () => {
                 ) : activeTab === 'Links' ? (
                   <LinksTab requirementId="13061" />
                 ) : activeTab === 'Files' ? (
-                  <FilesTab requirementId="13061" />
+                  <FilesTab requirementId="REQ-001" documents={currentRequirement?.documents} />
                 ) : (
                   <div className="flex items-center justify-center p-8">
                     <span className="text-lg text-muted-foreground">{activeTab} Content</span>
