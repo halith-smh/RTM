@@ -8,11 +8,7 @@ const INITIAL_KB_DATA: KnowledgeBase = {
   requirementId: '13061',
   content: {
     description: "The Outlook calendar integration should block time slots when events are created from our application. Currently, events are created but the calendar doesn't show as busy.",
-    acceptanceCriteria: [
-      { id: 'ac-1', text: "Events created from app appear in Outlook calendar within 5 seconds", status: "met" },
-      { id: 'ac-2', text: "Calendar shows time as 'Busy' for created events", status: "pending" },
-      { id: 'ac-3', text: "Updates to event time in app reflect in Outlook", status: "pending" }
-    ],
+    acceptanceCriteria: "- Events created from app appear in Outlook calendar within 5 seconds\n- Calendar shows time as 'Busy' for created events\n- Updates to event time in app reflect in Outlook",
     technicalSpecs: {
       apiEndpoints: "POST /api/calendar/events\nGET /api/calendar/sync-status",
       dataModels: "Event { id, title, startTime, endTime, isBlocking, outlookId }",
@@ -60,7 +56,21 @@ export const knowledgeBaseService = {
     const stored = localStorage.getItem(`${STORAGE_KEY}_${requirementId}`);
     
     if (stored) {
-      return JSON.parse(stored);
+      const data = JSON.parse(stored) as KnowledgeBase;
+      
+      // Data Migration: Convert old array AC to new string format if needed
+      if (Array.isArray(data.content.acceptanceCriteria)) {
+          console.warn('Migrating legacy AC array to string format');
+          const acArray = data.content.acceptanceCriteria as unknown as { text: string; status?: string }[];
+          data.content.acceptanceCriteria = acArray
+              .map(ac => `- ${ac.text}${ac.status === 'met' ? ' [Met]' : ''}`)
+              .join('\n');
+          
+          // Save the migrated version immediately
+          localStorage.setItem(`${STORAGE_KEY}_${requirementId}`, JSON.stringify(data));
+      }
+      
+      return data;
     }
     
     // Seed and return if not found
@@ -74,7 +84,7 @@ export const knowledgeBaseService = {
         ...INITIAL_KB_DATA, 
         id: `kb-${requirementId}`, 
         requirementId,
-        content: { ...INITIAL_KB_DATA.content, description: '', acceptanceCriteria: [] }
+        content: { ...INITIAL_KB_DATA.content, description: '', acceptanceCriteria: '' }
     };
     return emptyDocs;
   },

@@ -1,16 +1,10 @@
-export type AcceptanceCriteriaStatus = 'met' | 'pending' | 'not-met';
 export type DependencyType = 'blocks' | 'blocked-by' | 'related';
 export type TestCaseStatus = 'passed' | 'failed' | 'pending' | 'not-run';
 export type Priority = 'high' | 'medium' | 'low';
 export type RiskImpact = 'high' | 'medium' | 'low';
 export type RiskProbability = 'high' | 'medium' | 'low';
 
-export interface AcceptanceCriteria {
-  id: string;
-  text: string;
-  status: AcceptanceCriteriaStatus;
-}
-
+// Simplified AC to string to match user preference for a single rich text block
 export interface TechnicalSpecs {
   apiEndpoints: string;
   dataModels: string;
@@ -40,7 +34,7 @@ export interface Risk {
 
 export interface KnowledgeBaseContent {
   description: string;
-  acceptanceCriteria: AcceptanceCriteria[];
+  acceptanceCriteria: string;
   technicalSpecs: TechnicalSpecs;
   dependencies: Dependency[];
   testCases: TestCase[];
