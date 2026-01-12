@@ -4,6 +4,9 @@ import { StatusBadge } from './StatusBadge';
 import { StatusBar, StatusSegment } from './StatusBar';
 import { RTMHoverCard } from './HoverCard';
 import { cn } from '@/lib/utils';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface RTMTableProps {
   requirements: Requirement[];
@@ -94,6 +97,13 @@ function getSignOffSegments(req: Requirement): StatusSegment[] {
 }
 
 export function RTMTable({ requirements, onRequirementClick }: RTMTableProps) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  // Pagination
+  const totalPages = Math.ceil(requirements.length / pageSize);
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedRequirements = requirements.slice(startIndex, startIndex + pageSize);
   // Minimum widths for each column to ensure data visibility
   const minColumnWidths = [
     90,  // Req ID
@@ -102,10 +112,15 @@ export function RTMTable({ requirements, onRequirementClick }: RTMTableProps) {
     130, // Source Owner
     110, // Priority
     110, // Status
+    120, // Lifecycle Phase
+    120, // Approval Status
+    130, // Solution Type
     140, // Task
     140, // Testcase
     140, // Issues
     140, // Sign-offs
+    120, // Release Version
+    100, // Tags
   ];
 
   // Initial widths matching the minimums to prevent gaps
@@ -138,7 +153,7 @@ export function RTMTable({ requirements, onRequirementClick }: RTMTableProps) {
   const renderHeader = (label: string, index: number, className: string = '') => (
     <th
       className={cn("sticky top-0 z-20 bg-muted/90 backdrop-blur-sm border-b border-r border-border px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500", className)}
-      style={{ width: colWidths[index] }}
+      style={{ minWidth: minColumnWidths[index], width: colWidths[index] }}
     >
       <div className="flex items-center h-full overflow-hidden">
         {label}
@@ -151,24 +166,30 @@ export function RTMTable({ requirements, onRequirementClick }: RTMTableProps) {
   );
 
   return (
-    <div className="h-full w-full overflow-auto custom-scrollbar bg-background">
-      <table className="w-full border-collapse bg-background table-fixed border-separate border-spacing-0">
-        <thead className="sticky top-0 z-30">
-          <tr className="bg-background">
-            {renderHeader("Req ID", 0, "whitespace-nowrap")}
-            {renderHeader("Req Title", 1, "min-w-[200px]")}
-            {renderHeader("Type", 2, "text-center whitespace-nowrap")}
-            {renderHeader("Source Owner", 3, "whitespace-nowrap")}
-            {renderHeader("Priority", 4, "text-center whitespace-nowrap")}
-            {renderHeader("Status", 5, "text-center whitespace-nowrap")}
-            {renderHeader("Task", 6, "text-center whitespace-nowrap")}
-            {renderHeader("TESTCASES", 7, "text-center min-w-[140px]")}
-            {renderHeader("Issues", 8, "text-center min-w-[100px]")}
-            {renderHeader("Sign-offs", 9, "text-center min-w-[100px]")}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-border">
-          {requirements.map((req) => {
+    <div className="space-y-4">
+      <div className="overflow-x-auto border border-border rounded-lg">
+        <table className="w-full border-collapse bg-background" style={{ minWidth: '1800px' }}>
+          <thead>
+            <tr className="bg-muted/50">
+              {renderHeader("Req ID", 0, "whitespace-nowrap")}
+              {renderHeader("Req Title", 1, "min-w-[200px]")}
+              {renderHeader("Type", 2, "text-center whitespace-nowrap")}
+              {renderHeader("Source Owner", 3, "whitespace-nowrap")}
+              {renderHeader("Priority", 4, "text-center whitespace-nowrap")}
+              {renderHeader("Status", 5, "text-center whitespace-nowrap")}
+              {renderHeader("Lifecycle Stage", 6, "text-center whitespace-nowrap")}
+              {renderHeader("Approval Status", 7, "text-center whitespace-nowrap")}
+              {renderHeader("Solution Type", 8, "text-center whitespace-nowrap")}
+              {renderHeader("Task", 9, "text-center whitespace-nowrap")}
+              {renderHeader("TESTCASES", 10, "text-center min-w-[140px]")}
+              {renderHeader("Issues", 11, "text-center min-w-[100px]")}
+              {renderHeader("Sign-offs", 12, "text-center min-w-[100px]")}
+              {renderHeader("Release Version", 13, "text-center whitespace-nowrap")}
+              {renderHeader("Tags", 14, "text-center whitespace-nowrap")}
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedRequirements.map((req) => {
             const taskSegments = getTaskSegments(req);
             const executionSegments = getExecutionSegments(req);
             const issueSegments = getIssueSegments(req);
@@ -245,8 +266,23 @@ export function RTMTable({ requirements, onRequirementClick }: RTMTableProps) {
                   </div>
                 </td>
 
+                {/* Lifecycle Phase */}
+                <td className="px-4 py-2 border-b border-r border-border text-center truncate" style={{ width: colWidths[6] }}>
+                  <span className="text-xs capitalize">{req.lifecyclePhase}</span>
+                </td>
+
+                {/* Approval Status */}
+                <td className="px-4 py-2 border-b border-r border-border text-center truncate" style={{ width: colWidths[7] }}>
+                  <span className="text-xs capitalize">{req.approvalStatus}</span>
+                </td>
+
+                {/* Solution Type */}
+                <td className="px-4 py-2 border-b border-r border-border text-center truncate" style={{ width: colWidths[8] }}>
+                  <span className="text-xs capitalize">{req.solutionType.replace('-', ' ')}</span>
+                </td>
+
                 {/* Task - Status Bar */}
-                <td className="px-3 py-2 border-b border-r border-border" style={{ width: colWidths[6] }}>
+                <td className="px-3 py-2 border-b border-r border-border" style={{ width: colWidths[9] }}>
                   <div className="overflow-hidden">
                     <StatusBar
                       segments={taskSegments}
@@ -260,7 +296,7 @@ export function RTMTable({ requirements, onRequirementClick }: RTMTableProps) {
                 </td>
 
                 {/* Testcase - Status Bar */}
-                <td className="px-3 py-2 border-b border-r border-border" style={{ width: colWidths[7] }}>
+                <td className="px-3 py-2 border-b border-r border-border" style={{ width: colWidths[10] }}>
                   <div className="overflow-hidden">
                     <StatusBar
                       segments={executionSegments}
@@ -274,7 +310,7 @@ export function RTMTable({ requirements, onRequirementClick }: RTMTableProps) {
                 </td>
 
                 {/* Issues - Status Bar */}
-                <td className="px-3 py-2 border-b border-r border-border" style={{ width: colWidths[8] }}>
+                <td className="px-3 py-2 border-b border-r border-border" style={{ width: colWidths[11] }}>
                   <div className="overflow-hidden">
                     <StatusBar
                       segments={issueSegments}
@@ -288,7 +324,7 @@ export function RTMTable({ requirements, onRequirementClick }: RTMTableProps) {
                 </td>
 
                 {/* Sign-offs - Status Bar */}
-                <td className="px-3 py-2 border-b border-r border-border" style={{ width: colWidths[9] }}>
+                <td className="px-3 py-2 border-b border-r border-border" style={{ width: colWidths[12] }}>
                   <div className="overflow-hidden">
                     <StatusBar
                       segments={signOffSegments}
@@ -300,11 +336,72 @@ export function RTMTable({ requirements, onRequirementClick }: RTMTableProps) {
                     />
                   </div>
                 </td>
+
+                {/* Release Version */}
+                <td className="px-4 py-2 border-b border-r border-border text-center truncate" style={{ width: colWidths[13] }}>
+                  <span className="text-xs">{req.releaseVersion.replace('rel-', 'v')}</span>
+                </td>
+
+                {/* Tags */}
+                <td className="px-2 py-2 border-b border-r border-border text-center truncate" style={{ width: colWidths[14] }}>
+                  <div className="flex flex-wrap gap-1 justify-center">
+                    {req.tags.slice(0, 2).map((tag, index) => (
+                      <span key={index} className="text-xs bg-blue-100 text-blue-700 px-1 py-0.5 rounded">
+                        {tag}
+                      </span>
+                    ))}
+                    {req.tags.length > 2 && (
+                      <span className="text-xs text-muted-foreground">+{req.tags.length - 2}</span>
+                    )}
+                  </div>
+                </td>
               </tr>
             );
           })}
         </tbody>
       </table>
     </div>
+    
+    {/* Pagination */}
+    <div className="flex items-center justify-between px-2">
+      <div className="flex items-center gap-2">
+        <span className="text-sm text-muted-foreground">
+          Showing {startIndex + 1}-{Math.min(startIndex + pageSize, requirements.length)} of {requirements.length}
+        </span>
+        <Select value={pageSize.toString()} onValueChange={(value) => setPageSize(Number(value))}>
+          <SelectTrigger className="w-20 h-8">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="10">10</SelectItem>
+            <SelectItem value="25">25</SelectItem>
+            <SelectItem value="50">50</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      
+      <div className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+          disabled={currentPage === 1}
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+        <span className="text-sm">
+          Page {currentPage} of {totalPages}
+        </span>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+          disabled={currentPage === totalPages}
+                >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+  </div>
   );
 }
