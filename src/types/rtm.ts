@@ -46,6 +46,7 @@ export interface Issue {
   status: 'New' | 'Active' | 'Resolved' | 'Approved';
   assignee: string;
   dueDate: string;
+  priority: Priority;
 }
 
 export interface SignOff {

@@ -12,7 +12,7 @@ import { FilesTab } from '@/components/rtm/FilesTab';
 import { DiscussionsPanel } from '@/components/rtm/DiscussionsPanel';
 import { KnowledgeBaseTab } from '@/components/views/detail/KnowledgeBaseTab';
 import { StakeholdersTab } from '@/components/views/detail/StakeholdersTab';
-import { HistoryTab } from '@/components/rtm/HistoryTab';
+import HistoryTab from '@/components/rtm/HistoryTab';
 
 const RequirementDetail = () => {
   const navigate = useNavigate();

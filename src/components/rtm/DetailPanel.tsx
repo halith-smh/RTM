@@ -617,7 +617,7 @@ export function DetailPanel({ requirement, isOpen, onClose, initialTab = 'overvi
                 className="flex-1 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none px-2 py-3 text-xs"
               >
                 <CheckSquare className="h-3.5 w-3.5 mr-1.5" />
-                Sign-offs
+                Sign-offs ({requirement.signOffs.length})
               </TabsTrigger>
               <TabsTrigger
                 value="audit"

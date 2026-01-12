@@ -305,7 +305,7 @@ export const requirementsData: Requirement[] = [
       { id: 'tc9', title: 'Test capacity allocation', status: 'New', assignee: 'Mike Chen', dueDate: '2025-02-01', priority: 'High' },
     ],
     issues: [
-      { id: 'i2', title: 'Performance issue with large datasets', severity: 'High', status: 'New', assignee: 'Sarah Johnson', dueDate: '2025-01-28' },
+      { id: 'i2', title: 'Performance issue with large datasets', severity: 'High', status: 'New', assignee: 'Sarah Johnson', dueDate: '2025-01-28', priority: 'High' },
     ],
     signOffs: [],
     ctas: [
@@ -375,7 +375,7 @@ export const requirementsData: Requirement[] = [
       { id: 'tc11', title: 'Test reconciliation matching', status: 'New', assignee: 'Mike Chen', dueDate: '2025-01-25', priority: 'High' },
     ],
     issues: [
-      { id: 'i3', title: 'Currency conversion rounding errors', severity: 'Low', status: 'New', assignee: 'Sarah Johnson', dueDate: '2025-01-26' },
+      { id: 'i3', title: 'Currency conversion rounding errors', severity: 'Low', status: 'New', assignee: 'Sarah Johnson', dueDate: '2025-01-26', priority: 'Low' },
     ],
     signOffs: [
       { id: 'so6', role: 'Business Owner', stakeholder: 'Emily Davis', status: 'New', priority: 'High', dueDate: '2025-01-20' },
@@ -468,10 +468,10 @@ export const requirementsData: Requirement[] = [
       { id: 'tc18', title: 'Critical bug discovery', status: 'Defect found', tester: 'Mike Chen', executionResult: 'Fail', lastRun: '2025-01-17', assignee: 'Mike Chen', dueDate: '2025-02-17', priority: 'High' },
     ],
     issues: [
-      { id: 'i4', title: 'New reported issue', severity: 'Low', status: 'New', assignee: 'Sarah Johnson', dueDate: '2025-02-05' },
-      { id: 'i5', title: 'Under investigation', severity: 'Medium', status: 'Active', assignee: 'Sarah Johnson', dueDate: '2025-02-06' },
-      { id: 'i6', title: 'Fix provided for verification', severity: 'High', status: 'Resolved', assignee: 'Sarah Johnson', dueDate: '2025-02-07' },
-      { id: 'i7', title: 'Fix verified and accepted', severity: 'Critical', status: 'Approved', assignee: 'Mike Chen', dueDate: '2025-02-08' },
+      { id: 'i4', title: 'New reported issue', severity: 'Low', status: 'New', assignee: 'Sarah Johnson', dueDate: '2025-02-05', priority: 'Low' },
+      { id: 'i5', title: 'Under investigation', severity: 'Medium', status: 'Active', assignee: 'Sarah Johnson', dueDate: '2025-02-06', priority: 'Medium' },
+      { id: 'i6', title: 'Fix provided for verification', severity: 'High', status: 'Resolved', assignee: 'Sarah Johnson', dueDate: '2025-02-07', priority: 'High' },
+      { id: 'i7', title: 'Fix verified and accepted', severity: 'Critical', status: 'Approved', assignee: 'Mike Chen', dueDate: '2025-02-08', priority: 'High' },
     ],
     signOffs: [
       { id: 'so10', role: 'Business User', stakeholder: 'Emily Davis', status: 'New', priority: 'Low', dueDate: '2025-02-20' },

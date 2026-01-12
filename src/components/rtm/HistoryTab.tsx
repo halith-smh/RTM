@@ -86,7 +86,11 @@ const mockHistory: HistoryEntry[] = [
     },
 ];
 
-const HistoryTab = () => {
+interface HistoryTabProps {
+    requirementId?: string;
+}
+
+const HistoryTab = ({ requirementId }: HistoryTabProps) => {
     const [expandedId, setExpandedId] = useState<string | null>(null);
 
     const toggleExpand = (id: string) => {
