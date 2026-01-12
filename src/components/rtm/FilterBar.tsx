@@ -540,6 +540,7 @@ export function FilterBar({ onViewChange, onFullscreenToggle, visibleColumns, on
               </DropdownMenuContent>
             </DropdownMenu>
 
+
             <Button
               variant="ghost"
               size="icon"
@@ -548,14 +549,6 @@ export function FilterBar({ onViewChange, onFullscreenToggle, visibleColumns, on
               onClick={onFullscreenToggle}
             >
               <Maximize className="h-4 w-4" />
-            </Button>
-
-            <Button variant="ghost" size="icon" className="h-8 w-8 border border-muted-foreground/20 hover:border-muted-foreground/40" title="Refresh">
-              <RefreshCw className="h-4 w-4" />
-            </Button>
-
-            <Button variant="ghost" size="icon" className="h-8 w-8 border border-muted-foreground/20 hover:border-muted-foreground/40" title="Advanced Filters">
-              <Filter className="h-4 w-4" />
             </Button>
 
             <DropdownMenu>
