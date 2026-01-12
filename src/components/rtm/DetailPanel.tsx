@@ -502,41 +502,6 @@ function MeetingsTab({ meetings }: { meetings: Meeting[] }) {
   );
 }
 
-function AuditHistoryTab({ auditHistory }: { auditHistory: AuditEntry[] }) {
-  if (auditHistory.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
-        <History className="h-12 w-12 text-muted-foreground/30 mb-3" />
-        <p className="text-sm text-muted-foreground">No audit history available</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-3">
-      {auditHistory.map((entry) => (
-        <div key={entry.id} className="p-3 bg-muted/30 rounded-lg border border-border">
-          <div className="flex items-start gap-3">
-            <div className="w-2 h-2 rounded-full bg-primary mt-1.5 flex-shrink-0" />
-            <div className="flex-1 min-w-0">
-              <p className="text-sm text-foreground">
-                <span className="font-medium">{entry.changedBy}</span>
-                {' changed '}
-                <span className="font-medium">{entry.field}</span>
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                <span className="line-through">{entry.oldValue}</span>
-                {' → '}
-                <span className="font-medium text-foreground">{entry.newValue}</span>
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">{entry.changedAt}</p>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
 
 export function DetailPanel({ requirement, isOpen, onClose, initialTab = 'overview' }: DetailPanelProps) {
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -626,13 +591,6 @@ export function DetailPanel({ requirement, isOpen, onClose, initialTab = 'overvi
                 Sign-offs ({requirement.signOffs.length})
               </TabsTrigger>
               <TabsTrigger
-                value="audit"
-                className="flex-1 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none px-2 py-3 text-xs"
-              >
-                <History className="h-3.5 w-3.5 mr-1.5" />
-                Audit
-              </TabsTrigger>
-              <TabsTrigger
                 value="cta"
                 className="flex-1 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none px-2 py-3 text-xs"
               >
@@ -663,9 +621,6 @@ export function DetailPanel({ requirement, isOpen, onClose, initialTab = 'overvi
               </TabsContent>
               <TabsContent value="signoffs" className="mt-0">
                 <SignOffsTab signOffs={requirement.signOffs} />
-              </TabsContent>
-              <TabsContent value="audit" className="mt-0">
-                <AuditHistoryTab auditHistory={requirement.auditHistory} />
               </TabsContent>
               <TabsContent value="cta" className="mt-0">
                 <CTATab ctas={requirement.ctas || []} />

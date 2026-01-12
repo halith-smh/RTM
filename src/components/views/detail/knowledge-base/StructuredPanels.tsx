@@ -51,7 +51,7 @@ export const StructuredPanels = ({ content, onChange, readOnly = false }: Struct
             {/* Acceptance Criteria */}
             <AccordionItem value="ac" className="border rounded-lg px-4 bg-white/50">
                 <AccordionTrigger className="hover:no-underline py-4">
-                    <span className="font-semibold text-base">Acceptance Criteria</span>
+                    <span className="font-semibold text-base">Information Center</span>
                 </AccordionTrigger>
                 <AccordionContent className="pt-2 pb-4 space-y-3">
                     <div className="space-y-4">
