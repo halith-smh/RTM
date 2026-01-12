@@ -130,20 +130,20 @@ export const requirementsData: Requirement[] = [
     processId: 'proc-1',
     tasks: [
       { id: 't1', title: 'Design order form UI', status: 'Completed', assignee: 'Sarah Johnson', dueDate: '2025-01-15' },
-      { id: 't2', title: 'Implement validation logic', status: 'In Progress', assignee: 'Mike Chen', dueDate: '2025-01-20' },
-      { id: 't3', title: 'Setup approval workflow', status: 'Open', assignee: 'Alex Kumar', dueDate: '2025-01-25' },
+      { id: 't2', title: 'Implement validation logic', status: 'Active', assignee: 'Mike Chen', dueDate: '2025-01-20' },
+      { id: 't3', title: 'Setup approval workflow', status: 'New', assignee: 'Alex Kumar', dueDate: '2025-01-25' },
     ],
     testCases: [
-      { id: 'tc1', title: 'Verify order creation with valid data', status: 'Ready', executionResult: 'Pass', lastRun: '2025-01-10', tester: 'Mike Chen' },
-      { id: 'tc2', title: 'Test validation error handling', status: 'Ready', executionResult: 'Pass', lastRun: '2025-01-10', tester: 'Mike Chen' },
-      { id: 'tc3', title: 'Verify approval notification', status: 'In Progress', tester: 'Mike Chen' },
+      { id: 'tc1', title: 'Verify order creation with valid data', status: 'Active', executionResult: 'Pass', lastRun: '2025-01-10', tester: 'Mike Chen' },
+      { id: 'tc2', title: 'Test validation error handling', status: 'Active', executionResult: 'Pass', lastRun: '2025-01-10', tester: 'Mike Chen' },
+      { id: 'tc3', title: 'Verify approval notification', status: 'Active', tester: 'Mike Chen' },
     ],
     issues: [
-      { id: 'i1', title: 'Date picker not showing correctly on mobile', severity: 'Medium', status: 'In Progress', assignee: 'Sarah Johnson' },
+      { id: 'i1', title: 'Date picker not showing correctly on mobile', severity: 'Medium', status: 'Active', assignee: 'Sarah Johnson' },
     ],
     signOffs: [
       { id: 'so1', role: 'Business Owner', stakeholder: 'Emily Davis', status: 'Approved', date: '2025-01-08' },
-      { id: 'so2', role: 'Technical Lead', stakeholder: 'Alex Kumar', status: 'Pending' },
+      { id: 'so2', role: 'Technical Lead', stakeholder: 'Alex Kumar', status: 'New' },
     ],
     documents: [
       { id: 'd1', name: 'Sales_Order_BRD.pdf', type: 'PDF', size: '2.4 MB', uploadedBy: 'John Smith', uploadedAt: '2025-01-05' },
@@ -171,15 +171,15 @@ export const requirementsData: Requirement[] = [
     processId: 'proc-1',
     tasks: [
       { id: 't4', title: 'API Integration Design', status: 'Completed', assignee: 'Sarah Johnson', dueDate: '2025-01-12' },
-      { id: 't5', title: 'Implement credit check service', status: 'In Progress', assignee: 'Sarah Johnson', dueDate: '2025-01-18' },
+      { id: 't5', title: 'Implement credit check service', status: 'Active', assignee: 'Sarah Johnson', dueDate: '2025-01-18' },
     ],
     testCases: [
-      { id: 'tc4', title: 'Test successful credit check', status: 'Not Started' },
-      { id: 'tc5', title: 'Test credit check timeout handling', status: 'Not Started' },
+      { id: 'tc4', title: 'Test successful credit check', status: 'New' },
+      { id: 'tc5', title: 'Test credit check timeout handling', status: 'New' },
     ],
     issues: [],
     signOffs: [
-      { id: 'so3', role: 'Technical Lead', stakeholder: 'Alex Kumar', status: 'Pending' },
+      { id: 'so3', role: 'Technical Lead', stakeholder: 'Alex Kumar', status: 'New' },
     ],
     documents: [
       { id: 'd3', name: 'Credit_API_Spec.yaml', type: 'YAML', size: '45 KB', uploadedBy: 'Sarah Johnson', uploadedAt: '2025-01-08' },
@@ -204,7 +204,7 @@ export const requirementsData: Requirement[] = [
     scopeId: 'scope-1',
     processId: 'proc-1',
     tasks: [
-      { id: 't6', title: 'Dashboard wireframes', status: 'Open', assignee: 'Sarah Johnson', dueDate: '2025-01-22' },
+      { id: 't6', title: 'Dashboard wireframes', status: 'New', assignee: 'Sarah Johnson', dueDate: '2025-01-22' },
     ],
     testCases: [],
     issues: [],
@@ -233,9 +233,9 @@ export const requirementsData: Requirement[] = [
       { id: 't9', title: 'Integration testing', status: 'Completed', assignee: 'Mike Chen', dueDate: '2025-01-10' },
     ],
     testCases: [
-      { id: 'tc6', title: 'Verify invoice calculation', status: 'Ready', executionResult: 'Pass', lastRun: '2025-01-10', tester: 'Mike Chen' },
-      { id: 'tc7', title: 'Test multi-currency support', status: 'Ready', executionResult: 'Pass', lastRun: '2025-01-10', tester: 'Mike Chen' },
-      { id: 'tc8', title: 'Verify PDF generation', status: 'Ready', executionResult: 'Pass', lastRun: '2025-01-10', tester: 'Mike Chen' },
+      { id: 'tc6', title: 'Verify invoice calculation', status: 'Active', executionResult: 'Pass', lastRun: '2025-01-10', tester: 'Mike Chen' },
+      { id: 'tc7', title: 'Test multi-currency support', status: 'Active', executionResult: 'Pass', lastRun: '2025-01-10', tester: 'Mike Chen' },
+      { id: 'tc8', title: 'Verify PDF generation', status: 'Active', executionResult: 'Pass', lastRun: '2025-01-10', tester: 'Mike Chen' },
     ],
     issues: [],
     signOffs: [
@@ -266,14 +266,14 @@ export const requirementsData: Requirement[] = [
     scopeId: 'scope-2',
     processId: 'proc-3',
     tasks: [
-      { id: 't10', title: 'Capacity planning algorithm', status: 'In Progress', assignee: 'Sarah Johnson', dueDate: '2025-01-25' },
-      { id: 't11', title: 'Scheduling UI', status: 'Open', assignee: 'Sarah Johnson', dueDate: '2025-01-30' },
+      { id: 't10', title: 'Capacity planning algorithm', status: 'Active', assignee: 'Sarah Johnson', dueDate: '2025-01-25' },
+      { id: 't11', title: 'Scheduling UI', status: 'New', assignee: 'Sarah Johnson', dueDate: '2025-01-30' },
     ],
     testCases: [
-      { id: 'tc9', title: 'Test capacity allocation', status: 'Not Started' },
+      { id: 'tc9', title: 'Test capacity allocation', status: 'New' },
     ],
     issues: [
-      { id: 'i2', title: 'Performance issue with large datasets', severity: 'High', status: 'Open', assignee: 'Sarah Johnson' },
+      { id: 'i2', title: 'Performance issue with large datasets', severity: 'High', status: 'New', assignee: 'Sarah Johnson' },
     ],
     signOffs: [],
     documents: [
@@ -320,17 +320,17 @@ export const requirementsData: Requirement[] = [
     processId: 'proc-5',
     tasks: [
       { id: 't12', title: 'Define closing checklist', status: 'Completed', assignee: 'Emily Davis', dueDate: '2025-01-10' },
-      { id: 't13', title: 'Implement reconciliation workflow', status: 'In Progress', assignee: 'Alex Kumar', dueDate: '2025-01-20' },
+      { id: 't13', title: 'Implement reconciliation workflow', status: 'Active', assignee: 'Alex Kumar', dueDate: '2025-01-20' },
     ],
     testCases: [
-      { id: 'tc10', title: 'Verify closing procedure sequence', status: 'In Progress', tester: 'Mike Chen' },
-      { id: 'tc11', title: 'Test reconciliation matching', status: 'Not Started' },
+      { id: 'tc10', title: 'Verify closing procedure sequence', status: 'Active', tester: 'Mike Chen' },
+      { id: 'tc11', title: 'Test reconciliation matching', status: 'New' },
     ],
     issues: [
-      { id: 'i3', title: 'Currency conversion rounding errors', severity: 'Low', status: 'Open', assignee: 'Sarah Johnson' },
+      { id: 'i3', title: 'Currency conversion rounding errors', severity: 'Low', status: 'New', assignee: 'Sarah Johnson' },
     ],
     signOffs: [
-      { id: 'so6', role: 'Business Owner', stakeholder: 'Emily Davis', status: 'Pending' },
+      { id: 'so6', role: 'Business Owner', stakeholder: 'Emily Davis', status: 'New' },
     ],
     documents: [
       { id: 'd7', name: 'Closing_Procedures.pdf', type: 'PDF', size: '1.8 MB', uploadedBy: 'Emily Davis', uploadedAt: '2025-01-08' },
@@ -358,8 +358,8 @@ export const requirementsData: Requirement[] = [
       { id: 't16', title: 'Build task checklist', status: 'Completed', assignee: 'Sarah Johnson', dueDate: '2025-01-05' },
     ],
     testCases: [
-      { id: 'tc12', title: 'Test document upload flow', status: 'Ready', executionResult: 'Pass', lastRun: '2025-01-06', tester: 'Mike Chen' },
-      { id: 'tc13', title: 'Verify task completion tracking', status: 'Ready', executionResult: 'Pass', lastRun: '2025-01-06', tester: 'Mike Chen' },
+      { id: 'tc12', title: 'Test document upload flow', status: 'Active', executionResult: 'Pass', lastRun: '2025-01-06', tester: 'Mike Chen' },
+      { id: 'tc13', title: 'Verify task completion tracking', status: 'Active', executionResult: 'Pass', lastRun: '2025-01-06', tester: 'Mike Chen' },
     ],
     issues: [],
     signOffs: [
@@ -393,13 +393,13 @@ export const requirementsData: Requirement[] = [
     processId: 'proc-1',
     tasks: [
       { id: 't17', title: 'Define cancellation rules', status: 'Completed', assignee: 'John Smith', dueDate: '2025-01-12' },
-      { id: 't18', title: 'Implement refund logic', status: 'In Progress', assignee: 'Sarah Johnson', dueDate: '2025-01-18' },
+      { id: 't18', title: 'Implement refund logic', status: 'Active', assignee: 'Sarah Johnson', dueDate: '2025-01-18' },
     ],
     testCases: [
-      { id: 'tc14', title: 'Test full cancellation', status: 'Ready', executionResult: 'Pass', lastRun: '2025-01-11', tester: 'Mike Chen' },
+      { id: 'tc14', title: 'Test full cancellation', status: 'Active', executionResult: 'Pass', lastRun: '2025-01-11', tester: 'Mike Chen' },
     ],
     issues: [],
-    signOffs: [{ id: 'so10', role: 'Business Owner', stakeholder: 'Emily Davis', status: 'Pending' }],
+    signOffs: [{ id: 'so10', role: 'Business Owner', stakeholder: 'Emily Davis', status: 'New' }],
     documents: [],
     stakeholders: [stakeholders[0], stakeholders[1]],
     auditHistory: [],
@@ -441,10 +441,10 @@ export const requirementsData: Requirement[] = [
     scopeId: 'scope-1',
     processId: 'proc-1',
     tasks: [
-      { id: 't19', title: 'Design priority algorithm', status: 'In Progress', assignee: 'Alex Kumar', dueDate: '2025-01-20' },
+      { id: 't19', title: 'Design priority algorithm', status: 'Active', assignee: 'Alex Kumar', dueDate: '2025-01-20' },
     ],
     testCases: [],
-    issues: [{ id: 'i4', title: 'Priority calculation edge case', severity: 'Medium', status: 'Open', assignee: 'Alex Kumar' }],
+    issues: [{ id: 'i4', title: 'Priority calculation edge case', severity: 'Medium', status: 'New', assignee: 'Alex Kumar' }],
     signOffs: [],
     documents: [],
     stakeholders: [stakeholders[4]],
@@ -466,9 +466,9 @@ export const requirementsData: Requirement[] = [
     processId: 'proc-2',
     tasks: [
       { id: 't20', title: 'Define dispute workflow', status: 'Completed', assignee: 'Emily Davis', dueDate: '2025-01-10' },
-      { id: 't21', title: 'Build communication templates', status: 'Open', assignee: 'John Smith', dueDate: '2025-01-25' },
+      { id: 't21', title: 'Build communication templates', status: 'New', assignee: 'John Smith', dueDate: '2025-01-25' },
     ],
-    testCases: [{ id: 'tc15', title: 'Test dispute creation', status: 'In Progress', tester: 'Mike Chen' }],
+    testCases: [{ id: 'tc15', title: 'Test dispute creation', status: 'Active', tester: 'Mike Chen' }],
     issues: [],
     signOffs: [],
     documents: [],
@@ -494,8 +494,8 @@ export const requirementsData: Requirement[] = [
       { id: 't23', title: 'Exception handling', status: 'Completed', assignee: 'Sarah Johnson', dueDate: '2025-01-10' },
     ],
     testCases: [
-      { id: 'tc16', title: 'Test auto-matching', status: 'Ready', executionResult: 'Pass', lastRun: '2025-01-11', tester: 'Mike Chen' },
-      { id: 'tc17', title: 'Test exception workflow', status: 'Ready', executionResult: 'Pass', lastRun: '2025-01-11', tester: 'Mike Chen' },
+      { id: 'tc16', title: 'Test auto-matching', status: 'Active', executionResult: 'Pass', lastRun: '2025-01-11', tester: 'Mike Chen' },
+      { id: 'tc17', title: 'Test exception workflow', status: 'Active', executionResult: 'Pass', lastRun: '2025-01-11', tester: 'Mike Chen' },
     ],
     issues: [],
     signOffs: [
@@ -520,7 +520,7 @@ export const requirementsData: Requirement[] = [
     scopeId: 'scope-2',
     processId: 'proc-3',
     tasks: [
-      { id: 't24', title: 'MRP algorithm design', status: 'In Progress', assignee: 'Alex Kumar', dueDate: '2025-01-22' },
+      { id: 't24', title: 'MRP algorithm design', status: 'Active', assignee: 'Alex Kumar', dueDate: '2025-01-22' },
     ],
     testCases: [],
     issues: [],
@@ -567,10 +567,10 @@ export const requirementsData: Requirement[] = [
     processId: 'proc-3',
     tasks: [
       { id: 't25', title: 'Define QC checkpoints', status: 'Completed', assignee: 'Mike Chen', dueDate: '2025-01-10' },
-      { id: 't26', title: 'Implement defect tracking', status: 'In Progress', assignee: 'Sarah Johnson', dueDate: '2025-01-20' },
+      { id: 't26', title: 'Implement defect tracking', status: 'Active', assignee: 'Sarah Johnson', dueDate: '2025-01-20' },
     ],
-    testCases: [{ id: 'tc18', title: 'Test QC workflow', status: 'In Progress', tester: 'Mike Chen' }],
-    issues: [{ id: 'i5', title: 'Barcode scanner compatibility', severity: 'Low', status: 'Open', assignee: 'Sarah Johnson' }],
+    testCases: [{ id: 'tc18', title: 'Test QC workflow', status: 'Active', tester: 'Mike Chen' }],
+    issues: [{ id: 'i5', title: 'Barcode scanner compatibility', severity: 'Low', status: 'New', assignee: 'Sarah Johnson' }],
     signOffs: [],
     documents: [],
     stakeholders: [stakeholders[2], stakeholders[1]],
@@ -592,7 +592,7 @@ export const requirementsData: Requirement[] = [
     processId: 'proc-4',
     tasks: [
       { id: 't27', title: 'Dashboard wireframes', status: 'Completed', assignee: 'Sarah Johnson', dueDate: '2025-01-08' },
-      { id: 't28', title: 'Data integration', status: 'Open', assignee: 'Sarah Johnson', dueDate: '2025-01-25' },
+      { id: 't28', title: 'Data integration', status: 'New', assignee: 'Sarah Johnson', dueDate: '2025-01-25' },
     ],
     testCases: [],
     issues: [],
@@ -638,7 +638,7 @@ export const requirementsData: Requirement[] = [
     scopeId: 'scope-3',
     processId: 'proc-5',
     tasks: [
-      { id: 't29', title: 'Elimination rules engine', status: 'In Progress', assignee: 'Sarah Johnson', dueDate: '2025-01-22' },
+      { id: 't29', title: 'Elimination rules engine', status: 'Active', assignee: 'Sarah Johnson', dueDate: '2025-01-22' },
     ],
     testCases: [],
     issues: [],
@@ -666,7 +666,7 @@ export const requirementsData: Requirement[] = [
       { id: 't31', title: 'Drill-down implementation', status: 'Completed', assignee: 'Sarah Johnson', dueDate: '2025-01-10' },
     ],
     testCases: [
-      { id: 'tc19', title: 'Test report generation', status: 'Ready', executionResult: 'Pass', lastRun: '2025-01-11', tester: 'Mike Chen' },
+      { id: 'tc19', title: 'Test report generation', status: 'Active', executionResult: 'Pass', lastRun: '2025-01-11', tester: 'Mike Chen' },
     ],
     issues: [],
     signOffs: [
@@ -692,7 +692,7 @@ export const requirementsData: Requirement[] = [
     processId: 'proc-6',
     tasks: [
       { id: 't32', title: 'Document storage design', status: 'Completed', assignee: 'Sarah Johnson', dueDate: '2025-01-08' },
-      { id: 't33', title: 'Access control implementation', status: 'In Progress', assignee: 'Sarah Johnson', dueDate: '2025-01-18' },
+      { id: 't33', title: 'Access control implementation', status: 'Active', assignee: 'Sarah Johnson', dueDate: '2025-01-18' },
     ],
     testCases: [],
     issues: [],
@@ -738,11 +738,11 @@ export const requirementsData: Requirement[] = [
     scopeId: 'scope-1',
     processId: 'proc-1',
     tasks: [
-      { id: 't34', title: 'GPS integration', status: 'In Progress', assignee: 'Sarah Johnson', dueDate: '2025-01-22' },
-      { id: 't35', title: 'Notification service', status: 'Open', assignee: 'Sarah Johnson', dueDate: '2025-01-28' },
+      { id: 't34', title: 'GPS integration', status: 'Active', assignee: 'Sarah Johnson', dueDate: '2025-01-22' },
+      { id: 't35', title: 'Notification service', status: 'New', assignee: 'Sarah Johnson', dueDate: '2025-01-28' },
     ],
     testCases: [],
-    issues: [{ id: 'i6', title: 'GPS accuracy issues', severity: 'Medium', status: 'In Progress', assignee: 'Sarah Johnson' }],
+    issues: [{ id: 'i6', title: 'GPS accuracy issues', severity: 'Medium', status: 'Active', assignee: 'Sarah Johnson' }],
     signOffs: [],
     documents: [],
     stakeholders: [stakeholders[4], stakeholders[1]],
@@ -767,7 +767,7 @@ export const requirementsData: Requirement[] = [
       { id: 't37', title: 'Currency conversion', status: 'Completed', assignee: 'Sarah Johnson', dueDate: '2025-01-10' },
     ],
     testCases: [
-      { id: 'tc20', title: 'Test currency conversion', status: 'Ready', executionResult: 'Pass', lastRun: '2025-01-11', tester: 'Mike Chen' },
+      { id: 'tc20', title: 'Test currency conversion', status: 'Active', executionResult: 'Pass', lastRun: '2025-01-11', tester: 'Mike Chen' },
     ],
     issues: [],
     signOffs: [{ id: 'so13', role: 'Technical Lead', stakeholder: 'Alex Kumar', status: 'Approved', date: '2025-01-12' }],
@@ -791,9 +791,9 @@ export const requirementsData: Requirement[] = [
     processId: 'proc-3',
     tasks: [
       { id: 't38', title: 'Batch framework design', status: 'Completed', assignee: 'Alex Kumar', dueDate: '2025-01-10' },
-      { id: 't39', title: 'Performance optimization', status: 'In Progress', assignee: 'Sarah Johnson', dueDate: '2025-01-25' },
+      { id: 't39', title: 'Performance optimization', status: 'Active', assignee: 'Sarah Johnson', dueDate: '2025-01-25' },
     ],
-    testCases: [{ id: 'tc21', title: 'Load testing', status: 'Not Started' }],
+    testCases: [{ id: 'tc21', title: 'Load testing', status: 'New' }],
     issues: [],
     signOffs: [],
     documents: [],
@@ -816,7 +816,7 @@ export const requirementsData: Requirement[] = [
     processId: 'proc-5',
     tasks: [
       { id: 't40', title: 'Audit data model', status: 'Completed', assignee: 'Sarah Johnson', dueDate: '2025-01-08' },
-      { id: 't41', title: 'Search implementation', status: 'In Progress', assignee: 'Sarah Johnson', dueDate: '2025-01-20' },
+      { id: 't41', title: 'Search implementation', status: 'Active', assignee: 'Sarah Johnson', dueDate: '2025-01-20' },
     ],
     testCases: [],
     issues: [],
@@ -863,7 +863,7 @@ export const requirementsData: Requirement[] = [
     processId: 'proc-6',
     tasks: [
       { id: 't42', title: 'Review form design', status: 'Completed', assignee: 'John Smith', dueDate: '2025-01-08' },
-      { id: 't43', title: 'Workflow implementation', status: 'In Progress', assignee: 'Sarah Johnson', dueDate: '2025-01-22' },
+      { id: 't43', title: 'Workflow implementation', status: 'Active', assignee: 'Sarah Johnson', dueDate: '2025-01-22' },
     ],
     testCases: [],
     issues: [],
