@@ -81,11 +81,25 @@ export function AppShell() {
 
   // Dynamic path based on drill context or selection
   const currentPath = useMemo(() => {
-    if (selectedNode && selectedNode.type === 'requirement') {
-      return ["MDLP FY25", selectedNode.name];
+    const root = "MDLP FY25";
+
+    if (selectedNode) {
+      const path = findPathToNode(navigationData[0]?.children || [], selectedNode.id);
+      if (path) {
+        return [root, ...path.map(n => n.name), selectedNode.name];
+      }
+      return [root, selectedNode.name];
     }
-    if (!drillContext) return ["MDLP FY25", "All Requirements"];
-    return ["MDLP FY25", drillContext.name];
+
+    if (drillContext) {
+      const path = findPathToNode(navigationData[0]?.children || [], drillContext.id);
+      if (path) {
+        return [root, ...path.map(n => n.name), drillContext.name];
+      }
+      return [root, drillContext.name];
+    }
+
+    return [root, "All Requirements"];
   }, [drillContext, selectedNode]);
 
   const handleNodeSelect = (node: NavigationNode) => {
