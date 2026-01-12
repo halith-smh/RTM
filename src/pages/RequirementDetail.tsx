@@ -7,6 +7,7 @@ import { ArrowLeft, Settings, HelpCircle, Bell, Copy, MoreVertical, ChevronDown,
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { OverviewTab } from '@/components/rtm/OverviewTab';
+import { LinksTab } from '@/components/rtm/LinksTab';
 import { DiscussionsPanel } from '@/components/rtm/DiscussionsPanel';
 
 const RequirementDetail = () => {
@@ -105,39 +106,40 @@ const RequirementDetail = () => {
       {/* Main Layout */}
       <div className="flex flex-1 overflow-hidden">
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <div className="flex-1 flex flex-col min-w-0">
           {/* Form Content */}
-          <div className="flex-1 flex flex-col overflow-hidden bg-background">
-            <div className="px-2 pt-4 pb-0 flex-shrink-0">
+          <div className="flex flex-col bg-background">
+            <div className="px-4 pt-3 pb-0 flex-shrink-0">
               {/* ID and Title Row */}
-              <div className="flex items-center gap-3 mb-3">
-                <span className="!text-[17px] text-foreground font-normal">13061</span>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="!text-[17px] !font-normal text-foreground" style={{fontSize: '17px', fontWeight: '400'}}>13061</span>
                 <Input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="flex-1 h-auto px-3 py-2 !text-[17px] border-transparent bg-transparent hover:border-border focus:border-border transition-colors font-normal"
+                  className="flex-1 h-auto px-2 py-1 !text-[17px] !font-normal border-transparent bg-transparent hover:border-border focus:border-border transition-colors"
+                  style={{fontSize: '17px', fontWeight: '400'}}
                   placeholder="Enter requirement title"
                 />
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => navigator.clipboard.writeText(`13061 ${title}`)}
-                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                  className="h-7 w-7 text-muted-foreground hover:text-foreground"
                 >
-                  <Copy className="h-4 w-4" />
+                  <Copy className="h-3 w-3" />
                 </Button>
               </div>
               
               {/* Second Row */}
-              <div className="flex items-center justify-between gap-4 px-2">
-                <div className="flex items-center gap-6">
+              <div className="flex items-center justify-between gap-3 mb-3">
+                <div className="flex items-center gap-4">
                   {/* Stakeholder Dropdown */}
                   <Select value={selectedStakeholder} onValueChange={setSelectedStakeholder}>
-                    <SelectTrigger className="min-w-48 border-transparent bg-transparent p-0 h-auto hover:border-border hover:bg-white hover:border rounded-md px-2 py-1 [&>svg]:hidden focus:border-border focus:bg-white focus:!ring-0">
+                    <SelectTrigger className="min-w-40 border-transparent bg-transparent p-0 h-auto hover:border-border hover:bg-white hover:border rounded-md px-2 py-1 [&>svg]:hidden focus:border-border focus:bg-white focus:!ring-0">
                       <SelectValue asChild>
                         <div className="flex items-center gap-2">
-                          <Avatar className="h-8 w-8">
-                            <AvatarFallback className="bg-blue-500 text-white text-sm font-medium">
+                          <Avatar className="h-6 w-6">
+                            <AvatarFallback className="bg-blue-500 text-white text-xs font-medium">
                               {stakeholders.find(s => s.name === selectedStakeholder)?.initials || 'JS'}
                             </AvatarFallback>
                           </Avatar>
@@ -150,12 +152,12 @@ const RequirementDetail = () => {
                       {stakeholders.map((stakeholder) => (
                         <SelectItem key={stakeholder.name} value={stakeholder.name}>
                           <div className="flex items-center gap-2">
-                            <Avatar className="h-6 w-6">
+                            <Avatar className="h-5 w-5">
                               <AvatarFallback className="bg-blue-500 text-white text-xs font-medium">
                                 {stakeholder.initials}
                               </AvatarFallback>
                             </Avatar>
-                            <span>{stakeholder.name}</span>
+                            <span className="text-sm">{stakeholder.name}</span>
                           </div>
                         </SelectItem>
                       ))}
@@ -163,9 +165,9 @@ const RequirementDetail = () => {
                   </Select>
                   
                   {/* Tags */}
-                  <div className="flex items-center gap-2 flex-nowrap">
+                  <div className="flex items-center gap-1 flex-nowrap">
                     {tags.map((tag, index) => (
-                      <Badge key={index} variant="secondary" className="flex items-center gap-1 whitespace-nowrap">
+                      <Badge key={index} variant="secondary" className="flex items-center gap-1 whitespace-nowrap text-xs h-6">
                         {tag}
                         <X className="h-3 w-3 cursor-pointer hover:text-red-500" onClick={() => removeTag(tag)} />
                       </Badge>
@@ -181,29 +183,28 @@ const RequirementDetail = () => {
                   {/* Save Button */}
                   <Button
                     disabled
-                    className="h-7 px-4 py-1 bg-primary hover:bg-primary/90 text-primary-foreground shadow-md disabled:opacity-50 hover:disabled:opacity-100 text-sm"
+                    className="h-7 px-3 py-1 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm disabled:opacity-50 text-sm"
                   >
                     Save
                   </Button>
-
                   
                   {/* More Options */}
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+                  <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground">
                     <MoreVertical className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
               
               {/* Third Row with Tab Bar */}
-              <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-start gap-8 mb-4">
+              <div className="mt-2 p-2 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-6 mb-3">
                   {/* State */}
                   <div className="flex items-center gap-2">
-                    <label className="text-xs font-medium text-foreground min-w-fit">State</label>
+                    <label className="text-xs font-medium text-muted-foreground min-w-fit">State</label>
                     <Select value={selectedState} onValueChange={setSelectedState}>
-                      <SelectTrigger className="min-w-32 h-8 px-2 py-1 text-sm border-transparent bg-transparent hover:border-border hover:bg-white [&>svg]:hidden focus:border-border focus:bg-white">
+                      <SelectTrigger className="min-w-28 h-7 px-2 py-1 text-sm border-transparent bg-transparent hover:border-border hover:bg-white [&>svg]:hidden focus:border-border focus:bg-white">
                         <SelectValue asChild>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
                             <div className={`w-2 h-2 rounded-full ${getStateColor(selectedState)}`}></div>
                             <span className="text-sm">{selectedState}</span>
                           </div>
@@ -233,10 +234,10 @@ const RequirementDetail = () => {
                   </div>
                   
                   {/* Process */}
-                  <div className="flex items-center gap-2 pr-8">
-                    <label className="text-xs font-medium text-foreground min-w-fit">Process</label>
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs font-medium text-muted-foreground min-w-fit">Process</label>
                     <Select value={selectedProcess} onValueChange={setSelectedProcess}>
-                      <SelectTrigger className="min-w-32 h-8 px-2 py-1 text-sm border-transparent bg-transparent hover:border-border hover:bg-white [&>svg]:hidden focus:border-border focus:bg-white">
+                      <SelectTrigger className="min-w-28 h-7 px-2 py-1 text-sm border-transparent bg-transparent hover:border-border hover:bg-white [&>svg]:hidden focus:border-border focus:bg-white">
                         <SelectValue className="text-sm" />
                       </SelectTrigger>
                       <SelectContent>
@@ -249,9 +250,9 @@ const RequirementDetail = () => {
                   
                   {/* Group */}
                   <div className="flex items-center gap-2">
-                    <label className="text-xs font-medium text-foreground min-w-fit">Group</label>
+                    <label className="text-xs font-medium text-muted-foreground min-w-fit">Group</label>
                     <Select value={selectedGroup} onValueChange={setSelectedGroup}>
-                      <SelectTrigger className="min-w-32 h-8 px-2 py-1 text-sm border-transparent bg-transparent hover:border-border hover:bg-white [&>svg]:hidden focus:border-border focus:bg-white">
+                      <SelectTrigger className="min-w-28 h-7 px-2 py-1 text-sm border-transparent bg-transparent hover:border-border hover:bg-white [&>svg]:hidden focus:border-border focus:bg-white">
                         <SelectValue className="text-sm" />
                       </SelectTrigger>
                       <SelectContent>
@@ -265,15 +266,15 @@ const RequirementDetail = () => {
                 
                 {/* Tab Bar */}
                 <div className="border-b border-gray-300">
-                  <div className="flex gap-1">
+                  <div className="flex gap-0">
                     {tabs.map((tab) => (
                       <Button
                         key={tab}
                         variant="ghost"
                         onClick={() => setActiveTab(tab)}
-                        className={`px-4 py-2 !text-[14px] rounded-none border-b-2 transition-colors ${
+                        className={`px-3 py-2 text-[14px] font-normal rounded-none border-b-2 transition-colors !bg-transparent hover:!bg-transparent ${
                           activeTab === tab
-                            ? 'border-primary text-primary bg-transparent'
+                            ? 'border-primary text-primary'
                             : 'border-transparent text-muted-foreground hover:text-foreground'
                         }`}
                       >
@@ -285,11 +286,13 @@ const RequirementDetail = () => {
               </div>
             </div>
             {/* Tab Content with Discussions Panel */}
-            <div className="flex flex-1 min-h-0 overflow-hidden">
+            <div className="flex" style={{height: 'calc(100vh - 280px)'}}>
               {/* Main Tab Content - 75% */}
               <div className="flex-1 w-[75%] overflow-y-auto">
                 {activeTab === 'Overview' ? (
                   <OverviewTab requirementId="13061" />
+                ) : activeTab === 'Links' ? (
+                  <LinksTab requirementId="13061" />
                 ) : (
                   <div className="flex items-center justify-center p-8">
                     <span className="text-lg text-muted-foreground">{activeTab} Content</span>
@@ -298,7 +301,7 @@ const RequirementDetail = () => {
               </div>
               
               {/* Discussions Panel - 25% */}
-              <div className="w-[25%] flex-shrink-0 h-full">
+              <div className="w-[25%] flex-shrink-0 h-full overflow-y-auto">
                 <DiscussionsPanel requirementId="13061" />
               </div>
             </div>

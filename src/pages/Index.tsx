@@ -20,6 +20,7 @@ const Index = () => {
   const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false);
   const [selectedRequirement, setSelectedRequirement] = useState<Requirement | null>(null);
   const [detailPanelTab, setDetailPanelTab] = useState('overview');
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const breadcrumb = ['MDLP FY25', 'RTM', 'Home'];
   const mockPath = ["MDLP FY25", "Order to cash", "Sales Order Management"];
@@ -34,6 +35,10 @@ const Index = () => {
     setSelectedNode(node);
   };
 
+  const handleFullscreenToggle = () => {
+    setIsFullscreen(!isFullscreen);
+  };
+
   const handleRequirementClick = (req: Requirement, tab?: string) => {
     if (tab) {
       setSelectedRequirement(req);
@@ -43,6 +48,23 @@ const Index = () => {
       navigate(`/requirement/${req.reqId}`);
     }
   };
+
+  if (isFullscreen) {
+    return (
+      <div className="h-screen w-screen bg-background flex flex-col overflow-hidden">
+        {/* Filter Bar */}
+        <FilterBar onViewChange={setCurrentView} onFullscreenToggle={handleFullscreenToggle} />
+        
+        {/* RTM Table */}
+        <div className="flex-1 bg-background p-4 overflow-auto">
+          <RTMTable
+            requirements={requirementsData}
+            onRequirementClick={handleRequirementClick}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen w-screen bg-background flex flex-col overflow-hidden">
@@ -130,7 +152,7 @@ const Index = () => {
           </div>
 
           {/* Filter Bar */}
-          <FilterBar onViewChange={setCurrentView} />
+          <FilterBar onViewChange={setCurrentView} onFullscreenToggle={handleFullscreenToggle} />
 
           {/* RTM Table */}
           <div className={cn("flex-1 bg-background p-4", isDetailPanelOpen ? "overflow-hidden" : "overflow-auto")}>

@@ -40,18 +40,18 @@ export const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorP
       <div className="relative">
         <EditorContent 
           editor={editor} 
-          className={`w-full p-3 focus:outline-none text-foreground leading-relaxed text-base transition-all duration-200 ${
+          className={`w-full p-3 focus:outline-none text-foreground leading-relaxed text-sm transition-all duration-200 ${
             isFocused 
-              ? 'min-h-[60px] border border-border rounded-lg bg-background' 
+              ? 'min-h-[60px] border border-gray-300 rounded-lg bg-background' 
               : isEmpty 
-                ? 'min-h-[60px] border border-transparent hover:border-border rounded-lg cursor-text'
-                : 'min-h-[60px] border border-transparent hover:border-border rounded-lg'
+                ? 'min-h-[60px] border border-transparent hover:border-gray-300 rounded-lg cursor-text'
+                : 'min-h-[60px] border border-transparent hover:border-gray-300 rounded-lg'
           }`}
         />
         {/* Custom placeholder overlay when empty and not focused */}
         {isEmpty && !isFocused && (
           <div 
-            className="absolute top-3 left-3 text-muted-foreground italic cursor-text hover:text-foreground transition-colors pointer-events-none"
+            className="absolute top-3 left-3 text-sm text-muted-foreground italic cursor-text hover:text-foreground transition-colors pointer-events-none"
           >
             {placeholder || 'Click to add content...'}
           </div>
