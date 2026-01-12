@@ -11,6 +11,7 @@ import { OverviewTab } from '@/components/rtm/OverviewTab';
 import { KnowledgeBaseTab } from '@/components/views/detail/KnowledgeBaseTab';
 import { StakeholdersTab } from '@/components/views/detail/StakeholdersTab';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 const RequirementDetail = () => {
   const navigate = useNavigate();
@@ -80,18 +81,18 @@ const RequirementDetail = () => {
 
             {/* Right: Actions */}
             <div className="flex items-center gap-2 flex-shrink-0">
-              <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground">
+              <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground" onClick={() => toast.info("Settings panel coming soon")}>
                 <Settings className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground">
+              <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground" onClick={() => toast.info("Help documentation coming soon")}>
                 <HelpCircle className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground relative">
+              <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground relative" onClick={() => toast.info("You have 3 new notifications")}>
                 <Bell className="h-4 w-4" />
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full" />
               </Button>
               <div className="ml-2 pl-4 border-l border-border">
-                <Avatar className="h-8 w-8 cursor-pointer">
+                <Avatar className="h-8 w-8 cursor-pointer" onClick={() => toast.info("User profile coming soon")}>
                   <AvatarFallback className="bg-primary text-primary-foreground text-xs font-medium">
                     KA
                   </AvatarFallback>
@@ -116,7 +117,10 @@ const RequirementDetail = () => {
                <Button
                  variant="ghost"
                  size="icon"
-                 onClick={() => navigator.clipboard.writeText(`13061 ${title}`)}
+                 onClick={() => {
+                   navigator.clipboard.writeText(`13061 ${title}`);
+                   toast.success("Requirement ID and title copied to clipboard");
+                 }}
                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
                >
                  <Copy className="h-4 w-4" />
@@ -130,7 +134,7 @@ const RequirementDetail = () => {
                  >
                    Save
                  </Button>
-                 <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+                 <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={() => toast.info("More options coming soon")}>
                    <MoreVertical className="h-4 w-4" />
                  </Button>
                </div>
@@ -177,7 +181,7 @@ const RequirementDetail = () => {
                      <X className="h-3 w-3 cursor-pointer hover:text-red-500" onClick={() => removeTag(tag)} />
                    </Badge>
                  ))}
-                 <Button variant="ghost" className="h-6 px-2 text-xs text-blue-500 hover:text-blue-600 hover:bg-blue-50">
+                 <Button variant="ghost" className="h-6 px-2 text-xs text-blue-500 hover:text-blue-600 hover:bg-blue-50" onClick={() => toast.info("Add tag feature coming soon")}>
                    <Plus className="h-3 w-3 mr-1" />
                    Add Tag
                  </Button>

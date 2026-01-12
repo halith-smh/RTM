@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Send, Paperclip } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { toast } from 'sonner';
 
 interface Message {
   id: string;
@@ -105,7 +106,7 @@ export const DiscussionsPanel = ({ requirementId }: DiscussionsPanelProps) => {
             placeholder="Type a message..."
             className="flex-1"
           />
-          <Button variant="ghost" size="icon" className="h-10 w-10">
+          <Button variant="ghost" size="icon" className="h-10 w-10" onClick={() => toast.info("File attachment feature coming soon")}>
             <Paperclip className="h-4 w-4" />
           </Button>
           <Button onClick={handleSendMessage} size="icon" className="h-10 w-10">

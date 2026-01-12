@@ -228,15 +228,15 @@ export const KnowledgeBaseTab = ({ requirementId }: KnowledgeBaseTabProps) => {
                             <div>
                               <h4 className="font-medium text-sm mb-2">API Documentation</h4>
                               <div className="space-y-2">
-                                <Button variant="outline" size="sm" className="w-full justify-start h-8">
+                                <Button variant="outline" size="sm" className="w-full justify-start h-8" onClick={() => toast.info("Opening Outlook Calendar API documentation")}>
                                   <ExternalLink className="h-3 w-3 mr-2" />
                                   Outlook Calendar API Reference
                                 </Button>
-                                <Button variant="outline" size="sm" className="w-full justify-start h-8">
+                                <Button variant="outline" size="sm" className="w-full justify-start h-8" onClick={() => toast.info("Opening Microsoft Graph API documentation")}>
                                   <ExternalLink className="h-3 w-3 mr-2" />
                                   Microsoft Graph API Documentation
                                 </Button>
-                                <Button variant="outline" size="sm" className="w-full justify-start h-8">
+                                <Button variant="outline" size="sm" className="w-full justify-start h-8" onClick={() => toast.info("Opening authentication guide")}>
                                   <ExternalLink className="h-3 w-3 mr-2" />
                                   Authentication & Authorization Guide
                                 </Button>
@@ -245,7 +245,7 @@ export const KnowledgeBaseTab = ({ requirementId }: KnowledgeBaseTabProps) => {
                             
                             <div>
                               <h4 className="font-medium text-sm mb-2">Technical Specifications</h4>
-                              <Button variant="outline" size="sm" className="w-full justify-start h-8">
+                              <Button variant="outline" size="sm" className="w-full justify-start h-8" onClick={() => toast.info("Opening calendar integration architecture docs")}>
                                 <ExternalLink className="h-3 w-3 mr-2" />
                                 Calendar Integration Architecture
                               </Button>
@@ -254,11 +254,11 @@ export const KnowledgeBaseTab = ({ requirementId }: KnowledgeBaseTabProps) => {
                             <div>
                               <h4 className="font-medium text-sm mb-2">Testing Resources</h4>
                               <div className="space-y-2">
-                                <Button variant="outline" size="sm" className="w-full justify-start h-8">
+                                <Button variant="outline" size="sm" className="w-full justify-start h-8" onClick={() => toast.info("Opening integration test suite")}>
                                   <Code className="h-3 w-3 mr-2" />
                                   Integration Test Suite
                                 </Button>
-                                <Button variant="outline" size="sm" className="w-full justify-start h-8">
+                                <Button variant="outline" size="sm" className="w-full justify-start h-8" onClick={() => toast.info("Opening API mock server")}>
                                   <Code className="h-3 w-3 mr-2" />
                                   API Mock Server
                                 </Button>
@@ -281,7 +281,7 @@ export const KnowledgeBaseTab = ({ requirementId }: KnowledgeBaseTabProps) => {
                             <div>
                               <h4 className="font-medium text-sm mb-2">Related Requirements</h4>
                               <div className="bg-blue-50 dark:bg-blue-950/20 p-3 rounded-md border border-blue-200 dark:border-blue-800">
-                                <Button variant="ghost" size="sm" className="w-full justify-start h-8 p-2">
+                                <Button variant="ghost" size="sm" className="w-full justify-start h-8 p-2" onClick={() => toast.info("Opening REQ-002: User Authentication System")}>
                                   <FileText className="h-3 w-3 mr-2" />
                                   REQ-002: User Authentication System
                                 </Button>
@@ -294,7 +294,7 @@ export const KnowledgeBaseTab = ({ requirementId }: KnowledgeBaseTabProps) => {
                             <div>
                               <h4 className="font-medium text-sm mb-2">Implementation Dependencies</h4>
                               <div className="bg-orange-50 dark:bg-orange-950/20 p-3 rounded-md border border-orange-200 dark:border-orange-800">
-                                <Button variant="ghost" size="sm" className="w-full justify-start h-8 p-2">
+                                <Button variant="ghost" size="sm" className="w-full justify-start h-8 p-2" onClick={() => toast.info("Opening REQ-003: Event Management Interface")}>
                                   <FileText className="h-3 w-3 mr-2" />
                                   REQ-003: Event Management Interface
                                 </Button>

@@ -39,6 +39,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface StakeholderListProps {
   stakeholders: Stakeholder[];
@@ -256,7 +257,10 @@ export const StakeholderList = ({ stakeholders, viewMode, onRemove, onApprove }:
               </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => window.open(`mailto:${stakeholder.email}`)}>
+              <DropdownMenuItem onClick={() => {
+                  window.open(`mailto:${stakeholder.email}`);
+                  toast.success(`Opening email to ${stakeholder.name}`);
+              }}>
                   <Mail className="h-4 w-4 mr-2" /> Email Stakeholder
               </DropdownMenuItem>
               {stakeholder.approvalStatus === 'pending' && onApprove && (
@@ -264,7 +268,7 @@ export const StakeholderList = ({ stakeholders, viewMode, onRemove, onApprove }:
                       <CheckCircle2 className="h-4 w-4 mr-2" /> Approve Request
                   </DropdownMenuItem>
               )}
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toast.info("Role change feature coming soon")}>
                   <Shield className="h-4 w-4 mr-2" /> Change Role
               </DropdownMenuItem>
               <DropdownMenuItem className="text-red-600 focus:text-red-600 focus:bg-red-50" onClick={() => onRemove(stakeholder.id)}>

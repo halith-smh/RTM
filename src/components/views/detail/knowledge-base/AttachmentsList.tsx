@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Progress } from "@/components/ui/progress";
+import { toast } from 'sonner';
 
 interface AttachmentsListProps {
   attachments: Attachment[];
@@ -156,10 +157,10 @@ export const AttachmentsList = ({ attachments, onUpload, onDelete }: Attachments
               </div>
               
               <div className="flex items-center gap-1">
-                 <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-primary">
+                 <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-primary" onClick={() => toast.info(`Opening preview for ${file.filename}`)}>
                    <Eye className="h-4 w-4" />
                  </Button>
-                 <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-primary">
+                 <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-primary" onClick={() => toast.success(`Downloading ${file.filename}`)}>
                    <Download className="h-4 w-4" />
                  </Button>
                  
