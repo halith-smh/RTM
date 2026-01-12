@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-import { X, FileText, ClipboardList, TestTube, Bug, CheckSquare, History, Users } from 'lucide-react';
-import { Requirement, Task, TestCase, Issue, SignOff, AuditEntry, Stakeholder } from '@/types/rtm';
+import { X, FileText, ClipboardList, TestTube, Bug, CheckSquare, History } from 'lucide-react';
+import { Requirement, Task, TestCase, Issue, SignOff, AuditEntry } from '@/types/rtm';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { StatusBadge } from './StatusBadge';
-import { ProgressBar } from './ProgressBar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
@@ -439,6 +438,13 @@ export function DetailPanel({ requirement, isOpen, onClose, initialTab = 'overvi
                 <CheckSquare className="h-3.5 w-3.5 mr-1.5" />
                 Sign-offs
               </TabsTrigger>
+              <TabsTrigger
+                value="audit"
+                className="flex-1 data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none px-2 py-3 text-xs"
+              >
+                <History className="h-3.5 w-3.5 mr-1.5" />
+                Audit
+              </TabsTrigger>
 
             </TabsList>
 
@@ -457,6 +463,9 @@ export function DetailPanel({ requirement, isOpen, onClose, initialTab = 'overvi
               </TabsContent>
               <TabsContent value="signoffs" className="mt-0">
                 <SignOffsTab signOffs={requirement.signOffs} />
+              </TabsContent>
+              <TabsContent value="audit" className="mt-0">
+                <AuditHistoryTab auditHistory={requirement.auditHistory} />
               </TabsContent>
 
             </div>

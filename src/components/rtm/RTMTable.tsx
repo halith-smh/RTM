@@ -137,7 +137,7 @@ export function RTMTable({ requirements, onRequirementClick }: RTMTableProps) {
 
   const renderHeader = (label: string, index: number, className: string = '') => (
     <th
-      className={cn("relative border-b border-r border-border px-4 py-2 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground", className)}
+      className={cn("sticky top-0 z-20 bg-muted/90 backdrop-blur-sm border-b border-r border-border px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500", className)}
       style={{ width: colWidths[index] }}
     >
       <div className="flex items-center h-full overflow-hidden">
@@ -151,10 +151,10 @@ export function RTMTable({ requirements, onRequirementClick }: RTMTableProps) {
   );
 
   return (
-    <div className="overflow-x-auto border border-border rounded-lg">
-      <table className="w-full border-collapse bg-background table-fixed">
-        <thead>
-          <tr className="bg-muted/50">
+    <div className="h-full w-full overflow-auto custom-scrollbar bg-background">
+      <table className="w-full border-collapse bg-background table-fixed border-separate border-spacing-0">
+        <thead className="sticky top-0 z-30">
+          <tr className="bg-background">
             {renderHeader("Req ID", 0, "whitespace-nowrap")}
             {renderHeader("Req Title", 1, "min-w-[200px]")}
             {renderHeader("Type", 2, "text-center whitespace-nowrap")}
@@ -167,7 +167,7 @@ export function RTMTable({ requirements, onRequirementClick }: RTMTableProps) {
             {renderHeader("Sign-offs", 9, "text-center min-w-[100px]")}
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-border">
           {requirements.map((req) => {
             const taskSegments = getTaskSegments(req);
             const executionSegments = getExecutionSegments(req);

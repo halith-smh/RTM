@@ -1,9 +1,7 @@
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Placeholder from '@tiptap/extension-placeholder';
-import { Button } from '@/components/ui/button';
-import { Bold, Italic, List, ListOrdered } from 'lucide-react';
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Bold, Italic, List, ListOrdered, Type } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface RichTextEditorProps {
   value: string;
@@ -13,101 +11,94 @@ interface RichTextEditorProps {
 
 export const RichTextEditor = ({ value, onChange, placeholder }: RichTextEditorProps) => {
   const [isFocused, setIsFocused] = useState(false);
-  const isEmpty = !value || value === '' || value === '<p></p>';
-
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Placeholder.configure({
-        placeholder: placeholder || 'Start typing...',
-      }),
-    ],
-    content: value,
-    onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
-    },
-    onFocus: () => setIsFocused(true),
-    onBlur: () => setIsFocused(false),
-  });
-
-  if (!editor) {
-    return null;
-  }
+  const isEmpty = !value || value === '';
 
   return (
-    <div className="rich-text-editor w-full">
-      {/* Editor - Always rendered */}
-      <div className="relative">
-        <EditorContent 
-          editor={editor} 
-          className={`w-full p-3 focus:outline-none text-foreground leading-relaxed text-sm transition-all duration-200 ${
-            isFocused 
-              ? 'min-h-[60px] border border-gray-300 rounded-lg bg-background' 
-              : isEmpty 
-                ? 'min-h-[60px] border border-transparent hover:border-gray-300 rounded-lg cursor-text'
-                : 'min-h-[60px] border border-transparent hover:border-gray-300 rounded-lg'
+    <div className="rich-text-editor w-full h-full flex flex-col border border-border rounded-md overflow-hidden bg-background">
+      {/* Editor - Enhanced textarea */}
+      <div className="relative flex-1">
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          className={`w-full h-full p-3 focus:outline-none text-foreground leading-relaxed text-sm transition-all duration-200 resize-none bg-transparent border-0 ${
+            isFocused ? 'ring-1 ring-primary/50' : ''
           }`}
+          style={{ minHeight: '120px' }}
         />
         {/* Custom placeholder overlay when empty and not focused */}
         {isEmpty && !isFocused && (
-          <div 
-            className="absolute top-3 left-3 text-sm text-muted-foreground italic cursor-text hover:text-foreground transition-colors pointer-events-none"
-          >
+          <div className="absolute top-3 left-3 text-muted-foreground italic cursor-text hover:text-foreground transition-colors pointer-events-none flex items-center gap-2">
+            <Type className="h-4 w-4" />
             {placeholder || 'Click to add content...'}
           </div>
         )}
       </div>
-      
-      {/* Toolbar - Only visible when focused - Bottom position */}
-      {isFocused && (
-        <div className="flex items-center gap-1 p-2 border-t border-border bg-muted/20 mt-1">
+
+      {/* Toolbar - Always visible but styled differently when focused */}
+      <div className={cn(
+        "flex items-center justify-between gap-2 p-2 border-t border-border bg-muted/20 flex-shrink-0 transition-all duration-200",
+        isFocused ? "bg-muted/40" : "bg-muted/10"
+      )}>
+        <div className="flex items-center gap-1">
           <Button
             type="button"
             variant="ghost"
             size="sm"
-            onClick={() => editor.chain().focus().toggleBold().run()}
-            className={`h-8 w-8 p-0 hover:bg-muted ${
-              editor.isActive('bold') ? 'bg-muted' : ''
-            }`}
+            className={cn(
+              "h-6 w-6 p-0 transition-colors",
+              isFocused ? "hover:bg-muted" : "hover:bg-muted/50 opacity-60"
+            )}
+            title="Bold (Coming soon)"
           >
-            <Bold className="h-4 w-4" />
+            <Bold className="h-3 w-3" />
           </Button>
           <Button
             type="button"
             variant="ghost"
             size="sm"
-            onClick={() => editor.chain().focus().toggleItalic().run()}
-            className={`h-8 w-8 p-0 hover:bg-muted ${
-              editor.isActive('italic') ? 'bg-muted' : ''
-            }`}
+            className={cn(
+              "h-6 w-6 p-0 transition-colors",
+              isFocused ? "hover:bg-muted" : "hover:bg-muted/50 opacity-60"
+            )}
+            title="Italic (Coming soon)"
           >
-            <Italic className="h-4 w-4" />
+            <Italic className="h-3 w-3" />
           </Button>
-          <div className="w-px h-6 bg-border mx-2" />
+          <div className="w-px h-4 bg-border mx-1" />
           <Button
             type="button"
             variant="ghost"
             size="sm"
-            onClick={() => editor.chain().focus().toggleBulletList().run()}
-            className={`h-8 w-8 p-0 hover:bg-muted ${
-              editor.isActive('bulletList') ? 'bg-muted' : ''
-            }`}
+            className={cn(
+              "h-6 w-6 p-0 transition-colors",
+              isFocused ? "hover:bg-muted" : "hover:bg-muted/50 opacity-60"
+            )}
+            title="Bullet List (Coming soon)"
           >
-            <List className="h-4 w-4" />
+            <List className="h-3 w-3" />
           </Button>
           <Button
             type="button"
             variant="ghost"
             size="sm"
-            onClick={() => editor.chain().focus().toggleOrderedList().run()}
-            className={`h-8 w-8 p-0 hover:bg-muted ${
-              editor.isActive('orderedList') ? 'bg-muted' : ''
-            }`}
+            className={cn(
+              "h-6 w-6 p-0 transition-colors",
+              isFocused ? "hover:bg-muted" : "hover:bg-muted/50 opacity-60"
+            )}
+            title="Numbered List (Coming soon)"
           >
-            <ListOrdered className="h-4 w-4" />
+            <ListOrdered className="h-3 w-3" />
           </Button>
         </div>
-      )}
+        <div className={cn(
+          "text-xs transition-colors",
+          isFocused ? "text-muted-foreground" : "text-muted-foreground/60"
+        )}>
+          {value.length} chars
+        </div>
+      </div>
     </div>
   );
 };
