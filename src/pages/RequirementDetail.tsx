@@ -184,7 +184,7 @@ const RequirementDetail = () => {
              </div>
              
              {/* Third Row with Tab Bar */}
-             <div className="mt-0 p-3 bg-gray-50 rounded-lg">
+             <div className="mt-0 p-3 pb-2 bg-gray-50 rounded-lg">
                <div className="flex items-start gap-8 mb-4">
                  {/* State - Process - Group Selects */}
                  <div className="flex items-center gap-2">
@@ -235,23 +235,21 @@ const RequirementDetail = () => {
                </div>
                
                {/* Tab Bar */}
-               <div className="border-b border-gray-300">
-                 <div className="flex gap-1">
-                   {tabs.map((tab) => (
-                     <Button
-                       key={tab}
-                       variant="ghost"
-                       onClick={() => setActiveTab(tab)}
-                       className={`px-4 py-2 text-sm rounded-none border-b-2 transition-colors ${
-                         activeTab === tab
-                           ? 'border-primary text-primary bg-transparent'
-                           : 'border-transparent text-muted-foreground hover:text-foreground'
-                       }`}
-                     >
-                       {tab}
-                     </Button>
-                   ))}
-                 </div>
+               <div className="flex gap-1">
+                 {tabs.map((tab) => (
+                   <Button
+                     key={tab}
+                     variant="ghost"
+                     onClick={() => setActiveTab(tab)}
+                     className={`px-4 py-2 text-sm rounded-none border-b-2 transition-colors ${
+                       activeTab === tab
+                         ? 'border-primary text-primary bg-transparent'
+                         : 'border-transparent text-muted-foreground hover:text-foreground'
+                     }`}
+                   >
+                     {tab}
+                   </Button>
+                 ))}
                </div>
              </div>
           </div>
@@ -272,7 +270,7 @@ const RequirementDetail = () => {
       </div>
 
       {/* Right Sidebar - Discussions - Fixed Panel on Desktop, Stacked on Mobile */}
-      <div className="w-full h-[400px] lg:h-auto lg:fixed lg:right-0 lg:w-[350px] border-t lg:border-t-0 lg:border-l border-border bg-background shadow-xl lg:shadow-none z-20 pointer-events-auto lg:top-[120px] lg:bottom-0">
+      <div className="w-full h-[450px] lg:h-auto lg:fixed lg:right-0 lg:w-[350px] border-t-2 border-t-primary lg:border-t-2 lg:border-t-primary lg:border-l border-border bg-background shadow-xl lg:shadow-none z-40 pointer-events-auto lg:top-[185px] lg:bottom-0">
          <DiscussionsPanel requirementId="13061" />
       </div>
     </div>
