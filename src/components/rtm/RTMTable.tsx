@@ -151,7 +151,7 @@ function getMeetingSegments(req: Requirement): StatusSegment[] {
 
 export function RTMTable({ requirements, onRequirementClick, visibleColumns = [
   "Req ID", "Req Title", "Type", "Source Owner", "Priority", "Status",
-  "Task", "TESTCASES", "Issues", "Sign-offs", "CTA", "Meetings"
+  "Task", "Test cases", "Issues", "Sign-offs", "CTA", "Meetings"
 ], tableView = 'trace', onTableViewChange }: RTMTableProps) {
   // Initial widths matching the minimums to prevent gaps
   const [colWidths, setColWidths] = useState<number[]>([...MIN_COLUMN_WIDTHS]);
@@ -288,8 +288,8 @@ export function RTMTable({ requirements, onRequirementClick, visibleColumns = [
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => onTableViewChange('explorer')}>Explorer View</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onTableViewChange('trace')}>Trace View</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onTableViewChange('explorer')}>Explorer View</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           )}
@@ -309,7 +309,7 @@ export function RTMTable({ requirements, onRequirementClick, visibleColumns = [
                 {renderHeader("Priority", 4, "text-center whitespace-nowrap")}
                 {renderHeader("Status", 5, "text-center whitespace-nowrap")}
                 {renderHeader("Task", 6, "text-center whitespace-nowrap")}
-                {renderHeader("TESTCASES", 7, "text-center min-w-[140px]")}
+                {renderHeader("Test Cases", 7, "text-center min-w-[140px]")}
                 {renderHeader("Issues", 8, "text-center min-w-[100px]")}
                 {renderHeader("Sign-offs", 9, "text-center min-w-[100px]")}
                 {renderHeader("CTA", 10, "text-center min-w-[100px]")}
@@ -417,13 +417,13 @@ export function RTMTable({ requirements, onRequirementClick, visibleColumns = [
                   </td>
                 )}
 
-                {visibleColumns.includes("TESTCASES") && (
+                {visibleColumns.includes("Test Cases") && (
                   <td className="px-3 py-2 border-b border-r border-border" style={{ width: colWidths[7] }}>
                     <div className="overflow-hidden">
                       <StatusBar
                         segments={executionSegments}
                         total={req.testCases.length}
-                        title="TESTCASES"
+                        title="Test Cases"
                         onViewDetails={() => onRequirementClick(req, 'test-cases')}
                         reqId={req.reqId}
                         reqTitle={req.title}

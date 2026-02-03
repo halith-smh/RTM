@@ -11,12 +11,14 @@ export const navigationData: NavigationNode[] = [
         reqId: 'FOLDER-001',
         name: 'System Requirements',
         type: 'folder',
+        tags: ['System', 'Core'],
         children: [
           {
             id: 'admin-reqs',
             reqId: 'FOLDER-002',
             name: 'Admin Requirements',
             type: 'folder',
+            tags: ['Admin', 'Security', 'Access Control'],
             children: [
               {
                 id: 'user-role-reqs',
@@ -39,6 +41,8 @@ export const navigationData: NavigationNode[] = [
                         status: 'in-scope',
                         requirementStatus: 'Active',
                         priority: 'High',
+                        tags: ['SD', 'Order Management', 'Workflow', 'Business Process', 'Critical', 'High Priority'],
+                        source: 'Sales_Order_BRD.pdf',
                         createdBy: 'John Smith',
                         createdOn: '2025-01-01',
                         phase: 'build',
@@ -87,6 +91,8 @@ export const navigationData: NavigationNode[] = [
                         status: 'in-scope',
                         requirementStatus: 'Active',
                         priority: 'High',
+                        tags: ['FI-AR', 'Credit Management', 'API', 'Integration', 'External System'],
+                        source: 'Credit_Integration_SDD.docx',
                         createdBy: 'Sarah Johnson',
                         createdOn: '2025-01-02',
                         phase: 'test',
@@ -346,6 +352,7 @@ export const requirementsData: Requirement[] = [
     stageStatus: 'in-progress',
     sprintCycle: 'sprint-2',
     tags: ['SD', 'Order Management', 'Workflow'],
+    source: 'Sales_Order_BRD.pdf',
     tasks: [
       { id: 't1', title: 'Design order form UI', status: 'Completed', assignee: 'Sarah Johnson', dueDate: '2025-01-15', priority: 'Medium' },
       { id: 't2', title: 'Implement validation logic', status: 'Active', assignee: 'Mike Chen', dueDate: '2025-01-20', priority: 'High' },
@@ -427,6 +434,7 @@ export const requirementsData: Requirement[] = [
     stageStatus: 'in-progress',
     sprintCycle: 'sprint-2',
     tags: ['FI-AR', 'Credit Management', 'API'],
+    source: 'Credit_Integration_SDD.docx',
     tasks: [
       { id: 't4', title: 'API Integration Design', status: 'Completed', assignee: 'Sarah Johnson', dueDate: '2025-01-12', priority: 'High' },
       { id: 't5', title: 'Implement credit check service', status: 'Active', assignee: 'Sarah Johnson', dueDate: '2025-01-18', priority: 'High' },
@@ -486,6 +494,7 @@ export const requirementsData: Requirement[] = [
     stageStatus: 'not-started',
     sprintCycle: 'backlog',
     tags: ['SD', 'Reporting', 'Dashboard'],
+    source: 'Dashboard_Requirements.xlsx',
     tasks: [
       { id: 't6', title: 'Dashboard wireframes', status: 'New', assignee: 'Sarah Johnson', dueDate: '2025-01-22', priority: 'Medium' },
     ],
@@ -531,6 +540,7 @@ export const requirementsData: Requirement[] = [
     stageStatus: 'completed',
     sprintCycle: 'sprint-1',
     tags: ['FI-AR', 'Billing', 'Automation'],
+    source: 'Billing_Process_SDD.pdf',
     tasks: [
       { id: 't7', title: 'Define billing rules engine', status: 'Completed', assignee: 'Alex Kumar', dueDate: '2025-01-05', priority: 'High' },
       { id: 't8', title: 'Implement invoice template', status: 'Completed', assignee: 'Sarah Johnson', dueDate: '2025-01-08', priority: 'Medium' },

@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   useReactTable,
@@ -10,7 +10,7 @@ import {
   createColumnHelper,
   Row,
 } from '@tanstack/react-table';
-import { ChevronRight, ChevronDown, Folder, FileText, Search, ArrowUpDown, ArrowUp, ArrowDown, Filter, X, ExternalLink, ArrowLeft, Minimize2 } from 'lucide-react';
+import { ChevronRight, ChevronDown, Folder, FileText, Search, ArrowUpDown, ArrowUp, ArrowDown, Filter, X, ExternalLink, ArrowLeft, Minimize2, Plus } from 'lucide-react';
 import { NavigationNode } from '@/types/rtm';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -68,10 +68,10 @@ const columnHelper = createColumnHelper<TableRow>();
 const MIN_COLUMN_WIDTHS = [
   300, // Req Title (first)
   110,  // Req ID (second, reduced)
-  110, // Type
-  130, // Source Owner
+  130, // Source
   110, // Priority
   110, // Status
+  300, // Tags - increased width
   140, // Task
   140, // Testcase
   140, // Issues
@@ -84,10 +84,10 @@ const MIN_COLUMN_WIDTHS = [
 const EXPLORER_MIN_WIDTHS = [
   300, // Req Title (first)
   110, // Req ID (second, reduced)
-  110, // Type
-  130, // Source Owner
+  130, // Source
   110, // Priority
   110, // Status
+  250, // Tags - increased width for explorer
   220, // Tasks - wider for work item cards
   220, // Test Cases - wider for work item cards
   200, // Issues - wider for work item cards
@@ -98,6 +98,7 @@ const EXPLORER_MIN_WIDTHS = [
 export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer', onTableViewChange, onFolderFocus, onBackNavigation, showBackButton, onExpandedChange, visibleItemsCount, isFullscreen = false, onFullscreenToggle, visibleColumns, onColumnToggle, availableFolders }: RTMTreeTableProps) {
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState({});
+  const [expansionLevel, setExpansionLevel] = useState(4);
   const [sorting, setSorting] = useState([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const [columnFilters, setColumnFilters] = useState([]);
@@ -116,11 +117,50 @@ export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer'
   const [activeFilterCol, setActiveFilterCol] = useState<number | null>(null);
   const [expandedCells, setExpandedCells] = useState<Record<string, boolean>>({});
   
-  // const visibleColumns = [
-  //   "Req Title", "Req ID", "Type", "Source Owner", "Priority", "Status",
-  //   "Task", "TESTCASES", "Issues", "Sign-offs", "CTA", "Meetings"
-  // ];
+  // Function to expand nodes to a specific level
+  const expandToLevel = useCallback((nodes: TableRow[], targetLevel: number, currentLevel: number = 0): Record<string, boolean> => {
+    const expandedState: Record<string, boolean> = {};
+    
+    const processNode = (node: TableRow, level: number) => {
+      if (node.subRows && level < targetLevel) {
+        expandedState[node.id] = true;
+        node.subRows.forEach(child => processNode(child, level + 1));
+      }
+    };
+    
+    nodes.forEach(node => processNode(node, currentLevel));
+    return expandedState;
+  }, []);
+  
+  // Convert NavigationNode to TableRow format
+  const convertToTableRows = (nodes: NavigationNode[]): TableRow[] => {
+    return nodes.map(node => {
+      const tableRow: TableRow = {
+        ...node,
+        subRows: node.children ? convertToTableRows(node.children) : undefined,
+      };
+      
+      // Ensure parent folders are always visible when expanded
+      if (node.children && node.children.length > 0) {
+        tableRow.subRows = convertToTableRows(node.children);
+      }
+      
+      return tableRow;
+    });
+  };
 
+  const tableData = useMemo(() => convertToTableRows(data), [data]);
+  
+  // Update expanded state when expansion level changes
+  const handleExpansionLevelChange = useCallback((level: number) => {
+    setExpansionLevel(level);
+    const newExpanded = expandToLevel(tableData, level);
+    setExpanded(newExpanded);
+    if (onExpandedChange) {
+      onExpandedChange(newExpanded);
+    }
+  }, [tableData, expandToLevel, onExpandedChange]);
+  
   // Column resize handler
   const startResize = useCallback((index: number) => (e: React.MouseEvent) => {
     e.preventDefault();
@@ -144,12 +184,12 @@ export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer'
 
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
-  }, [colWidths]);
+  }, [colWidths, currentMinWidths]);
 
   // Get work items for explorer view
   const getWorkItemsList = (req: any, type: 'tasks' | 'testCases' | 'issues' | 'signOffs' | 'ctas' | 'meetings') => {
     const items = req[type] || [];
-    return items; // Return all items, not just first 3
+    return items;
   };
 
   const renderWorkItemsList = (items: any[], type: string, total: number, rowId: string, columnId: string) => {
@@ -159,21 +199,16 @@ export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer'
     const isExpanded = expandedCells[cellKey];
     const displayItems = isExpanded ? items : items.slice(0, 3);
     
-    console.log('Rendering cell:', cellKey, 'total items:', total, 'isExpanded:', isExpanded, 'showing:', displayItems.length);
-    
     return (
       <div className="space-y-2">
         {displayItems.map((item: any, index: number) => (
           <div key={index} className="bg-gray-50 border border-gray-200 rounded-md p-3 relative">
-            {/* Left colored border */}
             <div className={`absolute left-0 top-0 bottom-0 w-1 rounded-l-md ${
               item.status === 'Completed' || item.status === 'Approved' || item.status === 'Done' ? 'bg-green-500' :
               item.status === 'Active' || item.status === 'Pending' ? 'bg-blue-500' :
               item.status === 'Blocked' || item.status === 'Rejected' ? 'bg-red-500' :
               'bg-gray-400'
             }`} />
-            
-            {/* Content */}
             <div className="flex items-start justify-between ml-2">
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium text-gray-900 truncate">
@@ -183,8 +218,6 @@ export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer'
                   {item.id}
                 </div>
               </div>
-              
-              {/* Status */}
               <div className="flex items-center gap-1.5 ml-2 flex-shrink-0">
                 <div className={`w-2 h-2 rounded-full ${
                   item.status === 'Completed' || item.status === 'Approved' || item.status === 'Done' ? 'bg-green-500' :
@@ -211,12 +244,7 @@ export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer'
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Clicked expand/collapse for:', cellKey, 'current state:', isExpanded);
-                setExpandedCells(prev => {
-                  const newState = { ...prev, [cellKey]: !isExpanded };
-                  console.log('New expanded state:', newState);
-                  return newState;
-                });
+                setExpandedCells(prev => ({ ...prev, [cellKey]: !isExpanded }));
               }}
             >
               {isExpanded ? `Show less ▲` : `+${total - 3} more ▼`}
@@ -225,14 +253,6 @@ export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer'
         )}
       </div>
     );
-  };
-
-  const getCoveragePercentage = (items: any[]) => {
-    if (!items || items.length === 0) return 0;
-    const completed = items.filter(item => 
-      item.status === 'Completed' || item.status === 'Approved' || item.status === 'Done'
-    ).length;
-    return Math.round((completed / items.length) * 100);
   };
 
   // Get task segments from requirement data
@@ -334,16 +354,17 @@ export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer'
       { label: 'Cancelled', count: cancelled.length, color: 'red', items: cancelled.map((m: any) => ({ id: m.id, title: m.title, status: `Due: ${m.dueDate}` })) },
     ];
   };
-
-  // Convert NavigationNode to TableRow format
-  const convertToTableRows = (nodes: NavigationNode[]): TableRow[] => {
-    return nodes.map(node => ({
-      ...node,
-      subRows: node.children ? convertToTableRows(node.children) : undefined,
-    }));
-  };
-
-  const tableData = useMemo(() => convertToTableRows(data), [data]);
+  
+  // Initialize expansion to level 4 on mount
+  useEffect(() => {
+    if (tableData.length > 0) {
+      const initialExpanded = expandToLevel(tableData, 4);
+      setExpanded(initialExpanded);
+      if (onExpandedChange) {
+        onExpandedChange(initialExpanded);
+      }
+    }
+  }, [tableData, expandToLevel, onExpandedChange]);
 
   // Header renderer with filters
   const renderHeader = (label: string, index: number, className: string = '') => {
@@ -513,36 +534,18 @@ export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer'
           );
         },
       }),
-      columnHelper.accessor('type', {
-        id: 'type',
-        header: 'Type',
+      columnHelper.accessor((row) => (row as any).source || '', {
+        id: 'source',
+        header: 'Source',
         cell: ({ row, getValue }) => {
           const isFolder = row.original.children !== undefined;
           if (isFolder) return <div />;
-          
-          const type = getValue();
-          if (!type) return <span className="text-xs text-muted-foreground">-</span>;
-          
-          const typeMap: Record<string, 'info' | 'warning' | 'neutral'> = {
-            'Business': 'info',
-            'Functional': 'warning', 
-            'Technical': 'neutral',
-          };
-          
+          const source = getValue() as string;
           return (
-            <div className="flex justify-center">
-              <StatusBadge label={type} type={typeMap[type] || 'neutral'} />
-            </div>
+            <span className="text-sm text-muted-foreground" title={source}>
+              {source || '-'}
+            </span>
           );
-        },
-      }),
-      columnHelper.accessor((row) => row.sourceOwner || '', {
-        id: 'sourceOwner',
-        header: 'Source Owner',
-        cell: ({ row, getValue }) => {
-          const isFolder = row.original.children !== undefined;
-          if (isFolder) return <div />;
-          return <span className="text-sm">{getValue() as string || '-'}</span>;
         },
       }),
       columnHelper.accessor('priority', {
@@ -592,6 +595,106 @@ export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer'
           );
         },
       }),
+      columnHelper.accessor((row) => (row as any).tags || [], {
+        id: 'tags',
+        header: 'Tags',
+        cell: ({ row, getValue }) => {
+          const isFolder = row.original.children !== undefined;
+          const tags = getValue() as string[];
+          const [isEditing, setIsEditing] = useState(false);
+          const [newTag, setNewTag] = useState('');
+          
+          const handleAddTag = () => {
+            if (newTag.trim() && !tags.includes(newTag.trim())) {
+              const updatedTags = [...tags, newTag.trim()];
+              // Update the data (in real app, this would be an API call)
+              (row.original as any).tags = updatedTags;
+              setNewTag('');
+              setIsEditing(false);
+            }
+          };
+          
+          const handleRemoveTag = (tagToRemove: string) => {
+            const updatedTags = tags.filter(tag => tag !== tagToRemove);
+            (row.original as any).tags = updatedTags;
+          };
+          
+          if (!tags || tags.length === 0) {
+            return (
+              <div className="flex items-center gap-1">
+                {/* <span className="text-xs text-muted-foreground">-</span> */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-5 w-5 p-0 text-blue-600 hover:text-blue-800"
+                  onClick={() => setIsEditing(true)}
+                >
+                  <Plus className="h-3 w-3" />
+                </Button>
+                {isEditing && (
+                  <div className="flex items-center gap-1">
+                    <Input
+                      value={newTag}
+                      onChange={(e) => setNewTag(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleAddTag()}
+                      className="h-6 w-20 text-xs"
+                      placeholder="Tag"
+                      autoFocus
+                    />
+                    <Button size="sm" className="h-6 px-2 text-xs" onClick={handleAddTag}>Add</Button>
+                  </div>
+                )}
+              </div>
+            );
+          }
+          
+          const maxTags = 4;
+          const visibleTags = tags.slice(0, maxTags);
+          const remainingCount = tags.length - maxTags;
+          
+          return (
+            <div className="flex flex-wrap gap-1 items-center">
+              {visibleTags.map((tag, index) => (
+                <Badge key={index} variant="secondary" className="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 group relative">
+                  {tag}
+                  <button
+                    onClick={() => handleRemoveTag(tag)}
+                    className="ml-1 opacity-0 group-hover:opacity-100 text-blue-500 hover:text-red-500"
+                  >
+                    <X className="h-2 w-2" />
+                  </button>
+                </Badge>
+              ))}
+              {remainingCount > 0 && (
+                <button className="text-xs text-blue-600 hover:text-blue-800 underline">
+                  +{remainingCount} more
+                </button>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-5 w-5 p-0 text-blue-600 hover:text-blue-800"
+                onClick={() => setIsEditing(true)}
+              >
+                {/* <Plus className="h-3 w-3" /> */}
+              </Button>
+              {isEditing && (
+                <div className="flex items-center gap-1">
+                  <Input
+                    value={newTag}
+                    onChange={(e) => setNewTag(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleAddTag()}
+                    className="h-6 w-20 text-xs"
+                    placeholder="Tag"
+                    autoFocus
+                  />
+                  <Button size="sm" className="h-6 px-2 text-xs" onClick={handleAddTag}>Add</Button>
+                </div>
+              )}
+            </div>
+          );
+        },
+      }),
     ];
 
     const traceColumns = [
@@ -621,7 +724,7 @@ export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer'
       }),
       columnHelper.accessor('name', {
         id: 'testcases',
-        header: 'TESTCASES',
+        header: 'Test Cases',
         cell: ({ row }) => {
           const isFolder = row.original.children !== undefined;
           if (isFolder) return <div />;
@@ -634,7 +737,7 @@ export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer'
               <StatusBar
                 segments={testCaseSegments}
                 total={total}
-                title="TESTCASES"
+                title="Test Cases"
                 onViewDetails={() => onRequirementSelect(row.original)}
                 reqId={row.original.reqId || row.original.name}
                 reqTitle={row.original.name}
@@ -746,7 +849,7 @@ export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer'
         id: 'task',
         header: () => (
           <div className="text-center">
-            <div className="font-bold">Tasks</div>
+            <div className="text-xs font-medium">Tasks</div>
             <div className="text-[10px] text-muted-foreground">85% coverage</div>
           </div>
         ),
@@ -764,7 +867,7 @@ export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer'
         id: 'testcases',
         header: () => (
           <div className="text-center">
-            <div className="font-bold">Test Cases</div>
+            <div className="text-xs font-medium">Test Cases</div>
             <div className="text-[10px] text-muted-foreground">92% coverage</div>
           </div>
         ),
@@ -782,7 +885,7 @@ export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer'
         id: 'issues',
         header: () => (
           <div className="text-center">
-            <div className="font-bold">Issues</div>
+            <div className="text-xs font-medium">Issues</div>
             <div className="text-[10px] text-muted-foreground">78% coverage</div>
           </div>
         ),
@@ -800,7 +903,7 @@ export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer'
         id: 'signoffs',
         header: () => (
           <div className="text-center">
-            <div className="font-bold">Sign-offs</div>
+            <div className="text-xs font-medium">Sign-offs</div>
             <div className="text-[10px] text-muted-foreground">100% coverage</div>
           </div>
         ),
@@ -818,7 +921,7 @@ export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer'
         id: 'events',
         header: () => (
           <div className="text-center">
-            <div className="font-bold">Events</div>
+            <div className="text-xs font-medium">Events</div>
             <div className="text-[10px] text-muted-foreground">88% coverage</div>
           </div>
         ),
@@ -847,9 +950,10 @@ export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer'
       columnFilters,
     },
     onExpandedChange: (updater) => {
-      setExpanded(updater);
+      const newExpanded = typeof updater === 'function' ? updater(expanded) : updater;
+      console.log('Expanded state changed:', newExpanded);
+      setExpanded(newExpanded);
       if (onExpandedChange) {
-        const newExpanded = typeof updater === 'function' ? updater(expanded) : updater;
         onExpandedChange(newExpanded);
       }
     },
@@ -861,6 +965,8 @@ export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer'
     getExpandedRowModel: getExpandedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    enableExpanding: true,
+    debugTable: false,
   });
 
   return (
@@ -925,7 +1031,7 @@ export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer'
           </div>
           
           <div className="flex-1 flex justify-center">
-            <span className="text-sm text-muted-foreground">Showing {visibleItemsCount || table.getRowModel().rows.length} of {data.length} Items</span>
+            <span className="text-sm text-muted-foreground">Showing 20 of 245 Items</span>
           </div>
           
           <div className="flex items-center gap-4">
@@ -938,8 +1044,8 @@ export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer'
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => onTableViewChange('explorer')}>Explorer View</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => onTableViewChange('trace')}>Trace View</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => onTableViewChange('explorer')}>Explorer View</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
@@ -957,13 +1063,13 @@ export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer'
                   headerGroup.headers.map((header, index) => (
                     <th
                       key={header.id}
-                      className={cn("sticky top-0 z-20 bg-muted/90 backdrop-blur-sm border-b border-r border-border px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500", 
+                      className={cn("sticky top-0 z-20 backdrop-blur-sm border-b border-r border-gray-300 px-4 py-2 text-left text-xs font-medium tracking-normal", 
                         index === 0 ? "min-w-[200px]" : 
                         index === 1 ? "whitespace-nowrap" :
                         index >= 2 && index <= 5 ? "text-center whitespace-nowrap" :
                         "text-center min-w-[100px]"
                       )}
-                      style={{ width: colWidths[index] }}
+                      style={{ width: colWidths[index], backgroundColor: '#F8F8F8', color: '#374151' }}
                     >
                       <div className="flex flex-col gap-2">
                         <div className="flex items-center justify-between h-full overflow-hidden group">
@@ -1020,24 +1126,29 @@ export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer'
               {table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row, index) => {
                   const isFolder = row.original.children !== undefined;
+                  const isExpandedFolder = isFolder && row.getIsExpanded();
+                  
                   return (
                     <tr
                       key={row.id}
                       className={cn(
                         "transition-all duration-200 hover:bg-muted/30",
-                        row.getIsSelected() && "bg-blue-50/80"
+                        row.getIsSelected() && "bg-blue-50/80",
+                        isExpandedFolder && "bg-muted/20 opacity-70"
                       )}
                     >
                       {row.getVisibleCells().map((cell, cellIndex) => (
                         <td 
                           key={cell.id} 
-                          className="px-3 py-3 align-top text-sm border-r border-border/20 last:border-r-0"
-                          style={{ width: colWidths[cellIndex] }}
+                          className="px-3 py-2 align-top text-sm border-r border-border/20 last:border-r-0 overflow-hidden"
+                          style={{ width: colWidths[cellIndex], maxWidth: colWidths[cellIndex] }}
                         >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
+                          <div className="truncate">
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </div>
                         </td>
                       ))}
                     </tr>

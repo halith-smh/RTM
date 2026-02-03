@@ -16,6 +16,8 @@ export interface NavigationNode {
   type: 'project' | 'scope' | 'process' | 'requirement';
   children?: NavigationNode[];
   status?: 'in-scope' | 'out-of-scope';
+  tags?: string[];
+  source?: string;
   
   // Additional fields for requirements
   priority?: Priority;
@@ -141,6 +143,7 @@ export interface Requirement {
   stageStatus: 'not-started' | 'in-progress' | 'blocked' | 'completed' | 'failed' | 'deferred';
   sprintCycle: 'sprint-1' | 'sprint-2' | 'sprint-3' | 'backlog' | 'unassigned';
   tags: string[];
+  source?: string;
 
   // Traceability links
   tasks: Task[];

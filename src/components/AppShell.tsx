@@ -55,7 +55,7 @@ export function AppShell() {
   const [tableView, setTableView] = useState<'explorer' | 'trace'>('explorer');
   const [visibleColumns, setVisibleColumns] = useState<string[]>([
     "Req ID", "Req Title", "Type", "Source Owner", "Priority", "Status",
-    "Task", "TESTCASES", "Issues", "Sign-offs", "CTA", "Meetings"
+    "Task", "Test Cases", "Issues", "Sign-offs", "CTA", "Meetings"
   ]);
 
   const handleColumnToggle = (column: string) => {

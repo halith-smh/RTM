@@ -140,10 +140,20 @@ export function ImportFromSDDDrawer({ open, onOpenChange, data, onSubmit }: Impo
   const selectedCount = extractedRequirements.filter(req => req.selected).length;
 
   return (
-    <Sheet open={open} onOpenChange={handleClose}>
-      <SheetContent side="right" className="w-[800px] sm:max-w-[800px] overflow-y-auto">
+    <Sheet open={open} onOpenChange={() => {}}>
+      <SheetContent side="right" className="w-[800px] sm:max-w-[800px] overflow-y-auto [&>button]:hidden">
         <SheetHeader className="pb-4">
-          <SheetTitle>Import Requirements from SDD</SheetTitle>
+          <div className="flex items-center justify-between">
+            <SheetTitle>Import Requirements from SDD</SheetTitle>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6"
+              onClick={handleClose}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
         </SheetHeader>
 
         {step === 'upload' && (

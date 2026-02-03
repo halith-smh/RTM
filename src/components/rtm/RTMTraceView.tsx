@@ -119,8 +119,8 @@ export function RTMTraceView({ data, onRequirementSelect, visibleColumns, tableV
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => onTableViewChange('explorer')}>Explorer View</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onTableViewChange('trace')}>Trace View</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onTableViewChange('explorer')}>Explorer View</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           )}

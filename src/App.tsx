@@ -9,7 +9,7 @@ import { GlobalHeader } from '@/components/rtm/GlobalHeader';
 import { FilterBar } from '@/components/rtm/FilterBar';
 import { RTMTreeTable } from '@/components/rtm/RTMTreeTable';
 import { navigationData, requirementsData } from '@/data/mockData';
-import { Eye, ChevronDown, RefreshCw, Filter as FilterIcon, Download, Maximize, Search, Plus, Save, ArrowLeft } from 'lucide-react';
+import { Eye, ChevronDown, RefreshCw, Filter as FilterIcon, Download, Maximize, Search, Plus, Save, ArrowLeft, FolderPlus, Upload, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -22,6 +22,7 @@ import RequirementDetail from "./pages/RequirementDetail";
 import NewRequirement from "./pages/NewRequirement";
 import NotFound from "./pages/NotFound";
 import { ImportFromSDDDrawer } from '@/components/drawers/ImportFromSDDDrawer';
+import { AddFolderDialog } from '@/components/dialogs/AddFolderDialog';
 import kternLogo from '@/assets/kternlogo.png';
 import { cn } from '@/lib/utils';
 
@@ -31,12 +32,13 @@ const queryClient = new QueryClient();
 function MainLayout() {
   const navigate = useNavigate();
   const [showImportDrawer, setShowImportDrawer] = useState(false);
+  const [showAddFolderDialog, setShowAddFolderDialog] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [expanded, setExpanded] = useState({});
   const [tableView, setTableView] = useState<'explorer' | 'trace'>('trace');
   const [visibleColumns, setVisibleColumns] = useState<string[]>([
-    "Req ID", "Req Title", "Type", "Source Owner", "Priority", "Status",
-    "Task", "TESTCASES", "Issues", "Sign-offs", "CTA", "Meetings"
+    "Req ID", "Req Title", "Source", "Priority", "Status", "Tags",
+    "Task", "Test Cases", "Issues", "Sign-offs", "CTA", "Meetings"
   ]);
   const [globalFilter, setGlobalFilter] = useState('');
   const [currentFolderData, setCurrentFolderData] = useState(navigationData[0]?.children || []);
@@ -78,7 +80,8 @@ function MainLayout() {
     if (node.children) {
       // Push current state to stack
       setNavigationStack(prev => [...prev, { data: currentFolderData, path: breadcrumbPath }]);
-      setCurrentFolderData(node.children);
+      // Include the parent node along with its children
+      setCurrentFolderData([node]);
       setBreadcrumbPath([...breadcrumbPath, node.name]);
     }
   };
@@ -256,11 +259,17 @@ function MainLayout() {
                   <Plus className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 bg-white border border-gray-200 rounded-lg shadow-lg p-1">
+              <DropdownMenuContent align="end" className="w-48 bg-white border border-gray-200 rounded-lg shadow-lg p-1">  
+              <DropdownMenuItem className="rounded-md px-3 py-2 text-sm hover:bg-gray-50 cursor-pointer transition-colors" onClick={() => setShowAddFolderDialog(true)}>
+                  <FolderPlus className="h-4 w-4 mr-2" />
+                  Add Folder
+                </DropdownMenuItem>
                 <DropdownMenuItem className="rounded-md px-3 py-2 text-sm hover:bg-gray-50 cursor-pointer transition-colors" onClick={() => setShowImportDrawer(true)}>
+                  <Upload className="h-4 w-4 mr-2" />
                   Import from SDD
                 </DropdownMenuItem>
                 <DropdownMenuItem className="rounded-md px-3 py-2 text-sm hover:bg-gray-50 cursor-pointer transition-colors" onClick={() => navigate('/requirements/new')}>
+                  <FileText className="h-4 w-4 mr-2" />
                   Add Requirement
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -295,6 +304,15 @@ function MainLayout() {
         data={navigationData[0]?.children || []}
         onSubmit={(data) => {
           console.log('Import SDD data:', data);
+        }}
+      />
+      
+      <AddFolderDialog
+        open={showAddFolderDialog}
+        onOpenChange={setShowAddFolderDialog}
+        data={navigationData[0]?.children || []}
+        onSubmit={(data) => {
+          console.log('Add folder data:', data);
         }}
       />
 

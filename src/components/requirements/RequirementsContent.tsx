@@ -33,7 +33,7 @@ export function RequirementsContent({ sidebarCollapsed = false, onToggleSidebar 
   const [tableView, setTableView] = useState<'explorer' | 'trace'>('explorer');
   const [visibleColumns, setVisibleColumns] = useState<string[]>([
     "Req ID", "Req Title", "Type", "Source Owner", "Priority", "Status",
-    "Task", "TESTCASES", "Issues", "Sign-offs", "CTA", "Meetings"
+    "Task", "Test Cases", "Issues", "Sign-offs", "CTA", "Meetings"
   ]);
 
   const handleSelect = (node: NavigationNode) => {
@@ -223,7 +223,7 @@ export function RequirementsContent({ sidebarCollapsed = false, onToggleSidebar 
                   <DropdownMenuContent align="end" className="w-56">
                     {[
                       "Req ID", "Req Title", "Type", "Source Owner", "Priority", "Status",
-                      "Task", "TESTCASES", "Issues", "Sign-offs", "CTA", "Meetings"
+                      "Task", "Test Cases", "Issues", "Sign-offs", "CTA", "Meetings"
                     ].map((col) => (
                       <div key={col} className="flex items-center gap-2 px-2 py-1.5 hover:bg-muted/50 rounded cursor-pointer">
                         <Checkbox checked={visibleColumns.includes(col)} id={`col-${col}`} />
