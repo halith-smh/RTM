@@ -94,8 +94,8 @@ When users create calendar events from within SAP applications (such as scheduli
   const [collapsedSections, setCollapsedSections] = useState<{ [key: string]: boolean }>({});
 
   const lifecycleStages = [
-    { id: 'identification', name: 'Identification', icon: FileText, status: 'completed' },
-    { id: 'analysis', name: 'Analysis', icon: Users, status: hasAnalystData ? 'completed' : 'active' },
+    { id: 'identification', name: 'Identification', icon: FileText, status: 'active' },
+    { id: 'analysis', name: 'Analysis', icon: Users, status: 'pending' },
     { id: 'documentation', name: 'Documentation', icon: FileText, status: documentGenerated ? 'completed' : hasAnalystData ? 'active' : 'pending' },
     { id: 'approval', name: 'Approval', icon: CheckCircle, status: 'pending' },
     { id: 'design', name: 'Design', icon: Settings, status: 'pending' },

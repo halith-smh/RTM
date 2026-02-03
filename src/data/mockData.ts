@@ -7,84 +7,307 @@ export const navigationData: NavigationNode[] = [
     type: 'project',
     children: [
       {
-        id: 'scope-1',
-        name: 'Order to Cash',
-        type: 'scope',
+        id: 'system-reqs',
+        reqId: 'FOLDER-001',
+        name: 'System Requirements',
+        type: 'folder',
         children: [
           {
-            id: 'proc-1',
-            name: 'Sales Order Management',
-            type: 'process',
+            id: 'admin-reqs',
+            reqId: 'FOLDER-002',
+            name: 'Admin Requirements',
+            type: 'folder',
             children: [
-              { id: 'req-cat-1', name: 'Sales Order Validation', type: 'requirement', status: 'in-scope' },
-              { id: 'req-cat-2', name: 'Inventory Adjustment', type: 'requirement', status: 'out-of-scope' },
-            ],
-          },
-          {
-            id: 'proc-2',
-            name: 'Billing & Invoicing',
-            type: 'process',
-            children: [
-              { id: 'req-cat-3', name: 'Invoice Processing', type: 'requirement', status: 'in-scope' },
-            ],
-          },
-        ],
+              {
+                id: 'user-role-reqs',
+                reqId: 'FOLDER-003',
+                name: 'User Role Requirements',
+                type: 'folder',
+                children: [
+                  {
+                    id: 'access-control',
+                    reqId: 'FOLDER-004',
+                    name: 'Access Control',
+                    type: 'folder',
+                    children: [
+                      {
+                        id: 'req-001',
+                        name: 'Sales Order Creation Workflow',
+                        reqId: 'REQ-001',
+                        type: 'Business',
+                        sourceOwner: 'John Smith',
+                        status: 'in-scope',
+                        requirementStatus: 'Active',
+                        priority: 'High',
+                        createdBy: 'John Smith',
+                        createdOn: '2025-01-01',
+                        phase: 'build',
+                        coverage: 'full',
+                        tasks: [
+                          { id: 't1', title: 'Design order form UI', status: 'Completed', assignee: 'Sarah Johnson', dueDate: '2025-01-15', priority: 'Medium' },
+                          { id: 't2', title: 'Implement validation logic', status: 'Active', assignee: 'Mike Chen', dueDate: '2025-01-20', priority: 'High' },
+                          { id: 't3', title: 'Setup approval workflow', status: 'New', assignee: 'Alex Kumar', dueDate: '2025-01-25', priority: 'High' },
+                          { id: 't4', title: 'Integration with inventory system', status: 'Approved', assignee: 'John Smith', dueDate: '2025-01-12', priority: 'Medium' },
+                        ],
+                        testCases: [
+                          { id: 'tc1', title: 'Verify order creation with valid data', status: 'performed', executionResult: 'Pass', lastRun: '2025-01-10', tester: 'Mike Chen', assignee: 'Mike Chen', dueDate: '2025-01-15', priority: 'High' },
+                          { id: 'tc2', title: 'Test validation error handling', status: 'approved', executionResult: 'Pass', lastRun: '2025-01-10', tester: 'Mike Chen', assignee: 'Mike Chen', dueDate: '2025-01-15', priority: 'Medium' },
+                          { id: 'tc3', title: 'Verify approval notification', status: 'Active', tester: 'Mike Chen', assignee: 'Mike Chen', dueDate: '2025-01-18', priority: 'Medium' },
+                          { id: 'tc4', title: 'Test inventory integration', status: 'New', tester: 'Mike Chen', assignee: 'Mike Chen', dueDate: '2025-01-20', priority: 'Low' },
+                          { id: 'tc5', title: 'Stress test with large datasets', status: 'Defect found', executionResult: 'Fail', lastRun: '2025-01-11', tester: 'Mike Chen', assignee: 'Mike Chen', dueDate: '2025-01-22', priority: 'High' },
+                        ],
+                        issues: [
+                          { id: 'i1', title: 'Date picker not showing correctly on mobile', severity: 'Medium', status: 'Active', assignee: 'Sarah Johnson', dueDate: '2025-01-22', priority: 'Medium' },
+                          { id: 'i2', title: 'Form validation message unclear', severity: 'Low', status: 'Resolved', assignee: 'Mike Chen', dueDate: '2025-01-25', priority: 'Low' },
+                          { id: 'i3', title: 'API timeout on large datasets', severity: 'High', status: 'New', assignee: 'Alex Kumar', dueDate: '2025-01-28', priority: 'High' },
+                          { id: 'i4', title: 'UI alignment issue fixed', severity: 'Low', status: 'Approved', assignee: 'Sarah Johnson', dueDate: '2025-01-30', priority: 'Low' },
+                        ],
+                        signOffs: [
+                          { id: 'so1', role: 'Business Owner', stakeholder: 'Emily Davis', status: 'Approved', date: '2025-01-08', priority: 'High', dueDate: '2025-01-10' },
+                          { id: 'so2', role: 'Technical Lead', stakeholder: 'Alex Kumar', status: 'Active', priority: 'High', dueDate: '2025-01-15' },
+                          { id: 'so3', role: 'QA Lead', stakeholder: 'Mike Chen', status: 'New', priority: 'Medium', dueDate: '2025-01-18' },
+                          { id: 'so4', role: 'Security Team', stakeholder: 'Lisa Wilson', status: 'Rejected', date: '2025-01-09', priority: 'High', dueDate: '2025-01-20' },
+                          { id: 'so5', role: 'Product Manager', stakeholder: 'John Smith', status: 'Completed', date: '2025-01-10', priority: 'Medium', dueDate: '2025-01-22' },
+                        ],
+                        ctas: [
+                          { id: 'cta1', title: 'Review validation rules', status: 'Active', assignee: 'John Smith', dueDate: '2025-01-20', priority: 'High' },
+                          { id: 'cta2', title: 'Confirm inventory API specs', status: 'Completed', assignee: 'Sarah Johnson', dueDate: '2025-01-10', priority: 'Medium' },
+                        ],
+                        meetings: [
+                          { id: 'm1', title: 'Design Review', status: 'Completed', organizer: 'John Smith', attendees: ['Sarah Johnson', 'Mike Chen'], date: '2025-01-05', dueDate: '2025-01-05', priority: 'High' },
+                          { id: 'm2', title: 'Sprint Planning', status: 'Scheduled', organizer: 'Alex Kumar', attendees: ['Team'], date: '2025-01-20', dueDate: '2025-01-20', priority: 'Medium' },
+                        ]
+                      },
+                      {
+                        id: 'req-002',
+                        name: 'Customer Credit Check Integration',
+                        reqId: 'REQ-002',
+                        type: 'Technical',
+                        sourceOwner: 'Sarah Johnson',
+                        status: 'in-scope',
+                        requirementStatus: 'Active',
+                        priority: 'High',
+                        createdBy: 'Sarah Johnson',
+                        createdOn: '2025-01-02',
+                        phase: 'test',
+                        coverage: 'partial',
+                        tasks: [
+                          { id: 't4', title: 'API Integration Design', status: 'Completed', assignee: 'Sarah Johnson', dueDate: '2025-01-12', priority: 'High' },
+                          { id: 't5', title: 'Implement credit check service', status: 'Active', assignee: 'Sarah Johnson', dueDate: '2025-01-18', priority: 'High' },
+                        ],
+                        testCases: [
+                          { id: 'tc4', title: 'Test successful credit check', status: 'New', assignee: 'Sarah Johnson', dueDate: '2025-01-20', priority: 'High' },
+                          { id: 'tc5', title: 'Test credit check timeout handling', status: 'New', assignee: 'Sarah Johnson', dueDate: '2025-01-20', priority: 'Medium' },
+                        ],
+                        issues: [],
+                        signOffs: [
+                          { id: 'so3', role: 'Technical Lead', stakeholder: 'Alex Kumar', status: 'New', priority: 'High', dueDate: '2025-01-10' },
+                        ],
+                        ctas: [],
+                        meetings: [
+                          { id: 'm3', title: 'API Vendor Call', status: 'Completed', organizer: 'Sarah Johnson', attendees: ['Vendor', 'Alex Kumar'], date: '2025-01-08', dueDate: '2025-01-08', priority: 'High' },
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                id: 'config-reqs',
+                reqId: 'FOLDER-005',
+                name: 'Configuration Requirements',
+                type: 'folder',
+                children: [
+                  {
+                    id: 'system-config',
+                    reqId: 'FOLDER-006',
+                    name: 'System Configuration',
+                    type: 'folder',
+                    children: [
+                      {
+                        id: 'req-003',
+                        name: 'Order Status Tracking Dashboard',
+                        reqId: 'REQ-003',
+                        type: 'Functional',
+                        sourceOwner: 'Emily Davis',
+                        status: 'in-scope',
+                        requirementStatus: 'New',
+                        priority: 'Medium',
+                        createdBy: 'Emily Davis',
+                        createdOn: '2025-01-05',
+                        phase: 'analyze',
+                        coverage: 'none',
+                        tasks: [
+                          { id: 't6', title: 'Dashboard wireframes', status: 'New', assignee: 'Sarah Johnson', dueDate: '2025-01-22', priority: 'Medium' },
+                        ],
+                        testCases: [],
+                        issues: [],
+                        signOffs: [],
+                        ctas: [
+                          { id: 'cta3', title: 'Approve wireframes', status: 'Pending', assignee: 'Emily Davis', dueDate: '2025-01-25', priority: 'Medium' },
+                        ],
+                        meetings: []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
       {
-        id: 'scope-2',
-        name: 'Plan to Produce',
-        type: 'scope',
+        id: 'business-reqs',
+        reqId: 'FOLDER-007',
+        name: 'Business Requirements',
+        type: 'folder',
         children: [
           {
-            id: 'proc-3',
-            name: 'Production',
-            type: 'process',
+            id: 'order-mgmt',
+            reqId: 'FOLDER-008',
+            name: 'Order Management',
+            type: 'folder',
             children: [
-              { id: 'req-cat-4', name: 'Material Planning', type: 'requirement', status: 'in-scope' },
-            ],
+              {
+                id: 'sales-order',
+                reqId: 'FOLDER-009',
+                name: 'Sales Order Processing',
+                type: 'folder',
+                children: [
+                  {
+                    id: 'order-creation',
+                    reqId: 'FOLDER-010',
+                    name: 'Order Creation',
+                    type: 'folder',
+                    children: [
+                      {
+                        id: 'req-004',
+                        name: 'Invoice Generation Automation',
+                        reqId: 'REQ-004',
+                        type: 'Business',
+                        sourceOwner: 'John Smith',
+                        status: 'in-scope',
+                        requirementStatus: 'Completed',
+                        priority: 'High',
+                        createdBy: 'John Smith',
+                        createdOn: '2024-12-20',
+                        phase: 'release',
+                        coverage: 'full',
+                        tasks: [
+                          { id: 't7', title: 'Define billing rules engine', status: 'Completed', assignee: 'Alex Kumar', dueDate: '2025-01-05', priority: 'High' },
+                          { id: 't8', title: 'Implement invoice template', status: 'Completed', assignee: 'Sarah Johnson', dueDate: '2025-01-08', priority: 'Medium' },
+                          { id: 't9', title: 'Integration testing', status: 'Completed', assignee: 'Mike Chen', dueDate: '2025-01-10', priority: 'High' },
+                        ],
+                        testCases: [
+                          { id: 'tc6', title: 'Verify invoice calculation', status: 'Active', executionResult: 'Pass', lastRun: '2025-01-10', tester: 'Mike Chen', assignee: 'Mike Chen', dueDate: '2025-01-12', priority: 'High' },
+                          { id: 'tc7', title: 'Test multi-currency support', status: 'Active', executionResult: 'Pass', lastRun: '2025-01-10', tester: 'Mike Chen', assignee: 'Mike Chen', dueDate: '2025-01-12', priority: 'Medium' },
+                          { id: 'tc8', title: 'Verify PDF generation', status: 'Active', executionResult: 'Pass', lastRun: '2025-01-10', tester: 'Mike Chen', assignee: 'Mike Chen', dueDate: '2025-01-12', priority: 'High' },
+                        ],
+                        issues: [],
+                        signOffs: [
+                          { id: 'so4', role: 'Business Owner', stakeholder: 'Emily Davis', status: 'Approved', date: '2025-01-11', priority: 'High', dueDate: '2025-01-12' },
+                          { id: 'so5', role: 'Technical Lead', stakeholder: 'Alex Kumar', status: 'Approved', date: '2025-01-11', priority: 'High', dueDate: '2025-01-12' },
+                        ],
+                        ctas: [],
+                        meetings: [
+                          { id: 'm4', title: 'Sign-off Meeting', status: 'Completed', organizer: 'John Smith', attendees: ['Emily Davis', 'Alex Kumar'], date: '2025-01-11', dueDate: '2025-01-11', priority: 'High' },
+                        ]
+                      },
+                      {
+                        id: 'req-005',
+                        name: 'Production Planning Module',
+                        reqId: 'REQ-005',
+                        type: 'Business',
+                        sourceOwner: 'Alex Kumar',
+                        status: 'in-scope',
+                        requirementStatus: 'Active',
+                        priority: 'High',
+                        createdBy: 'Alex Kumar',
+                        createdOn: '2025-01-02',
+                        phase: 'build',
+                        coverage: 'partial',
+                        tasks: [
+                          { id: 't10', title: 'Capacity planning algorithm', status: 'Active', assignee: 'Sarah Johnson', dueDate: '2025-01-25', priority: 'High' },
+                          { id: 't11', title: 'Scheduling UI', status: 'New', assignee: 'Sarah Johnson', dueDate: '2025-01-30', priority: 'Medium' },
+                        ],
+                        testCases: [
+                          { id: 'tc9', title: 'Test capacity allocation', status: 'New', assignee: 'Mike Chen', dueDate: '2025-02-01', priority: 'High' },
+                        ],
+                        issues: [
+                          { id: 'i2', title: 'Performance issue with large datasets', severity: 'High', status: 'New', assignee: 'Sarah Johnson', dueDate: '2025-01-28', priority: 'High' },
+                        ],
+                        signOffs: [],
+                        ctas: [
+                          { id: 'cta4', title: 'Define capacity metrics', status: 'New', assignee: 'Alex Kumar', dueDate: '2025-01-15', priority: 'High' },
+                        ],
+                        meetings: []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           },
           {
-            id: 'proc-4',
-            name: 'Demand to Supply',
-            type: 'process',
+            id: 'finance-reqs',
+            reqId: 'FOLDER-011',
+            name: 'Finance Requirements',
+            type: 'folder',
             children: [
-              { id: 'req-cat-5', name: 'Forecast Calculation', type: 'requirement', status: 'in-scope' },
-            ],
-          },
-        ],
-      },
-      {
-        id: 'scope-3',
-        name: 'Record to Report',
-        type: 'scope',
-        children: [
-          {
-            id: 'proc-5',
-            name: 'Financial Closing',
-            type: 'process',
-            children: [
-              { id: 'req-cat-6', name: 'Ledger Reconciliation', type: 'requirement', status: 'in-scope' },
-            ],
-          },
-        ],
-      },
-      {
-        id: 'scope-4',
-        name: 'Hire to Retire',
-        type: 'scope',
-        children: [
-          {
-            id: 'proc-6',
-            name: 'Onboarding',
-            type: 'process',
-            children: [
-              { id: 'req-cat-7', name: 'Document Verification', type: 'requirement', status: 'in-scope' },
-            ],
-          },
-        ],
-      },
-    ],
-  },
+              {
+                id: 'billing',
+                reqId: 'FOLDER-012',
+                name: 'Billing & Invoicing',
+                type: 'folder',
+                children: [
+                  {
+                    id: 'invoice-gen',
+                    reqId: 'FOLDER-013',
+                    name: 'Invoice Generation',
+                    type: 'folder',
+                    children: [
+                      {
+                        id: 'req-006',
+                        name: 'Financial Period Close Process',
+                        reqId: 'REQ-006',
+                        type: 'Business',
+                        sourceOwner: 'Emily Davis',
+                        status: 'in-scope',
+                        requirementStatus: 'Active',
+                        priority: 'High',
+                        createdBy: 'Emily Davis',
+                        createdOn: '2025-01-03',
+                        phase: 'test',
+                        coverage: 'full',
+                        tasks: [
+                          { id: 't12', title: 'Define closing checklist', status: 'Completed', assignee: 'Emily Davis', dueDate: '2025-01-10', priority: 'High' },
+                          { id: 't13', title: 'Implement reconciliation workflow', status: 'Active', assignee: 'Alex Kumar', dueDate: '2025-01-20', priority: 'High' },
+                        ],
+                        testCases: [
+                          { id: 'tc10', title: 'Verify closing procedure sequence', status: 'Active', tester: 'Mike Chen', assignee: 'Mike Chen', dueDate: '2025-01-22', priority: 'High' },
+                          { id: 'tc11', title: 'Test reconciliation matching', status: 'New', assignee: 'Mike Chen', dueDate: '2025-01-25', priority: 'High' },
+                        ],
+                        issues: [
+                          { id: 'i3', title: 'Currency conversion rounding errors', severity: 'Low', status: 'New', assignee: 'Sarah Johnson', dueDate: '2025-01-26', priority: 'Low' },
+                        ],
+                        signOffs: [
+                          { id: 'so6', role: 'Business Owner', stakeholder: 'Emily Davis', status: 'New', priority: 'High', dueDate: '2025-01-20' },
+                        ],
+                        ctas: [],
+                        meetings: [
+                          { id: 'm5', title: 'Requirements Gathering', status: 'Completed', organizer: 'Emily Davis', attendees: ['Finance Team'], date: '2025-01-05', dueDate: '2025-01-05', priority: 'High' },
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 ];
 
 const stakeholders: Stakeholder[] = [

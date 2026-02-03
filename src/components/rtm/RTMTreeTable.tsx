@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   useReactTable,
   getCoreRowModel,
@@ -9,72 +10,204 @@ import {
   createColumnHelper,
   Row,
 } from '@tanstack/react-table';
-import { ChevronRight, ChevronDown, Folder, FileText, Search, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { ChevronRight, ChevronDown, Folder, FileText, Search, ArrowUpDown, ArrowUp, ArrowDown, Filter, X, ExternalLink, ArrowLeft } from 'lucide-react';
 import { NavigationNode } from '@/types/rtm';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { StatusBadge } from './StatusBadge';
+import { StatusBar, StatusSegment } from './StatusBar';
+import { RTMHoverCard } from './HoverCard';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface RTMTreeTableProps {
   data: NavigationNode[];
   onRequirementSelect: (node: NavigationNode) => void;
+  tableView?: 'explorer' | 'trace';
+  onTableViewChange?: (view: 'explorer' | 'trace') => void;
+  onFolderFocus?: (node: NavigationNode) => void;
+  onBackNavigation?: () => void;
+  showBackButton?: boolean;
+  onExpandedChange?: (expanded: any) => void;
+  visibleItemsCount?: number;
 }
 
 interface TableRow extends NavigationNode {
   subRows?: TableRow[];
+  reqId?: string;
 }
 
 const columnHelper = createColumnHelper<TableRow>();
 
-export function RTMTreeTable({ data, onRequirementSelect }: RTMTreeTableProps) {
+// Minimum widths for each column to ensure data visibility
+const MIN_COLUMN_WIDTHS = [
+  300, // Req Title (first)
+  110,  // Req ID (second, reduced)
+  110, // Type
+  130, // Source Owner
+  110, // Priority
+  110, // Status
+  140, // Task
+  140, // Testcase
+  140, // Issues
+  140, // Sign-offs
+  140, // CTA
+  140, // Meetings
+];
+
+export function RTMTreeTable({ data, onRequirementSelect, tableView = 'explorer', onTableViewChange, onFolderFocus, onBackNavigation, showBackButton, onExpandedChange, visibleItemsCount }: RTMTreeTableProps) {
+  const navigate = useNavigate();
   const [expanded, setExpanded] = useState({});
   const [sorting, setSorting] = useState([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const [columnFilters, setColumnFilters] = useState([]);
+  const [colWidths, setColWidths] = useState<number[]>([...MIN_COLUMN_WIDTHS]);
+  const [filters, setFilters] = useState<Record<string, string>>({});
+  const [activeFilterCol, setActiveFilterCol] = useState<number | null>(null);
+  
+  const visibleColumns = [
+    "Req Title", "Req ID", "Type", "Source Owner", "Priority", "Status",
+    "Task", "TESTCASES", "Issues", "Sign-offs", "CTA", "Meetings"
+  ];
 
-  // Badge color utilities
-  const getStatusBadgeProps = (status: string) => {
-    switch (status) {
-      case 'Active': return { variant: 'default' as const, className: 'bg-blue-100 text-blue-800 border-blue-200' };
-      case 'New': return { variant: 'secondary' as const, className: 'bg-green-100 text-green-800 border-green-200' };
-      case 'Completed': return { variant: 'outline' as const, className: 'bg-emerald-100 text-emerald-800 border-emerald-200' };
-      case 'Approved': return { variant: 'outline' as const, className: 'bg-purple-100 text-purple-800 border-purple-200' };
-      default: return { variant: 'secondary' as const, className: 'bg-gray-100 text-gray-800 border-gray-200' };
-    }
+  // Column resize handler
+  const startResize = useCallback((index: number) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    const startX = e.pageX;
+    const startWidth = colWidths[index];
+    const minWidth = MIN_COLUMN_WIDTHS[index];
+
+    const onMouseMove = (e: MouseEvent) => {
+      const newWidth = Math.max(minWidth, startWidth + (e.pageX - startX));
+      setColWidths(prev => {
+        const next = [...prev];
+        next[index] = newWidth;
+        return next;
+      });
+    };
+
+    const onMouseUp = () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  }, [colWidths]);
+
+  // Mock status bar segments for folders (empty)
+  const getEmptySegments = (): StatusSegment[] => [];
+
+  // Get task segments from requirement data
+  const getTaskSegments = (req: any): StatusSegment[] => {
+    if (!req.tasks) return [];
+    const newItem = req.tasks.filter((t: any) => t.status === 'New');
+    const active = req.tasks.filter((t: any) => t.status === 'Active');
+    const completed = req.tasks.filter((t: any) => t.status === 'Completed');
+    const approved = req.tasks.filter((t: any) => t.status === 'Approved');
+
+    return [
+      { label: 'New', count: newItem.length, color: 'gray', items: newItem.map((t: any) => ({ id: t.id, title: t.title, status: `Due: ${t.dueDate}` })) },
+      { label: 'Active', count: active.length, color: 'blue', items: active.map((t: any) => ({ id: t.id, title: t.title, status: `Due: ${t.dueDate}` })) },
+      { label: 'Completed', count: completed.length, color: 'teal', items: completed.map((t: any) => ({ id: t.id, title: t.title, status: `Due: ${t.dueDate}` })) },
+      { label: 'Approved', count: approved.length, color: 'green', items: approved.map((t: any) => ({ id: t.id, title: t.title, status: `Due: ${t.dueDate}` })) },
+    ];
   };
 
-  const getPriorityBadgeProps = (priority: string) => {
-    switch (priority) {
-      case 'High': return { variant: 'destructive' as const, className: 'bg-red-100 text-red-800 border-red-200' };
-      case 'Medium': return { variant: 'default' as const, className: 'bg-yellow-100 text-yellow-800 border-yellow-200' };
-      case 'Low': return { variant: 'outline' as const, className: 'bg-gray-100 text-gray-600 border-gray-200' };
-      default: return { variant: 'secondary' as const, className: 'bg-gray-100 text-gray-800 border-gray-200' };
-    }
+  // Get test case segments from requirement data
+  const getTestCaseSegments = (req: any): StatusSegment[] => {
+    if (!req.testCases) return [];
+    const newItem = req.testCases.filter((tc: any) => tc.status === 'New');
+    const active = req.testCases.filter((tc: any) => tc.status === 'Active');
+    const performed = req.testCases.filter((tc: any) => tc.status === 'performed');
+    const approved = req.testCases.filter((tc: any) => tc.status === 'approved');
+    const defect = req.testCases.filter((tc: any) => tc.status === 'Defect found');
+
+    return [
+      { label: 'New', count: newItem.length, color: 'gray', items: newItem.map((tc: any) => ({ id: tc.id, title: tc.title, status: `Due: ${tc.dueDate}` })) },
+      { label: 'Active', count: active.length, color: 'blue', items: active.map((tc: any) => ({ id: tc.id, title: tc.title, status: `Due: ${tc.dueDate}` })) },
+      { label: 'Performed', count: performed.length, color: 'teal', items: performed.map((tc: any) => ({ id: tc.id, title: tc.title, status: `Due: ${tc.dueDate}` })) },
+      { label: 'Approved', count: approved.length, color: 'green', items: approved.map((tc: any) => ({ id: tc.id, title: tc.title, status: `Due: ${tc.dueDate}` })) },
+      { label: 'Defect', count: defect.length, color: 'purple', items: defect.map((tc: any) => ({ id: tc.id, title: tc.title, status: `Due: ${tc.dueDate}` })) },
+    ];
   };
 
-  const getPhaseBadgeProps = (phase: string) => {
-    switch (phase) {
-      case 'identify': return { variant: 'outline' as const, className: 'bg-slate-100 text-slate-700 border-slate-200' };
-      case 'analyze': return { variant: 'outline' as const, className: 'bg-blue-100 text-blue-700 border-blue-200' };
-      case 'document': return { variant: 'outline' as const, className: 'bg-indigo-100 text-indigo-700 border-indigo-200' };
-      case 'approve': return { variant: 'outline' as const, className: 'bg-purple-100 text-purple-700 border-purple-200' };
-      case 'design': return { variant: 'outline' as const, className: 'bg-pink-100 text-pink-700 border-pink-200' };
-      case 'build': return { variant: 'outline' as const, className: 'bg-orange-100 text-orange-700 border-orange-200' };
-      case 'test': return { variant: 'outline' as const, className: 'bg-yellow-100 text-yellow-700 border-yellow-200' };
-      case 'release': return { variant: 'outline' as const, className: 'bg-green-100 text-green-700 border-green-200' };
-      case 'support': return { variant: 'outline' as const, className: 'bg-teal-100 text-teal-700 border-teal-200' };
-      default: return { variant: 'secondary' as const, className: 'bg-gray-100 text-gray-700 border-gray-200' };
-    }
+  // Get issue segments from requirement data
+  const getIssueSegments = (req: any): StatusSegment[] => {
+    if (!req.issues) return [];
+    const newItem = req.issues.filter((i: any) => i.status === 'New');
+    const active = req.issues.filter((i: any) => i.status === 'Active');
+    const resolved = req.issues.filter((i: any) => i.status === 'Resolved');
+    const approved = req.issues.filter((i: any) => i.status === 'Approved');
+
+    return [
+      { label: 'New', count: newItem.length, color: 'gray', items: newItem.map((i: any) => ({ id: i.id, title: i.title, status: `Due: ${i.dueDate}` })) },
+      { label: 'Active', count: active.length, color: 'blue', items: active.map((i: any) => ({ id: i.id, title: i.title, status: `Due: ${i.dueDate}` })) },
+      { label: 'Resolved', count: resolved.length, color: 'teal', items: resolved.map((i: any) => ({ id: i.id, title: i.title, status: `Due: ${i.dueDate}` })) },
+      { label: 'Approved', count: approved.length, color: 'green', items: approved.map((i: any) => ({ id: i.id, title: i.title, status: `Due: ${i.dueDate}` })) },
+    ];
   };
 
-  const getCoverageBadgeProps = (coverage: string) => {
-    switch (coverage) {
-      case 'full': return { variant: 'default' as const, className: 'bg-emerald-100 text-emerald-800 border-emerald-200' };
-      case 'partial': return { variant: 'outline' as const, className: 'bg-amber-100 text-amber-800 border-amber-200' };
-      case 'none': return { variant: 'secondary' as const, className: 'bg-red-100 text-red-800 border-red-200' };
-      default: return { variant: 'secondary' as const, className: 'bg-gray-100 text-gray-800 border-gray-200' };
-    }
+  // Get sign-off segments from requirement data
+  const getSignOffSegments = (req: any): StatusSegment[] => {
+    if (!req.signOffs) return [];
+    const newItem = req.signOffs.filter((s: any) => s.status === 'New');
+    const active = req.signOffs.filter((s: any) => s.status === 'Active');
+    const approved = req.signOffs.filter((s: any) => s.status === 'Approved');
+    const rejected = req.signOffs.filter((s: any) => s.status === 'Rejected');
+    const completed = req.signOffs.filter((s: any) => s.status === 'Completed');
+
+    return [
+      { label: 'New', count: newItem.length, color: 'gray', items: newItem.map((s: any) => ({ id: s.id, title: s.stakeholder, status: `Due: ${s.dueDate}` })) },
+      { label: 'Active', count: active.length, color: 'blue', items: active.map((s: any) => ({ id: s.id, title: s.stakeholder, status: `Due: ${s.dueDate}` })) },
+      { label: 'Approved', count: approved.length, color: 'teal', items: approved.map((s: any) => ({ id: s.id, title: s.stakeholder, status: `Due: ${s.dueDate}` })) },
+      { label: 'Rejected', count: rejected.length, color: 'red', items: rejected.map((s: any) => ({ id: s.id, title: s.stakeholder, status: `Due: ${s.dueDate}` })) },
+      { label: 'Completed', count: completed.length, color: 'teal', items: completed.map((s: any) => ({ id: s.id, title: s.stakeholder, status: `Due: ${s.dueDate}` })) },
+    ];
+  };
+
+  // Get CTA segments from requirement data
+  const getCTASegments = (req: any): StatusSegment[] => {
+    if (!req.ctas) return [];
+    const newItem = req.ctas.filter((c: any) => c.status === 'New');
+    const active = req.ctas.filter((c: any) => c.status === 'Active');
+    const completed = req.ctas.filter((c: any) => c.status === 'Completed');
+    const pending = req.ctas.filter((c: any) => c.status === 'Pending');
+
+    return [
+      { label: 'New', count: newItem.length, color: 'gray', items: newItem.map((c: any) => ({ id: c.id, title: c.title, status: `Due: ${c.dueDate}` })) },
+      { label: 'Active', count: active.length, color: 'blue', items: active.map((c: any) => ({ id: c.id, title: c.title, status: `Due: ${c.dueDate}` })) },
+      { label: 'Pending', count: pending.length, color: 'orange', items: pending.map((c: any) => ({ id: c.id, title: c.title, status: `Due: ${c.dueDate}` })) },
+      { label: 'Completed', count: completed.length, color: 'teal', items: completed.map((c: any) => ({ id: c.id, title: c.title, status: `Due: ${c.dueDate}` })) },
+    ];
+  };
+
+  // Get meeting segments from requirement data
+  const getMeetingSegments = (req: any): StatusSegment[] => {
+    if (!req.meetings) return [];
+    const scheduled = req.meetings.filter((m: any) => m.status === 'Scheduled');
+    const completed = req.meetings.filter((m: any) => m.status === 'Completed');
+    const cancelled = req.meetings.filter((m: any) => m.status === 'Cancelled');
+    const pending = req.meetings.filter((m: any) => m.status === 'Pending');
+
+    return [
+      { label: 'Scheduled', count: scheduled.length, color: 'blue', items: scheduled.map((m: any) => ({ id: m.id, title: m.title, status: `Due: ${m.dueDate}` })) },
+      { label: 'Pending', count: pending.length, color: 'orange', items: pending.map((m: any) => ({ id: m.id, title: m.title, status: `Due: ${m.dueDate}` })) },
+      { label: 'Completed', count: completed.length, color: 'teal', items: completed.map((m: any) => ({ id: m.id, title: m.title, status: `Due: ${m.dueDate}` })) },
+      { label: 'Cancelled', count: cancelled.length, color: 'red', items: cancelled.map((m: any) => ({ id: m.id, title: m.title, status: `Due: ${m.dueDate}` })) },
+    ];
   };
 
   // Convert NavigationNode to TableRow format
@@ -87,51 +220,169 @@ export function RTMTreeTable({ data, onRequirementSelect }: RTMTreeTableProps) {
 
   const tableData = useMemo(() => convertToTableRows(data), [data]);
 
+  // Header renderer with filters
+  const renderHeader = (label: string, index: number, className: string = '') => {
+    return (
+      <th
+        className={cn("sticky top-0 z-20 bg-muted/90 backdrop-blur-sm border-b border-r border-border px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500", className)}
+        style={{ width: colWidths[index] }}
+      >
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between h-full overflow-hidden group">
+            <span className="truncate">{label}</span>
+            <button
+              onClick={() => setActiveFilterCol(activeFilterCol === index ? null : index)}
+              className={cn(
+                "p-1 rounded hover:bg-slate-200 transition-colors",
+                filters[label] ? "text-primary" : "text-slate-400 opacity-0 group-hover:opacity-100"
+              )}
+            >
+              <Filter className="h-3 w-3" />
+            </button>
+          </div>
+          {activeFilterCol === index && (
+            <div className="relative">
+              <Input
+                autoFocus
+                value={filters[label] || ''}
+                onChange={(e) => setFilters(prev => ({ ...prev, [label]: e.target.value }))}
+                placeholder={`Filter ${label}...`}
+                className="h-7 text-[10px] px-2 py-1 bg-white border-slate-200 focus:ring-1 focus:ring-primary/20"
+              />
+              {filters[label] && (
+                <button
+                  onClick={() => setFilters(prev => {
+                    const next = { ...prev };
+                    delete next[label];
+                    return next;
+                  })}
+                  className="absolute right-2 top-1/2 -translate-y-1/2"
+                >
+                  <X className="h-2.5 w-2.5 text-slate-400 hover:text-slate-600" />
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+        <div
+          className="absolute right-0 top-0 h-full w-1 cursor-col-resize bg-border hover:bg-primary/50 transition-colors"
+          onMouseDown={startResize(index)}
+        />
+      </th>
+    );
+  };
+
   const columns = useMemo(() => [
     columnHelper.accessor('name', {
-      id: 'name',
-      header: 'Name',
+      id: 'title',
+      header: 'Req Title',
       cell: ({ row, getValue }) => {
         const isFolder = row.original.children !== undefined;
         const depth = row.depth;
         
-        return (
-          <div 
-            className="flex items-center gap-2"
-            style={{ paddingLeft: `${depth * 20}px` }}
-          >
-            {isFolder && (
+        if (isFolder) {
+          return (
+            <div 
+              className="flex items-center gap-2 py-1"
+              style={{ paddingLeft: `${depth * 16}px` }}
+            >
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 w-6 p-0"
+                className="h-6 w-6 p-0 hover:bg-blue-50"
                 onClick={row.getToggleExpandedHandler()}
               >
                 {row.getIsExpanded() ? (
-                  <ChevronDown className="h-4 w-4" />
+                  <ChevronDown className="h-4 w-4 text-blue-600" />
                 ) : (
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-4 w-4 text-blue-600" />
                 )}
               </Button>
-            )}
-            {!isFolder && <div className="w-6" />}
-            
-            {isFolder ? (
-              <Folder className="h-4 w-4 text-muted-foreground" />
-            ) : (
-              <FileText className="h-4 w-4 text-muted-foreground" />
-            )}
-            
-            <button
-              className="text-left hover:text-blue-600 transition-colors font-medium truncate"
-              onClick={() => {
-                if (!isFolder) {
-                  onRequirementSelect(row.original);
-                }
-              }}
+              <Folder className="h-4 w-4 text-blue-600" />
+              
+              <span className="text-foreground font-medium text-sm truncate">
+                {getValue()}
+              </span>
+              {onFolderFocus && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-5 w-5 p-0 hover:bg-blue-50 ml-1"
+                  onClick={() => onFolderFocus(row.original)}
+                  title="Focus on this folder"
+                >
+                  <ExternalLink className="!h-3.5 !w-3.5 text-blue-600" />
+                </Button>
+              )}
+            </div>
+          );
+        }
+        
+        return (
+          <div 
+            className="flex flex-col"
+            style={{ paddingLeft: `${depth * 16 + 32}px` }}
+          >
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span
+                    className="text-foreground hover:underline cursor-pointer font-medium text-sm truncate"
+                    onClick={() => navigate(`/requirement/${row.original.reqId || row.original.id}`)}
+                  >
+                    {getValue()}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="max-w-md">
+                  <div className="space-y-2">
+                    <div className="font-semibold">{getValue()}</div>
+                    <div className="text-sm text-muted-foreground">
+                      ID: {row.original.reqId || row.original.id}
+                    </div>
+                    {row.original.description && (
+                      <div className="text-sm">{row.original.description}</div>
+                    )}
+                    {row.original.type && (
+                      <div className="text-sm">Type: {row.original.type}</div>
+                    )}
+                    {row.original.priority && (
+                      <div className="text-sm">Priority: {row.original.priority}</div>
+                    )}
+                    {row.original.requirementStatus && (
+                      <div className="text-sm">Status: {row.original.requirementStatus}</div>
+                    )}
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        );
+      },
+    }),
+    columnHelper.accessor('name', {
+      id: 'reqId',
+      header: 'Req ID',
+      cell: ({ row, getValue }) => {
+        const isFolder = row.original.children !== undefined;
+        
+        if (isFolder) {
+          return (
+            <div className="flex items-center py-1">
+              <span className="text-foreground font-medium text-xs">
+                {row.original.reqId}
+              </span>
+            </div>
+          );
+        }
+        
+        return (
+          <div className="flex items-center">
+            <span
+              className="text-foreground font-medium text-xs hover:underline cursor-pointer"
+              onClick={() => navigate(`/requirement/${row.original.reqId || row.original.id}`)}
             >
-              {getValue()}
-            </button>
+              {row.original.reqId || getValue()}
+            </span>
           </div>
         );
       },
@@ -139,145 +390,225 @@ export function RTMTreeTable({ data, onRequirementSelect }: RTMTreeTableProps) {
     columnHelper.accessor('type', {
       id: 'type',
       header: 'Type',
-      cell: ({ getValue }) => (
-        <Badge variant="outline" className="text-xs">
-          {getValue()}
-        </Badge>
-      ),
-    }),
-    columnHelper.accessor('requirementStatus', {
-      id: 'requirementStatus',
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className="h-8 px-2 font-semibold text-slate-700 hover:bg-slate-100"
-        >
-          Status
-          {column.getIsSorted() === 'asc' ? (
-            <ArrowUp className="ml-2 h-3 w-3" />
-          ) : column.getIsSorted() === 'desc' ? (
-            <ArrowDown className="ml-2 h-3 w-3" />
-          ) : (
-            <ArrowUpDown className="ml-2 h-3 w-3" />
-          )}
-        </Button>
-      ),
-      cell: ({ getValue }) => {
-        const status = getValue();
-        if (!status) return null;
-        const props = getStatusBadgeProps(status);
+      cell: ({ row, getValue }) => {
+        const isFolder = row.original.children !== undefined;
+        if (isFolder) return <div />;
+        
+        const type = getValue();
+        if (!type) return <span className="text-xs text-muted-foreground">-</span>;
+        
+        const typeMap: Record<string, 'info' | 'warning' | 'neutral'> = {
+          'Business': 'info',
+          'Functional': 'warning', 
+          'Technical': 'neutral',
+        };
+        
         return (
-          <Badge {...props} className={cn('text-xs font-medium', props.className)}>
-            {status}
-          </Badge>
+          <div className="flex justify-center">
+            <StatusBadge label={type} type={typeMap[type] || 'neutral'} />
+          </div>
         );
       },
-      filterFn: 'includesString',
+    }),
+    columnHelper.accessor('sourceOwner', {
+      id: 'sourceOwner',
+      header: 'Source Owner',
+      cell: ({ row, getValue }) => {
+        const isFolder = row.original.children !== undefined;
+        if (isFolder) return <div />;
+        return <span className="text-sm">{getValue() || '-'}</span>;
+      },
     }),
     columnHelper.accessor('priority', {
       id: 'priority',
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className="h-8 px-2 font-semibold text-slate-700 hover:bg-slate-100"
-        >
-          Priority
-          {column.getIsSorted() === 'asc' ? (
-            <ArrowUp className="ml-2 h-3 w-3" />
-          ) : column.getIsSorted() === 'desc' ? (
-            <ArrowDown className="ml-2 h-3 w-3" />
-          ) : (
-            <ArrowUpDown className="ml-2 h-3 w-3" />
-          )}
-        </Button>
-      ),
-      cell: ({ getValue }) => {
+      header: 'Priority',
+      cell: ({ row, getValue }) => {
+        const isFolder = row.original.children !== undefined;
+        if (isFolder) return <div />;
+        
         const priority = getValue();
-        if (!priority) return null;
-        const props = getPriorityBadgeProps(priority);
+        if (!priority) return <span className="text-xs text-muted-foreground">-</span>;
+        
+        const priorityMap: Record<string, 'error' | 'warning' | 'success'> = {
+          'High': 'error',
+          'Medium': 'warning',
+          'Low': 'success',
+        };
+        
         return (
-          <Badge {...props} className={cn('text-xs font-medium', props.className)}>
-            {priority}
-          </Badge>
+          <div className="flex justify-center">
+            <StatusBadge label={priority} type={priorityMap[priority] || 'neutral'} />
+          </div>
         );
       },
-      filterFn: 'includesString',
     }),
-    columnHelper.accessor('createdBy', {
-      id: 'createdBy',
-      header: 'Created By',
-      cell: ({ getValue }) => (
-        <span className="text-sm">{getValue() || '-'}</span>
-      ),
-    }),
-    columnHelper.accessor('createdOn', {
-      id: 'createdOn',
-      header: 'Created On',
-      cell: ({ getValue }) => (
-        <span className="text-sm">{getValue() || '-'}</span>
-      ),
-    }),
-    columnHelper.accessor('phase', {
-      id: 'phase',
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className="h-8 px-2 font-semibold text-slate-700 hover:bg-slate-100"
-        >
-          Phase
-          {column.getIsSorted() === 'asc' ? (
-            <ArrowUp className="ml-2 h-3 w-3" />
-          ) : column.getIsSorted() === 'desc' ? (
-            <ArrowDown className="ml-2 h-3 w-3" />
-          ) : (
-            <ArrowUpDown className="ml-2 h-3 w-3" />
-          )}
-        </Button>
-      ),
-      cell: ({ getValue }) => {
-        const phase = getValue();
-        if (!phase) return null;
-        const props = getPhaseBadgeProps(phase);
+    columnHelper.accessor('requirementStatus', {
+      id: 'status',
+      header: 'Status',
+      cell: ({ row, getValue }) => {
+        const isFolder = row.original.children !== undefined;
+        if (isFolder) return <div />;
+        
+        const status = getValue();
+        if (!status) return <span className="text-xs text-muted-foreground">-</span>;
+        
+        const statusMap: Record<string, 'neutral' | 'info' | 'success'> = {
+          'New': 'neutral',
+          'Active': 'info',
+          'Completed': 'success',
+          'Approved': 'success',
+        };
+        
         return (
-          <Badge {...props} className={cn('text-xs font-medium capitalize', props.className)}>
-            {phase}
-          </Badge>
+          <div className="flex justify-center">
+            <StatusBadge label={status} type={statusMap[status] || 'neutral'} />
+          </div>
         );
       },
-      filterFn: 'includesString',
     }),
-    columnHelper.accessor('coverage', {
-      id: 'coverage',
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className="h-8 px-2 font-semibold text-slate-700 hover:bg-slate-100"
-        >
-          Coverage
-          {column.getIsSorted() === 'asc' ? (
-            <ArrowUp className="ml-2 h-3 w-3" />
-          ) : column.getIsSorted() === 'desc' ? (
-            <ArrowDown className="ml-2 h-3 w-3" />
-          ) : (
-            <ArrowUpDown className="ml-2 h-3 w-3" />
-          )}
-        </Button>
-      ),
-      cell: ({ getValue }) => {
-        const coverage = getValue();
-        if (!coverage) return null;
-        const props = getCoverageBadgeProps(coverage);
+    columnHelper.accessor('name', {
+      id: 'task',
+      header: 'Task',
+      cell: ({ row }) => {
+        const isFolder = row.original.children !== undefined;
+        if (isFolder) return <div />;
+        
+        const taskSegments = getTaskSegments(row.original);
+        const total = row.original.tasks?.length || 0;
+        
         return (
-          <Badge {...props} className={cn('text-xs font-medium capitalize', props.className)}>
-            {coverage}
-          </Badge>
+          <div className="overflow-hidden">
+            <StatusBar
+              segments={taskSegments}
+              total={total}
+              title="Tasks"
+              onViewDetails={() => onRequirementSelect(row.original)}
+              reqId={row.original.reqId || row.original.name}
+              reqTitle={row.original.name}
+            />
+          </div>
         );
       },
-      filterFn: 'includesString',
+    }),
+    columnHelper.accessor('name', {
+      id: 'testcases',
+      header: 'TESTCASES',
+      cell: ({ row }) => {
+        const isFolder = row.original.children !== undefined;
+        if (isFolder) return <div />;
+        
+        const testCaseSegments = getTestCaseSegments(row.original);
+        const total = row.original.testCases?.length || 0;
+        
+        return (
+          <div className="overflow-hidden">
+            <StatusBar
+              segments={testCaseSegments}
+              total={total}
+              title="TESTCASES"
+              onViewDetails={() => onRequirementSelect(row.original)}
+              reqId={row.original.reqId || row.original.name}
+              reqTitle={row.original.name}
+            />
+          </div>
+        );
+      },
+    }),
+    columnHelper.accessor('name', {
+      id: 'issues',
+      header: 'Issues',
+      cell: ({ row }) => {
+        const isFolder = row.original.children !== undefined;
+        if (isFolder) return <div />;
+        
+        const issueSegments = getIssueSegments(row.original);
+        const total = row.original.issues?.length || 0;
+        
+        return (
+          <div className="overflow-hidden">
+            <StatusBar
+              segments={issueSegments}
+              total={total}
+              title="Issues"
+              onViewDetails={() => onRequirementSelect(row.original)}
+              reqId={row.original.reqId || row.original.name}
+              reqTitle={row.original.name}
+            />
+          </div>
+        );
+      },
+    }),
+    columnHelper.accessor('name', {
+      id: 'signoffs',
+      header: 'Sign-offs',
+      cell: ({ row }) => {
+        const isFolder = row.original.children !== undefined;
+        if (isFolder) return <div />;
+        
+        const signOffSegments = getSignOffSegments(row.original);
+        const total = row.original.signOffs?.length || 0;
+        
+        return (
+          <div className="overflow-hidden">
+            <StatusBar
+              segments={signOffSegments}
+              total={total}
+              title="Sign-offs"
+              onViewDetails={() => onRequirementSelect(row.original)}
+              reqId={row.original.reqId || row.original.name}
+              reqTitle={row.original.name}
+            />
+          </div>
+        );
+      },
+    }),
+    columnHelper.accessor('name', {
+      id: 'cta',
+      header: 'CTA',
+      cell: ({ row }) => {
+        const isFolder = row.original.children !== undefined;
+        if (isFolder) return <div />;
+        
+        const ctaSegments = getCTASegments(row.original);
+        const total = row.original.ctas?.length || 0;
+        
+        return (
+          <div className="overflow-hidden">
+            <StatusBar
+              segments={ctaSegments}
+              total={total}
+              title="CTA"
+              onViewDetails={() => onRequirementSelect(row.original)}
+              reqId={row.original.reqId || row.original.name}
+              reqTitle={row.original.name}
+            />
+          </div>
+        );
+      },
+    }),
+    columnHelper.accessor('name', {
+      id: 'meetings',
+      header: 'Meetings',
+      cell: ({ row }) => {
+        const isFolder = row.original.children !== undefined;
+        if (isFolder) return <div />;
+        
+        const meetingSegments = getMeetingSegments(row.original);
+        const total = row.original.meetings?.length || 0;
+        
+        return (
+          <div className="overflow-hidden">
+            <StatusBar
+              segments={meetingSegments}
+              total={total}
+              title="Meetings"
+              onViewDetails={() => onRequirementSelect(row.original)}
+              reqId={row.original.reqId || row.original.name}
+              reqTitle={row.original.name}
+            />
+          </div>
+        );
+      },
     }),
   ], [onRequirementSelect]);
 
@@ -290,7 +621,13 @@ export function RTMTreeTable({ data, onRequirementSelect }: RTMTreeTableProps) {
       globalFilter,
       columnFilters,
     },
-    onExpandedChange: setExpanded,
+    onExpandedChange: (updater) => {
+      setExpanded(updater);
+      if (onExpandedChange) {
+        const newExpanded = typeof updater === 'function' ? updater(expanded) : updater;
+        onExpandedChange(newExpanded);
+      }
+    },
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: setColumnFilters,
@@ -303,66 +640,102 @@ export function RTMTreeTable({ data, onRequirementSelect }: RTMTreeTableProps) {
 
   return (
     <div className="w-full h-full flex flex-col bg-background">
-      {/* Search Bar */}
+      {/* Search Bar with View Toggle */}
       <div className="p-4 pb-2 flex-shrink-0">
-        <div className="relative max-w-sm">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-          <Input
-            placeholder="Search requirements..."
-            value={globalFilter ?? ''}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-            className="pl-10 h-9 border-slate-200 focus:border-blue-500 focus:ring-blue-500"
-          />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {showBackButton && onBackNavigation && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-3 gap-2 text-muted-foreground hover:text-foreground border border-muted-foreground/20"
+                onClick={onBackNavigation}
+              >
+                <ArrowLeft className="h-3 w-3" />
+                Back
+              </Button>
+            )}
+            <div className="relative max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="Search requirements..."
+                value={globalFilter ?? ''}
+                onChange={(e) => setGlobalFilter(e.target.value)}
+                className="pl-10 h-9 border-slate-200 focus:border-blue-500 focus:ring-blue-500 w-96"
+              />
+            </div>
+          </div>
+          
+          <div className="flex-1 flex justify-center">
+            <span className="text-sm text-muted-foreground">Showing {visibleItemsCount || table.getRowModel().rows.length} of {data.length} Items</span>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            {onTableViewChange && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 gap-2 border border-muted-foreground/20">
+                    {tableView === 'explorer' ? 'Explorer View' : 'Trace View'}
+                    <ChevronDown className="h-3 w-3" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => onTableViewChange('explorer')}>Explorer View</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => onTableViewChange('trace')}>Trace View</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
         </div>
       </div>
       
       {/* Scrollable Table Container */}
       <div className="flex-1 overflow-auto px-4 pb-4">
-        <div className="rounded-lg border border-border/60 shadow-sm bg-white overflow-hidden">
-          <table className="w-full border-collapse">
-            <thead className="sticky top-0 z-10">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id} className="border-b border-border/40">
-                  {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      className="h-12 px-4 text-left align-middle font-semibold text-slate-700 bg-slate-50/80 first:rounded-tl-lg last:rounded-tr-lg border-r border-border/30 last:border-r-0"
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </th>
-                  ))}
-                </tr>
-              ))}
+        <div className="h-full w-full overflow-auto custom-scrollbar bg-background">
+          <table className="w-full border-collapse bg-background table-fixed border-spacing-0">
+            <thead className="sticky top-0 z-30">
+              <tr className="bg-background">
+                {renderHeader("Req Title", 0, "min-w-[200px]")}
+                {renderHeader("Req ID", 1, "whitespace-nowrap")}
+                {renderHeader("Type", 2, "text-center whitespace-nowrap")}
+                {renderHeader("Source Owner", 3, "whitespace-nowrap")}
+                {renderHeader("Priority", 4, "text-center whitespace-nowrap")}
+                {renderHeader("Status", 5, "text-center whitespace-nowrap")}
+                {renderHeader("Task", 6, "text-center whitespace-nowrap")}
+                {renderHeader("TESTCASES", 7, "text-center min-w-[140px]")}
+                {renderHeader("Issues", 8, "text-center min-w-[100px]")}
+                {renderHeader("Sign-offs", 9, "text-center min-w-[100px]")}
+                {renderHeader("CTA", 10, "text-center min-w-[100px]")}
+                {renderHeader("Meetings", 11, "text-center min-w-[100px]")}
+              </tr>
             </thead>
-            <tbody className="bg-white">
+            <tbody className="divide-y divide-border">
               {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row, index) => (
-                  <tr
-                    key={row.id}
-                    className={cn(
-                      "border-b border-border/20 transition-all duration-200 hover:bg-slate-50/60",
-                      row.getIsSelected() && "bg-blue-50/80",
-                      index % 2 === 0 ? "bg-white" : "bg-slate-50/30"
-                    )}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <td 
-                        key={cell.id} 
-                        className="px-4 py-3 align-middle text-sm border-r border-border/20 last:border-r-0 font-medium text-slate-700"
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-                ))
+                table.getRowModel().rows.map((row, index) => {
+                  const isFolder = row.original.children !== undefined;
+                  return (
+                    <tr
+                      key={row.id}
+                      className={cn(
+                        "transition-all duration-200 hover:bg-muted/30",
+                        row.getIsSelected() && "bg-blue-50/80"
+                      )}
+                    >
+                      {row.getVisibleCells().map((cell, cellIndex) => (
+                        <td 
+                          key={cell.id} 
+                          className="px-4 py-2 align-middle text-sm border-r border-border/20 last:border-r-0 font-medium text-slate-700"
+                          style={{ width: colWidths[cellIndex] }}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
                   <td colSpan={columns.length} className="h-32 text-center text-slate-500 bg-slate-50/30">

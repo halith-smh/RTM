@@ -112,16 +112,16 @@ export const StakeholdersTab = ({ requirementId }: StakeholdersTabProps) => {
                 Stakeholders 
                 <Badge variant="outline" className="ml-1">{data.stakeholders.length}</Badge>
             </h2>
-            <p className="text-sm text-muted-foreground">Team members and their responsibilities</p>
+            <p className="text-sm text-muted-foreground">Team members and their responsibilities in this requirement</p>
           </div>
           
           <div className="flex items-center gap-2">
-              <div className="border rounded-md p-1 bg-muted/30 mr-2 hidden sm:block">
+              {/* <div className="border rounded-md p-1 bg-muted/30 mr-2 hidden sm:block">
                   <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as 'grid'|'list')}>
                       <ToggleGroupItem value="grid" size="sm" className="h-7 px-2"><LayoutGrid className="h-3.5 w-3.5"/></ToggleGroupItem>
                       <ToggleGroupItem value="list" size="sm" className="h-7 px-2"><ListIcon className="h-3.5 w-3.5"/></ToggleGroupItem>
                   </ToggleGroup>
-              </div>
+              </div> */}
               <Button onClick={() => setIsAddModalOpen(true)} size="sm">
                   <Plus className="h-4 w-4 mr-2" /> Add Member
               </Button>
@@ -130,7 +130,7 @@ export const StakeholdersTab = ({ requirementId }: StakeholdersTabProps) => {
 
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
           {/* Main List Area */}
-          <div className="xl:col-span-3 space-y-4">
+          <div className="xl:col-span-4 space-y-4">
               <StakeholderFilters 
                   activeFilters={filters}
                   onSearchChange={(v) => setFilters({...filters, search: v})}
@@ -145,22 +145,6 @@ export const StakeholdersTab = ({ requirementId }: StakeholdersTabProps) => {
                   onRemove={handleRemoveStakeholder}
                   onApprove={handleApprove}
               />
-          </div>
-
-          {/* Right Sidebar */}
-          <div className="xl:col-span-1 space-y-6">
-              {/* Approval Workflow Widget */}
-              {data.approvalWorkflow && (
-                  <ApprovalWorkflowPanel 
-                      workflow={data.approvalWorkflow}
-                      onRequestAll={handleRemindAll}
-                  />
-              )}
-
-              {/* Activity Feed */}
-              <div className="h-[400px]">
-                  <ActivityFeed activities={data.activityFeed} />
-              </div>
           </div>
       </div>
 

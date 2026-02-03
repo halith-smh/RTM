@@ -10,9 +10,7 @@ import { OverviewTab } from '@/components/rtm/OverviewTab';
 import { LinksTab } from '@/components/rtm/LinksTab';
 import { FilesTab } from '@/components/rtm/FilesTab';
 import { DiscussionsPanel } from '@/components/rtm/DiscussionsPanel';
-import { KnowledgeBaseTab } from '@/components/views/detail/KnowledgeBaseTab';
 import { StakeholdersTab } from '@/components/views/detail/StakeholdersTab';
-import HistoryTab from '@/components/rtm/HistoryTab';
 import { requirementsData } from '@/data/mockData';
 
 const RequirementDetail = () => {
@@ -24,7 +22,7 @@ const RequirementDetail = () => {
   const [selectedGroup, setSelectedGroup] = useState('Backend Team');
   const [selectedArea, setSelectedArea] = useState('K4 - Product Development');
   const [activeTab, setActiveTab] = useState('Overview');
-  const tabs = ['Overview', 'Knowledge base', 'Stakeholders', 'Links', 'History', 'Files'];
+  const tabs = ['Overview', 'Stakeholders', 'Links', 'Files'];
   const [tags, setTags] = useState(['High Priority', 'Calendar', 'Integration']);
   
   // Get requirement data for REQ-001
@@ -195,128 +193,123 @@ const RequirementDetail = () => {
                   >
                     Save
                   </Button>
-
-                  {/* More Options */}
-                  {/* <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground">
-                    <MoreVertical className="h-4 w-4" />
-                  </Button> */}
-                </div>
-              </div>
-
-              {/* Third Row with Tab Bar */}
-              <div className="mt-2 p-2 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-6 mb-3">
-                  {/* State */}
-                  <div className="flex items-center gap-2">
-                    <label className="text-xs font-medium text-muted-foreground min-w-fit">State</label>
-                    <Select value={selectedState} onValueChange={setSelectedState}>
-                      <SelectTrigger className="min-w-28 h-7 px-2 py-1 text-sm border-transparent bg-transparent hover:border-border hover:bg-white [&>svg]:hidden focus:border-border focus:bg-white">
-                        <SelectValue asChild>
-                          <div className="flex items-center gap-1">
-                            <div className={`w-2 h-2 rounded-full ${getStateColor(selectedState)}`}></div>
-                            <span className="text-sm">{selectedState}</span>
-                          </div>
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Preparation - Approve...">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                            <span>Preparation - Approve...</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="In Progress">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                            <span>In Progress</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="Completed">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                            <span>Completed</span>
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Process */}
-                  <div className="flex items-center gap-2">
-                    <label className="text-xs font-medium text-muted-foreground min-w-fit">Process</label>
-                    <Select value={selectedProcess} onValueChange={setSelectedProcess}>
-                      <SelectTrigger className="min-w-28 h-7 px-2 py-1 text-sm border-transparent bg-transparent hover:border-border hover:bg-white [&>svg]:hidden focus:border-border focus:bg-white">
-                        <SelectValue className="text-sm" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Development Process">Development Process</SelectItem>
-                        <SelectItem value="Testing Process">Testing Process</SelectItem>
-                        <SelectItem value="Review Process">Review Process</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Group */}
-                  <div className="flex items-center gap-2">
-                    <label className="text-xs font-medium text-muted-foreground min-w-fit">Group</label>
-                    <Select value={selectedGroup} onValueChange={setSelectedGroup}>
-                      <SelectTrigger className="min-w-28 h-7 px-2 py-1 text-sm border-transparent bg-transparent hover:border-border hover:bg-white [&>svg]:hidden focus:border-border focus:bg-white">
-                        <SelectValue className="text-sm" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Backend Team">Backend Team</SelectItem>
-                        <SelectItem value="Frontend Team">Frontend Team</SelectItem>
-                        <SelectItem value="QA Team">QA Team</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                {/* Tab Bar */}
-                <div className="border-b border-gray-300">
-                  <div className="flex gap-0">
-                    {tabs.map((tab) => (
-                      <Button
-                        key={tab}
-                        variant="ghost"
-                        onClick={() => setActiveTab(tab)}
-                        className={`px-3 py-2 text-[14px] font-normal rounded-none border-b-2 transition-colors !bg-transparent hover:!bg-transparent ${activeTab === tab
-                          ? 'border-primary text-primary'
-                          : 'border-transparent text-muted-foreground hover:text-foreground'
-                          }`}
-                      >
-                        {tab}
-                      </Button>
-                    ))}
-                  </div>
                 </div>
               </div>
             </div>
-            {/* Tab Content with Discussions Panel */}
-            <div className="flex" style={{ height: 'calc(100vh - 280px)' }}>
-              {/* Main Tab Content - 75% */}
-              <div className="flex-1 w-[75%] overflow-y-auto">
-                {activeTab === 'Overview' ? (
-                  <OverviewTab requirementId="13061" />
-                ) : activeTab === 'Knowledge base' ? (
-                  <KnowledgeBaseTab requirementId="13061" />
-                ) : activeTab === 'Stakeholders' ? (
-                  <StakeholdersTab requirementId="13061" />
-                ) : activeTab === 'Links' ? (
-                  <LinksTab requirementId="13061" />
-                ) : activeTab === 'Files' ? (
-                  <FilesTab requirementId="13061" />
-                ) : activeTab === 'History' ? (
-                  <HistoryTab requirementId="13061" />
-                ) : (
-                  <div className="flex items-center justify-center p-8">
-                    <span className="text-lg text-muted-foreground">{activeTab} Content</span>
-                  </div>
-                )}
-              </div>
 
-              {/* Discussions Panel - 25% */}
-              <div className="w-[25%] flex-shrink-0 h-full overflow-y-auto border-l border-border">
+            {/* Content with Discussions Panel */}
+            <div className="flex" style={{ height: 'calc(100vh - 150px)' }}>
+              {/* Main Content - Left Side */}
+              <div className="flex-1 flex flex-col">
+                {/* Third Row with Tab Bar */}
+                <div className="mt-2 p-2 bg-gray-50 rounded-lg mx-4">
+                  <div className="flex items-center gap-6 mb-3">
+                    {/* State */}
+                    <div className="flex items-center gap-2">
+                      <label className="text-xs font-medium text-muted-foreground min-w-fit">State</label>
+                      <Select value={selectedState} onValueChange={setSelectedState}>
+                        <SelectTrigger className="min-w-28 h-7 px-2 py-1 text-sm border-transparent bg-transparent hover:border-border hover:bg-white [&>svg]:hidden focus:border-border focus:bg-white">
+                          <SelectValue asChild>
+                            <div className="flex items-center gap-1">
+                              <div className={`w-2 h-2 rounded-full ${getStateColor(selectedState)}`}></div>
+                              <span className="text-sm">{selectedState}</span>
+                            </div>
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Preparation - Approve...">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                              <span>Preparation - Approve...</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="In Progress">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                              <span>In Progress</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="Completed">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                              <span>Completed</span>
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Process */}
+                    <div className="flex items-center gap-2">
+                      <label className="text-xs font-medium text-muted-foreground min-w-fit">Process</label>
+                      <Select value={selectedProcess} onValueChange={setSelectedProcess}>
+                        <SelectTrigger className="min-w-28 h-7 px-2 py-1 text-sm border-transparent bg-transparent hover:border-border hover:bg-white [&>svg]:hidden focus:border-border focus:bg-white">
+                          <SelectValue className="text-sm" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Development Process">Development Process</SelectItem>
+                          <SelectItem value="Testing Process">Testing Process</SelectItem>
+                          <SelectItem value="Review Process">Review Process</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Group */}
+                    <div className="flex items-center gap-2">
+                      <label className="text-xs font-medium text-muted-foreground min-w-fit">Group</label>
+                      <Select value={selectedGroup} onValueChange={setSelectedGroup}>
+                        <SelectTrigger className="min-w-28 h-7 px-2 py-1 text-sm border-transparent bg-transparent hover:border-border hover:bg-white [&>svg]:hidden focus:border-border focus:bg-white">
+                          <SelectValue className="text-sm" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Backend Team">Backend Team</SelectItem>
+                          <SelectItem value="Frontend Team">Frontend Team</SelectItem>
+                          <SelectItem value="QA Team">QA Team</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Tab Bar */}
+                  <div className="border-b border-gray-300">
+                    <div className="flex gap-0">
+                      {tabs.map((tab) => (
+                        <Button
+                          key={tab}
+                          variant="ghost"
+                          onClick={() => setActiveTab(tab)}
+                          className={`px-3 py-2 text-[14px] font-normal rounded-none border-b-2 transition-colors !bg-transparent hover:!bg-transparent ${activeTab === tab
+                            ? 'border-primary text-primary'
+                            : 'border-transparent text-muted-foreground hover:text-foreground'
+                            }`}
+                        >
+                          {tab}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tab Content */}
+                <div className="flex-1 overflow-y-auto">
+                  {activeTab === 'Overview' ? (
+                    <OverviewTab requirementId="13061" />
+                  ) : activeTab === 'Stakeholders' ? (
+                    <StakeholdersTab requirementId="13061" />
+                  ) : activeTab === 'Links' ? (
+                    <LinksTab requirementId="13061" />
+                  ) : activeTab === 'Files' ? (
+                    <FilesTab requirementId="13061" />
+                  ) : (
+                    <div className="flex items-center justify-center p-8">
+                      <span className="text-lg text-muted-foreground">{activeTab} Content</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {/* Discussions Panel - Right Side */}
+              <div className="w-[25%] flex-shrink-0 h-full border-l border-t border-border rounded-[14px]">
                 <DiscussionsPanel requirementId="13061" />
               </div>
             </div>

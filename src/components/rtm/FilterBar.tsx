@@ -25,6 +25,8 @@ interface FilterBarProps {
   onColumnToggle: (column: string) => void;
   tableView?: 'explorer' | 'trace';
   onTableViewChange?: (view: 'explorer' | 'trace') => void;
+  onFolderFilter?: (selectedFolders: string[]) => void;
+  availableFolders?: { id: string; name: string; level: number; path: string }[];
 }
 
 interface FilterOption {
@@ -35,10 +37,22 @@ interface FilterOption {
   width?: string;
 }
 
-export function FilterBar({ onViewChange, onFullscreenToggle, visibleColumns, onColumnToggle, tableView = 'explorer', onTableViewChange }: FilterBarProps) {
+export function FilterBar({ onViewChange, onFullscreenToggle, visibleColumns, onColumnToggle, tableView = 'explorer', onTableViewChange, onFolderFilter, availableFolders = [] }: FilterBarProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showPinMode, setShowPinMode] = useState(false);
+  const [selectedFolders, setSelectedFolders] = useState<string[]>([]);
   const [filters, setFilters] = useState<FilterOption[]>([
+    {
+      id: 'folders',
+      label: 'Folders',
+      options: availableFolders.map(folder => ({
+        value: folder.id,
+        label: `${'  '.repeat(folder.level)}${folder.name}`,
+        count: undefined
+      })),
+      isPinned: true,
+      width: '200px'
+    },
     {
       id: 'search',
       label: 'Requirement ID / Title',
@@ -100,7 +114,7 @@ export function FilterBar({ onViewChange, onFullscreenToggle, visibleColumns, on
         { value: 'integration', label: 'Integration', count: 34 },
         { value: 'workflow', label: 'Workflow', count: 23 }
       ],
-      isPinned: false,
+      isPinned: true,
       width: '180px'
     },
     {
@@ -114,7 +128,7 @@ export function FilterBar({ onViewChange, onFullscreenToggle, visibleColumns, on
         { value: 'missing-test', label: 'Missing Test Cases', count: 29 },
         { value: 'missing-release', label: 'Missing Release Mapping', count: 17 }
       ],
-      isPinned: false,
+      isPinned: true,
       width: '200px'
     },
     {
@@ -234,6 +248,20 @@ export function FilterBar({ onViewChange, onFullscreenToggle, visibleColumns, on
     }
   ]);
 
+  const handleFolderToggle = (folderId: string) => {
+    const newSelection = selectedFolders.includes(folderId)
+      ? selectedFolders.filter(id => id !== folderId)
+      : [...selectedFolders, folderId];
+    
+    setSelectedFolders(newSelection);
+    onFolderFilter?.(newSelection);
+  };
+
+  const clearFolderSelection = () => {
+    setSelectedFolders([]);
+    onFolderFilter?.([]);
+  };
+
   const pinnedFilters = filters.filter(f => f.isPinned);
 
   const togglePin = (filterId: string) => {
@@ -243,16 +271,84 @@ export function FilterBar({ onViewChange, onFullscreenToggle, visibleColumns, on
   };
 
   const renderDropdownFilter = (filter: FilterOption) => {
+    if (filter.id === 'folders') {
+      return (
+        <div key={filter.id} className="flex items-center gap-1">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="h-8 text-sm bg-gray-50/50 border border-black-900/100 hover:border-gray-300 hover:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 shadow-sm hover:shadow-lg transition-all duration-300 rounded-lg justify-start"
+                style={{ width: filter.width }}
+              >
+                <span className="truncate text-muted-foreground">
+                  {selectedFolders.length === 0 
+                    ? 'Select Folders' 
+                    : `${selectedFolders.length} folder${selectedFolders.length > 1 ? 's' : ''} selected`
+                  }
+                </span>
+                <ChevronDown className="h-3 w-3 ml-auto" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-64 max-h-80 overflow-y-auto">
+              <div className="p-2 border-b">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearFolderSelection}
+                  className="h-6 text-xs w-full justify-start"
+                >
+                  <X className="h-3 w-3 mr-1" />
+                  Clear Selection
+                </Button>
+              </div>
+              {availableFolders.map(folder => (
+                <DropdownMenuItem
+                  key={folder.id}
+                  className="flex items-center gap-2 cursor-pointer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleFolderToggle(folder.id);
+                  }}
+                >
+                  <Checkbox
+                    checked={selectedFolders.includes(folder.id)}
+                    className="h-3 w-3"
+                  />
+                  <span className="text-xs" style={{ paddingLeft: `${folder.level * 12}px` }}>
+                    {folder.name}
+                  </span>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {showPinMode && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn(
+                "h-6 w-6 rounded transition-colors",
+                filter.isPinned ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
+              )}
+              onClick={() => togglePin(filter.id)}
+            >
+              <Pin className="h-3 w-3" />
+            </Button>
+          )}
+        </div>
+      );
+    }
+
     if (filter.id === 'search') {
       return (
         <div key={filter.id} className="flex items-center gap-1">
-          <div className="relative">
+          {/* <div className="relative">
             <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search requirements by ID or title..."
               className="h-8 pl-8 pr-3 text-sm border-muted-foreground/20 bg-background hover:border-muted-foreground/40 transition-colors w-80"
             />
-          </div>
+          </div> */}
           {showPinMode && (
             <Button
               variant="ghost"
@@ -274,10 +370,7 @@ export function FilterBar({ onViewChange, onFullscreenToggle, visibleColumns, on
       <div key={filter.id} className="flex items-center gap-1">
         <Select defaultValue={filter.options[0]?.value}>
           <SelectTrigger
-            className={cn(
-              "h-8 text-sm border-muted-foreground/20 bg-background hover:border-muted-foreground/40 transition-colors",
-              `w-[${filter.width}]`
-            )}
+            className="h-8 text-sm bg-gray-50/50 border border-black-900/100 hover:border-gray-300 hover:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 shadow-sm hover:shadow-lg transition-all duration-300 rounded-lg"
             style={{ width: filter.width }}
           >
             <SelectValue placeholder={`Select ${filter.label}`} />
@@ -295,8 +388,8 @@ export function FilterBar({ onViewChange, onFullscreenToggle, visibleColumns, on
             variant="ghost"
             size="icon"
             className={cn(
-              "h-6 w-6 rounded transition-colors",
-              filter.isPinned ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
+              "h-6 w-6 rounded-md bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 shadow-sm hover:shadow-md transition-all duration-200",
+              filter.isPinned ? "bg-blue-50 border-blue-200 text-blue-600" : "text-muted-foreground hover:text-foreground"
             )}
             onClick={() => togglePin(filter.id)}
           >
@@ -361,18 +454,18 @@ export function FilterBar({ onViewChange, onFullscreenToggle, visibleColumns, on
 
   return (
     <div className={cn(
-      "border-b border-border bg-muted/20 px-4 transition-all duration-200",
-      isExpanded ? "pt-2 pb-4" : "pt-3 pb-3"
+      "border-b border-border bg-muted/20 transition-all duration-200",
+      isExpanded ? "pt-2 pb-4 px-4" : "pt-3 pb-3 px-4"
     )}>
       <div className="flex flex-col gap-2">
         {/* Collapsed/Pinned Mode: Dropdown Filters */}
         {!isExpanded && (
           <>
             {/* First Row: Filters and Icon Group */}
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center justify-between gap-4 -ml-4 pl-4">
               {/* Left: Filters */}
-              <div className="flex-1 min-w-0 pl-2">
-                <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
                   {pinnedFilters.map(filter => renderDropdownFilter(filter))}
                 </div>
               </div>
@@ -383,21 +476,21 @@ export function FilterBar({ onViewChange, onFullscreenToggle, visibleColumns, on
               {/* Right: Icon Group - Fixed Position */}
               <div className="flex items-center gap-1 flex-shrink-0">
               <Button
-                  variant="ghost"
-                  size="icon"
-                  className={cn(
-                    "h-8 w-8 rounded bg-muted/50 border border-border hover:bg-muted transition-colors",
-                    showPinMode && "bg-primary/10 border-primary/20"
-                  )}
-                  onClick={() => setShowPinMode(!showPinMode)}
-                  title="Toggle pin mode"
-                >
+                variant="ghost"
+                size="icon"
+                className={cn(
+                  "h-8 w-8 rounded-md bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 shadow-sm hover:shadow-md transition-all duration-200",
+                  showPinMode && "bg-blue-50 border-blue-200 text-blue-600"
+                )}
+                onClick={() => setShowPinMode(!showPinMode)}
+                title="Toggle pin mode"
+              >
                   <Pin className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 rounded bg-muted/50 border border-border hover:bg-muted"
+                  className="h-8 w-8 rounded-md bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 shadow-sm hover:shadow-md transition-all duration-200"
                   onClick={() => setIsExpanded(!isExpanded)}
                   title={isExpanded ? 'Show less filters' : 'Show more filters'}
                 >
@@ -415,7 +508,7 @@ export function FilterBar({ onViewChange, onFullscreenToggle, visibleColumns, on
         {isExpanded && (
           <>
             {/* Header with controls */}
-            <div className="flex items-center justify-between mb-0 pt-2 pl-3">
+            <div className="flex items-center justify-between mb-0 pt-2">
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-medium">Filter Slicers</h3>
               </div>
@@ -424,8 +517,8 @@ export function FilterBar({ onViewChange, onFullscreenToggle, visibleColumns, on
                   variant="ghost"
                   size="icon"
                   className={cn(
-                    "h-8 w-8 rounded bg-muted/50 border border-border hover:bg-muted transition-colors",
-                    showPinMode && "bg-primary/10 border-primary/20"
+                    "h-8 w-8 rounded-md bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 shadow-sm hover:shadow-md transition-all duration-200",
+                    showPinMode && "bg-blue-50 border-blue-200 text-blue-600"
                   )}
                   onClick={() => setShowPinMode(!showPinMode)}
                   title="Toggle pin mode"
@@ -435,7 +528,7 @@ export function FilterBar({ onViewChange, onFullscreenToggle, visibleColumns, on
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 rounded bg-muted/50 border border-border hover:bg-muted"
+                  className="h-8 w-8 rounded-md bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 shadow-sm hover:shadow-md transition-all duration-200"
                   onClick={() => setIsExpanded(false)}
                   title="Collapse filters"
                 >
@@ -445,7 +538,7 @@ export function FilterBar({ onViewChange, onFullscreenToggle, visibleColumns, on
             </div>
 
             {/* Slicers - Single Row Horizontal Scroll */}
-            <div className="mb-4 pl-2">
+            <div className="mb-4 pl-0">
               <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent">
                 {filters.map(filter => (
                   <div key={filter.id} className="flex-shrink-0 w-64">

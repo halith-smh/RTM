@@ -3,20 +3,28 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ArrowLeft, Settings, HelpCircle, Bell, Copy, ChevronDown, X, Plus, User } from 'lucide-react';
+import { ArrowLeft, Settings, HelpCircle, Bell, Copy, ChevronDown, X, Plus, User, Folder, Search } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { OverviewTab } from '@/components/rtm/OverviewTabNew';
 import { DiscussionsPanel } from '@/components/rtm/DiscussionsPanel';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { navigationData } from '@/data/mockData';
 
 const NewRequirement = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [selectedStakeholder, setSelectedStakeholder] = useState('KTern Admin');
-  const [selectedState, setSelectedState] = useState('New');
-  const [selectedProcess, setSelectedProcess] = useState('Development Process');
-  const [selectedGroup, setSelectedGroup] = useState('Backend Team');
+  const [selectedState, setSelectedState] = useState('Identification');
+  const [selectedParent, setSelectedParent] = useState(null);
+  const [parentSearchTerm, setParentSearchTerm] = useState('');
   const [tags, setTags] = useState([]);
+  const [isDiscussionFullscreen, setIsDiscussionFullscreen] = useState(false);
   
   const removeTag = (tagToRemove) => {
     setTags(tags.filter(tag => tag !== tagToRemove));
@@ -32,7 +40,7 @@ const NewRequirement = () => {
 
   const getStateColor = (state) => {
     switch (state) {
-      case 'New':
+      case 'Identification':
         return 'bg-blue-400';
       case 'In Progress':
         return 'bg-yellow-500';
@@ -45,9 +53,27 @@ const NewRequirement = () => {
 
   const breadcrumb = ['MDLP FY25', 'RTM', 'Requirements', 'New Requirement'];
 
+  // Flatten hierarchy for dropdown
+  const flattenHierarchy = (nodes, level = 0, parentPath = '') => {
+    let result = [];
+    nodes.forEach(node => {
+      const currentPath = parentPath ? `${parentPath} / ${node.name}` : node.name;
+      result.push({ ...node, level, path: currentPath });
+      if (node.children) {
+        result = result.concat(flattenHierarchy(node.children, level + 1, currentPath));
+      }
+    });
+    return result;
+  };
+
+  const flatHierarchy = flattenHierarchy(navigationData[0]?.children || []);
+  const filteredHierarchy = flatHierarchy.filter(node => 
+    node.name.toLowerCase().includes(parentSearchTerm.toLowerCase())
+  );
+
   const handleSave = () => {
     // TODO: Save the new requirement
-    console.log('Saving new requirement:', { title, selectedStakeholder, selectedState, selectedProcess, selectedGroup, tags });
+    console.log('Saving new requirement:', { title, selectedStakeholder, selectedState, selectedParent, tags });
     // Navigate back or to the saved requirement
     navigate(-1);
   };
@@ -123,7 +149,7 @@ const NewRequirement = () => {
                 <Input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="flex-1 h-auto px-2 py-1 !text-[17px] !font-normal border-transparent bg-transparent hover:border-border focus:border-border transition-colors"
+                  className="flex-1 h-auto px-2 py-1 !text-[17px] !font-normal border-border bg-transparent hover:border-border focus:border-border transition-colors"
                   style={{ fontSize: '17px', fontWeight: '400' }}
                   placeholder="Enter requirement title"
                 />
@@ -197,100 +223,124 @@ const NewRequirement = () => {
                   </Button>
                 </div>
               </div>
-
-              {/* Third Row with Metadata */}
-              <div className="mt-2 p-2 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-6 mb-3">
-                  {/* State */}
-                  <div className="flex items-center gap-2">
-                    <label className="text-xs font-medium text-muted-foreground min-w-fit">State</label>
-                    <Select value={selectedState} onValueChange={setSelectedState}>
-                      <SelectTrigger className="min-w-28 h-7 px-2 py-1 text-sm border-transparent bg-transparent hover:border-border hover:bg-white [&>svg]:hidden focus:border-border focus:bg-white">
-                        <SelectValue asChild>
-                          <div className="flex items-center gap-1">
-                            <div className={`w-2 h-2 rounded-full ${getStateColor(selectedState)}`}></div>
-                            <span className="text-sm">{selectedState}</span>
-                          </div>
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="New">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                            <span>New</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="In Progress">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                            <span>In Progress</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="Completed">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                            <span>Completed</span>
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Process */}
-                  <div className="flex items-center gap-2">
-                    <label className="text-xs font-medium text-muted-foreground min-w-fit">Process</label>
-                    <Select value={selectedProcess} onValueChange={setSelectedProcess}>
-                      <SelectTrigger className="min-w-28 h-7 px-2 py-1 text-sm border-transparent bg-transparent hover:border-border hover:bg-white [&>svg]:hidden focus:border-border focus:bg-white">
-                        <SelectValue className="text-sm" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Development Process">Development Process</SelectItem>
-                        <SelectItem value="Testing Process">Testing Process</SelectItem>
-                        <SelectItem value="Review Process">Review Process</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Group */}
-                  <div className="flex items-center gap-2">
-                    <label className="text-xs font-medium text-muted-foreground min-w-fit">Group</label>
-                    <Select value={selectedGroup} onValueChange={setSelectedGroup}>
-                      <SelectTrigger className="min-w-28 h-7 px-2 py-1 text-sm border-transparent bg-transparent hover:border-border hover:bg-white [&>svg]:hidden focus:border-border focus:bg-white">
-                        <SelectValue className="text-sm" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Backend Team">Backend Team</SelectItem>
-                        <SelectItem value="Frontend Team">Frontend Team</SelectItem>
-                        <SelectItem value="QA Team">QA Team</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                {/* Tab Bar - Only Overview */}
-                <div className="border-b border-gray-300">
-                  <div className="flex gap-0">
-                    <Button
-                      variant="ghost"
-                      className="px-3 py-2 text-[14px] font-normal rounded-none border-b-2 transition-colors !bg-transparent hover:!bg-transparent border-primary text-primary"
-                    >
-                      Overview
-                    </Button>
-                  </div>
-                </div>
-              </div>
             </div>
 
-            {/* Tab Content with Discussions Panel */}
-            <div className="flex" style={{ height: 'calc(100vh - 280px)' }}>
-              {/* Main Tab Content - 75% */}
-              <div className="flex-1 w-[75%] overflow-y-auto">
-                <OverviewTab requirementId="new" />
-              </div>
+            {/* Content with Discussions Panel */}
+            <div className="flex" style={{ height: 'calc(100vh - 150px)' }}>
+              {/* Main Content - Left Side */}
+              <div className="flex-1 flex flex-col">
+                {/* Third Row with Metadata */}
+                <div className="mt-2 p-2 bg-gray-50 rounded-lg mx-4">
+                  <div className="flex items-center gap-6 mb-3">
+                    {/* State */}
+                    <div className="flex items-center gap-2">
+                      <label className="text-xs font-medium text-muted-foreground min-w-fit">State</label>
+                      <Select value={selectedState} onValueChange={setSelectedState}>
+                        <SelectTrigger className="min-w-28 h-7 px-2 py-1 text-sm border-transparent bg-transparent hover:border-border hover:bg-white [&>svg]:hidden focus:border-border focus:bg-white">
+                          <SelectValue asChild>
+                            <div className="flex items-center gap-1">
+                              <div className={`w-2 h-2 rounded-full ${getStateColor(selectedState)}`}></div>
+                              <span className="text-sm">{selectedState}</span>
+                            </div>
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Identification">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                              <span>Identification</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="In Progress">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                              <span>In Progress</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="Completed">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                              <span>Completed</span>
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-              {/* Discussions Panel - 25% */}
-              <div className="w-[25%] flex-shrink-0 h-full overflow-y-auto border-l border-border">
-                <DiscussionsPanel requirementId="new" />
+                    {/* Parent */}
+                    <div className="flex items-center gap-2">
+                      <label className="text-xs font-medium text-muted-foreground min-w-fit">Parent</label>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="min-w-48 h-7 px-2 py-1 text-sm border-transparent bg-transparent hover:border-border hover:bg-white justify-start"
+                          >
+                            <span className="text-sm truncate">
+                              {selectedParent ? selectedParent.name : 'Select parent'}
+                            </span>
+                            <ChevronDown className="h-3 w-3 ml-auto" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-64 max-h-64 overflow-y-auto">
+                          <div className="p-2 border-b">
+                            <div className="relative">
+                              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
+                              <Input
+                                placeholder="Search folders..."
+                                value={parentSearchTerm}
+                                onChange={(e) => setParentSearchTerm(e.target.value)}
+                                className="h-7 pl-7 text-xs"
+                              />
+                            </div>
+                          </div>
+                          <DropdownMenuItem onClick={() => setSelectedParent(null)}>
+                            <Folder className="h-4 w-4 mr-2" />
+                            Root
+                          </DropdownMenuItem>
+                          {filteredHierarchy.map(node => (
+                            <DropdownMenuItem
+                              key={node.id}
+                              onClick={() => setSelectedParent(node)}
+                              className="flex items-center"
+                            >
+                              <div style={{ paddingLeft: `${node.level * 12}px` }} className="flex items-center">
+                                <Folder className="h-4 w-4 mr-2" />
+                                <span className="truncate">{node.name}</span>
+                              </div>
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
+
+                  {/* Tab Bar - Only Overview */}
+                  <div className="border-b border-gray-300">
+                    <div className="flex gap-0">
+                      <Button
+                        variant="ghost"
+                        className="px-3 py-2 text-[14px] font-normal rounded-none border-b-2 transition-colors !bg-transparent hover:!bg-transparent border-primary text-primary"
+                      >
+                        Overview
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Overview Tab Content */}
+                <div className="flex-1 overflow-y-auto">
+                  <OverviewTab requirementId="new" />
+                </div>
+              </div>
+              
+              {/* Discussions Panel - Right Side */}
+              <div className="w-[25%] flex-shrink-0 h-full border-l border-t border-border rounded-[14px]">
+                <DiscussionsPanel 
+                  requirementId="new" 
+                  isFullscreen={isDiscussionFullscreen}
+                  onToggleFullscreen={() => setIsDiscussionFullscreen(!isDiscussionFullscreen)}
+                />
               </div>
             </div>
           </div>

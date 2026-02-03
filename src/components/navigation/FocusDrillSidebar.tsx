@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
-import { ChevronRight, ArrowLeft, Folder, FileText, Layout, Users, Settings, Plus, FolderPlus, FileTextIcon, MoreVertical } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ChevronRight, ArrowLeft, Folder, FileText, Layout, Users, Settings, Plus, FolderPlus, FileTextIcon, MoreVertical, Upload, PanelLeftClose, PanelLeft } from 'lucide-react';
 import { NavigationNode } from '@/types/rtm';
 import { cn } from '@/lib/utils';
 import {
@@ -18,6 +19,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { AddFolderDialog } from '@/components/dialogs/AddFolderDialog';
 import { AddRequirementDialog } from '@/components/dialogs/AddRequirementDialog';
+import { ImportFromSDDDialog } from '@/components/dialogs/ImportFromSDDDialog';
 
 interface FocusDrillSidebarProps {
   data: NavigationNode[];
@@ -30,6 +32,7 @@ interface FocusDrillSidebarProps {
   onAddRequirement?: (data: any) => void;
   onDataUpdate?: (newData: NavigationNode[]) => void;
   onNavigateToNewRequirement?: () => void;
+  isCollapsed?: boolean;
 }
 
 export function FocusDrillSidebar({
@@ -42,13 +45,16 @@ export function FocusDrillSidebar({
   onAddFolder,
   onAddRequirement,
   onDataUpdate,
-  onNavigateToNewRequirement
+  onNavigateToNewRequirement,
+  isCollapsed = false
 }: FocusDrillSidebarProps) {
+  const navigate = useNavigate();
   const [history, setHistory] = useState<NavigationNode[][]>([data]);
   const [currentPath, setCurrentPath] = useState<NavigationNode[]>([]);
   const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
   const [activeTab, setActiveTab] = useState('process');
   const [showAddFolder, setShowAddFolder] = useState(false);
+  const [showImportSDD, setShowImportSDD] = useState(false);
 
   // Sync internal history with external path changes (e.g. from Finder)
   useEffect(() => {
@@ -158,6 +164,25 @@ export function FocusDrillSidebar({
     onNavigateToNewRequirement?.();
   };
 
+  const handleImportFromSDD = (importData: any) => {
+    // Create parent SDD requirement
+    const parentReq: NavigationNode = {
+      id: `sdd-${Date.now()}`,
+      name: importData.sddTitle,
+      type: 'requirement',
+      status: 'in-scope',
+      children: importData.requirements.map((req: any, index: number) => ({
+        id: `req-${Date.now()}-${index}`,
+        name: req.title,
+        type: 'requirement',
+        status: 'in-scope'
+      }))
+    };
+
+    const updatedData = addNodeToPath([...data], importData.targetFolder, parentReq);
+    onDataUpdate?.(updatedData);
+  };
+
   const addNodeToPath = (rootData: NavigationNode[], path: NavigationNode[], newNode: NavigationNode): NavigationNode[] => {
     if (path.length === 0) {
       return [...rootData, newNode];
@@ -180,26 +205,32 @@ export function FocusDrillSidebar({
         {/* Static Sidebar Title with Toolbar - Always visible */}
         <div className="px-4 pt-4 shrink-0">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-[15px] font-bold text-foreground/90 tracking-tight flex items-center gap-2">
+            <h2 className="text-[14px] font-bold text-foreground/90 tracking-tight flex items-center gap-2">
               Requirements Explorer
             </h2>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="sm" variant="outline" className="h-7 w-7 p-0">
-                  <Plus className="h-3.5 w-3.5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setShowAddFolder(true)}>
-                  <FolderPlus className="mr-2 h-4 w-4" />
-                  Add Folder
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleAddRequirement}>
-                  <FileTextIcon className="mr-2 h-4 w-4" />
-                  Add Requirement
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex items-center gap-1">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="sm" variant="outline" className="h-7 w-7 p-0">
+                    <Plus className="h-3.5 w-3.5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => setShowAddFolder(true)}>
+                    <FolderPlus className="mr-2 h-4 w-4" />
+                    Add Folder
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleAddRequirement}>
+                    <FileTextIcon className="mr-2 h-4 w-4" />
+                    Add Requirement
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setShowImportSDD(true)}>
+                    <Upload className="mr-2 h-4 w-4" />
+                    Import from SDD
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
 
@@ -255,7 +286,14 @@ export function FocusDrillSidebar({
                 )}
               >
                 <button
-                  onClick={() => isFolder ? handleDrillDown(node) : onSelect(node)}
+                  onClick={() => {
+                    if (isFolder) {
+                      handleDrillDown(node);
+                    } else {
+                      onSelect(node);
+                      navigate(`/requirement/${node.id}`);
+                    }
+                  }}
                   className="flex items-center gap-3 min-w-0 flex-1 text-left"
                 >
                   {isFolder ? (
@@ -308,6 +346,12 @@ export function FocusDrillSidebar({
           onOpenChange={setShowAddFolder}
           data={data}
           onSubmit={handleAddFolder}
+        />
+        <ImportFromSDDDialog
+          open={showImportSDD}
+          onOpenChange={setShowImportSDD}
+          data={data}
+          onSubmit={handleImportFromSDD}
         />
       </div>
     </TooltipProvider>

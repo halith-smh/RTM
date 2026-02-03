@@ -4,13 +4,22 @@ import { StatusBadge } from './StatusBadge';
 import { StatusBar, StatusSegment } from './StatusBar';
 import { RTMHoverCard } from './HoverCard';
 import { cn } from '@/lib/utils';
-import { Search, X, Filter } from 'lucide-react';
+import { Search, X, Filter, ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface RTMTableProps {
   requirements: Requirement[];
   onRequirementClick: (req: Requirement, tab?: string) => void;
   visibleColumns?: string[];
+  tableView?: 'explorer' | 'trace';
+  onTableViewChange?: (view: 'explorer' | 'trace') => void;
 }
 
 const priorityMap: Record<Priority, 'error' | 'warning' | 'success'> = {
@@ -143,13 +152,27 @@ function getMeetingSegments(req: Requirement): StatusSegment[] {
 export function RTMTable({ requirements, onRequirementClick, visibleColumns = [
   "Req ID", "Req Title", "Type", "Source Owner", "Priority", "Status",
   "Task", "TESTCASES", "Issues", "Sign-offs", "CTA", "Meetings"
-] }: RTMTableProps) {
+], tableView = 'trace', onTableViewChange }: RTMTableProps) {
   // Initial widths matching the minimums to prevent gaps
   const [colWidths, setColWidths] = useState<number[]>([...MIN_COLUMN_WIDTHS]);
   const [filters, setFilters] = useState<Record<string, string>>({});
   const [activeFilterCol, setActiveFilterCol] = useState<number | null>(null);
+  const [globalFilter, setGlobalFilter] = useState('');
 
   const filteredRequirements = requirements.filter(req => {
+    // Global filter
+    if (globalFilter) {
+      const searchStr = globalFilter.toLowerCase();
+      const matchesGlobal = req.reqId.toLowerCase().includes(searchStr) ||
+                           req.title.toLowerCase().includes(searchStr) ||
+                           req.sourceOwner.toLowerCase().includes(searchStr) ||
+                           req.type.toLowerCase().includes(searchStr) ||
+                           req.priority.toLowerCase().includes(searchStr) ||
+                           req.status.toLowerCase().includes(searchStr);
+      if (!matchesGlobal) return false;
+    }
+    
+    // Column filters
     return Object.entries(filters).every(([key, value]) => {
       if (!value) return true;
       const searchStr = value.toLowerCase();
@@ -242,25 +265,58 @@ export function RTMTable({ requirements, onRequirementClick, visibleColumns = [
   };
 
   return (
-    <div className="h-full w-full overflow-auto custom-scrollbar bg-background">
-      <table className="w-full border-collapse bg-background table-fixed border-spacing-0">
-        <thead className="sticky top-0 z-30">
-          <tr className="bg-background">
-            {renderHeader("Req ID", 0, "whitespace-nowrap")}
-            {renderHeader("Req Title", 1, "min-w-[200px]")}
-            {renderHeader("Type", 2, "text-center whitespace-nowrap")}
-            {renderHeader("Source Owner", 3, "whitespace-nowrap")}
-            {renderHeader("Priority", 4, "text-center whitespace-nowrap")}
-            {renderHeader("Status", 5, "text-center whitespace-nowrap")}
-            {renderHeader("Task", 6, "text-center whitespace-nowrap")}
-            {renderHeader("TESTCASES", 7, "text-center min-w-[140px]")}
-            {renderHeader("Issues", 8, "text-center min-w-[100px]")}
-            {renderHeader("Sign-offs", 9, "text-center min-w-[100px]")}
-            {renderHeader("CTA", 10, "text-center min-w-[100px]")}
-            {renderHeader("Meetings", 11, "text-center min-w-[100px]")}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-border">
+    <div className="w-full h-full flex flex-col bg-background">
+      {/* Search Bar with View Toggle */}
+      <div className="p-4 pb-2 flex-shrink-0">
+        <div className="flex items-center justify-between">
+          <div className="relative max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Input
+              placeholder="Search requirements by title or id"
+              value={globalFilter ?? ''}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+              className="pl-10 h-9 border-slate-200 focus:border-blue-500 focus:ring-blue-500 w-96"
+            />
+          </div>
+          
+          {onTableViewChange && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 gap-2 border border-muted-foreground/20">
+                  {tableView === 'explorer' ? 'Explorer View' : 'Trace View'}
+                  <ChevronDown className="h-3 w-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => onTableViewChange('explorer')}>Explorer View</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onTableViewChange('trace')}>Trace View</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
+      </div>
+      
+      {/* Scrollable Table Container */}
+      <div className="flex-1 overflow-auto px-4 pb-4">
+        <div className="h-full w-full overflow-auto custom-scrollbar bg-background">
+          <table className="w-full border-collapse bg-background table-fixed border-spacing-0">
+            <thead className="sticky top-0 z-30">
+              <tr className="bg-background">
+                {renderHeader("Req ID", 0, "whitespace-nowrap")}
+                {renderHeader("Req Title", 1, "min-w-[200px]")}
+                {renderHeader("Type", 2, "text-center whitespace-nowrap")}
+                {renderHeader("Source Owner", 3, "whitespace-nowrap")}
+                {renderHeader("Priority", 4, "text-center whitespace-nowrap")}
+                {renderHeader("Status", 5, "text-center whitespace-nowrap")}
+                {renderHeader("Task", 6, "text-center whitespace-nowrap")}
+                {renderHeader("TESTCASES", 7, "text-center min-w-[140px]")}
+                {renderHeader("Issues", 8, "text-center min-w-[100px]")}
+                {renderHeader("Sign-offs", 9, "text-center min-w-[100px]")}
+                {renderHeader("CTA", 10, "text-center min-w-[100px]")}
+                {renderHeader("Meetings", 11, "text-center min-w-[100px]")}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
           {filteredRequirements.map((req) => {
             const taskSegments = getTaskSegments(req);
             const executionSegments = getExecutionSegments(req);
@@ -438,8 +494,10 @@ export function RTMTable({ requirements, onRequirementClick, visibleColumns = [
               </tr>
             );
           })}
-        </tbody>
-      </table>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

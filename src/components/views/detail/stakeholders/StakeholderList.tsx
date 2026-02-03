@@ -395,56 +395,49 @@ export const StakeholderList = ({ stakeholders, viewMode, onRemove, onApprove }:
                               const completedTasks = tasks.filter(t => t.completed).length;
                               
                               return (
-                                  <Tooltip key={person.id}>
-                                      <TooltipTrigger asChild>
-                                          <TableRow className="group cursor-pointer hover:bg-muted/50">
-                                              <TableCell>
-                                                  <div className="flex items-center gap-3">
-                                                      <Avatar className="h-8 w-8 border bg-white">
-                                                          <AvatarFallback className="text-[10px] font-bold bg-slate-100">
-                                                              {person.name.split(' ').map(n=>n[0]).join('')}
-                                                          </AvatarFallback>
-                                                      </Avatar>
-                                                      <div>
-                                                          <div className="font-medium text-sm">{person.name}</div>
-                                                          <div className="text-[11px] text-muted-foreground">{person.email}</div>
-                                                      </div>
-                                                  </div>
-                                              </TableCell>
-                                              <TableCell>
-                                                  <div className="text-xs">
-                                                      <div className="font-medium">{person.role}</div>
-                                                      <div className="text-muted-foreground">{person.department}</div>
-                                                  </div>
-                                              </TableCell>
-                                              <TableCell>
-                                                  <Badge variant="outline" className={cn("capitalize font-normal", getInvolvementColor(person.involvementLevel))}>
-                                                      {person.involvementLevel}
-                                                  </Badge>
-                                              </TableCell>
-                                              <TableCell>
-                                                  <div className="flex items-center gap-2">
-                                                      <span className="text-xs font-medium">{completedTasks}/{tasks.length}</span>
-                                                      <div className="w-16 bg-muted rounded-full h-1">
-                                                          <div 
-                                                              className="bg-primary h-1 rounded-full transition-all" 
-                                                              style={{ width: `${(completedTasks / tasks.length) * 100}%` }}
-                                                          />
-                                                      </div>
-                                                  </div>
-                                              </TableCell>
-                                              <TableCell>
-                                                  <ApprovalStatusBadge status={person.approvalStatus} />
-                                              </TableCell>
-                                              <TableCell>
-                                                  <ActionsMenu stakeholder={person} />
-                                              </TableCell>
-                                          </TableRow>
-                                      </TooltipTrigger>
-                                      <TooltipContent side="right" className="p-0 border-0 shadow-none bg-transparent">
-                                          <TaskTooltip stakeholder={person} />
-                                      </TooltipContent>
-                                  </Tooltip>
+                                  <TableRow key={person.id} className="group cursor-pointer hover:bg-muted/50">
+                                      <TableCell>
+                                          <div className="flex items-center gap-3">
+                                              <Avatar className="h-8 w-8 border bg-white">
+                                                  <AvatarFallback className="text-[10px] font-bold bg-slate-100">
+                                                      {person.name.split(' ').map(n=>n[0]).join('')}
+                                                  </AvatarFallback>
+                                              </Avatar>
+                                              <div>
+                                                  <div className="font-medium text-sm">{person.name}</div>
+                                                  <div className="text-[11px] text-muted-foreground">{person.email}</div>
+                                              </div>
+                                          </div>
+                                      </TableCell>
+                                      <TableCell>
+                                          <div className="text-xs">
+                                              <div className="font-medium">{person.role}</div>
+                                              <div className="text-muted-foreground">{person.department}</div>
+                                          </div>
+                                      </TableCell>
+                                      <TableCell>
+                                          <Badge variant="outline" className={cn("capitalize font-normal", getInvolvementColor(person.involvementLevel))}>
+                                              {person.involvementLevel}
+                                          </Badge>
+                                      </TableCell>
+                                      <TableCell>
+                                          <div className="flex items-center gap-2">
+                                              <span className="text-xs font-medium">{completedTasks}/{tasks.length}</span>
+                                              <div className="w-16 bg-muted rounded-full h-1">
+                                                  <div 
+                                                      className="bg-primary h-1 rounded-full transition-all" 
+                                                      style={{ width: `${(completedTasks / tasks.length) * 100}%` }}
+                                                  />
+                                              </div>
+                                          </div>
+                                      </TableCell>
+                                      <TableCell>
+                                          <ApprovalStatusBadge status={person.approvalStatus} />
+                                      </TableCell>
+                                      <TableCell>
+                                          <ActionsMenu stakeholder={person} />
+                                      </TableCell>
+                                  </TableRow>
                               );
                           })}
                       </TableBody>

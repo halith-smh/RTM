@@ -113,7 +113,7 @@ export function KPIDashboard() {
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
             <span>Live</span>
           </div>
-          <span>597 Total Items</span>
+          <span>247 Total Items</span>
         </div>
       </div>
 
@@ -154,7 +154,7 @@ export function KPIDashboard() {
         })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Coverage Metrics */}
         <Card className="transform transition-all duration-500 hover:shadow-lg">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -251,67 +251,7 @@ export function KPIDashboard() {
           </CardContent>
         </Card>
 
-        {/* Work Item Types Pie Chart */}
-        <Card className="transform transition-all duration-500 hover:shadow-lg">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              Work Item Types
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex items-center gap-6">
-            {/* Pie Chart */}
-            <div className="relative w-32 h-32">
-              <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" strokeWidth="8" />
-                {/* Process - Red */}
-                <circle 
-                  cx="50" cy="50" r="40" fill="none" 
-                  stroke="#dc2626" strokeWidth="8"
-                  strokeDasharray={`${isVisible ? 30 : 0} 251.2`}
-                  strokeDashoffset="0"
-                  className="transition-all duration-1000 ease-out"
-                  style={{ transitionDelay: '800ms' }}
-                />
-                {/* Task - Red */}
-                <circle 
-                  cx="50" cy="50" r="40" fill="none" 
-                  stroke="#dc2626" strokeWidth="8"
-                  strokeDasharray={`${isVisible ? 20 : 0} 251.2`}
-                  strokeDashoffset={`-${isVisible ? 180 : 0}`}
-                  className="transition-all duration-1000 ease-out"
-                  style={{ transitionDelay: '1400ms' }}
-                />
-                {/* Other items - Gray */}
-                <circle 
-                  cx="50" cy="50" r="40" fill="none" 
-                  stroke="#9ca3af" strokeWidth="8"
-                  strokeDasharray={`${isVisible ? 150 : 0} 251.2`}
-                  strokeDashoffset={`-${isVisible ? 30 : 0}`}
-                  className="transition-all duration-1000 ease-out"
-                  style={{ transitionDelay: '1000ms' }}
-                />
-              </svg>
-            </div>
-            {/* Legend */}
-            <div className="space-y-2 text-sm">
-              {[
-                { label: 'Process', color: 'bg-red-600' },
-                { label: 'Requirement', color: 'bg-gray-400' },
-                { label: 'Feature', color: 'bg-gray-400' },
-                { label: 'User Story', color: 'bg-gray-400' },
-                { label: 'Test Case', color: 'bg-gray-400' },
-                { label: 'Defect', color: 'bg-gray-400' },
-                { label: 'Task', color: 'bg-red-600' }
-              ].map((item) => (
-                <div key={item.label} className="flex items-center gap-2">
-                  <div className={`w-3 h-3 rounded-sm ${item.color}`} />
-                  <span className="text-xs text-muted-foreground">{item.label}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+
       </div>
     </div>
   );
