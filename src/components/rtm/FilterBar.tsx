@@ -53,13 +53,13 @@ export function FilterBar({ onViewChange, onFullscreenToggle, visibleColumns, on
       isPinned: true,
       width: '200px'
     },
-    {
-      id: 'search',
-      label: 'Requirement ID / Title',
-      options: [],
-      isPinned: true,
-      width: '220px'
-    },
+    // {
+    //   id: 'search',
+    //   label: 'Requirement ID / Title',
+    //   options: [],
+    //   isPinned: true,
+    //   width: '220px'
+    // },
     {
       id: 'lifecycle-phase',
       label: 'Lifecycle Stage',

@@ -16,7 +16,9 @@ import {
   Code,
   TestTube,
   Bug,
-  Rocket
+  Rocket,
+  Calendar,
+  CheckSquare
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -28,6 +30,7 @@ interface LinkItem {
   id: string;
   title: string;
   type: string;
+  workitemType: 'Tasks' | 'Test cases' | 'Issues' | 'Signoffs' | 'Meetings' | 'Requirements';
   status: 'active' | 'in-progress' | 'missing' | 'broken' | 'changed';
   priority: 'critical' | 'high' | 'medium' | 'low';
   owner: string;
@@ -40,6 +43,7 @@ const mockUpstreamLinks: LinkItem[] = [
     id: 'BR-001',
     title: 'Calendar Integration Business Requirement',
     type: 'Business Requirement',
+    workitemType: 'Requirements',
     status: 'active',
     priority: 'critical',
     owner: 'John Smith',
@@ -47,24 +51,24 @@ const mockUpstreamLinks: LinkItem[] = [
     riskLevel: 'low'
   },
   {
-    id: 'EPIC-045',
-    title: 'Outlook Calendar Enhancement Epic',
-    type: 'Epic',
-    status: 'in-progress',
+    id: 'TASK-123',
+    title: 'API Integration Planning Task',
+    type: 'Task',
+    workitemType: 'Tasks',
+    status: 'active',
     priority: 'high',
-    owner: 'Sarah Johnson',
-    lastModified: '2025-01-09',
-    riskLevel: 'medium'
+    owner: 'Mike Davis',
+    lastModified: '2025-01-08'
   },
   {
-    id: 'REG-012',
-    title: 'Data Privacy Compliance Requirement',
-    type: 'Regulatory Input',
-    status: 'changed',
-    priority: 'critical',
-    owner: 'Mike Davis',
-    lastModified: '2025-01-08',
-    riskLevel: 'high'
+    id: 'MEET-456',
+    title: 'Requirements Review Meeting',
+    type: 'Meeting',
+    workitemType: 'Meetings',
+    status: 'active',
+    priority: 'medium',
+    owner: 'Lisa Wilson',
+    lastModified: '2025-01-07'
   }
 ];
 
@@ -72,16 +76,18 @@ const mockDownstreamLinks: LinkItem[] = [
   {
     id: 'FS-089',
     title: 'Calendar Event Creation Functional Spec',
-    type: 'Functional Specification',
+    type: 'Functional Requirement',
+    workitemType: 'Requirements',
     status: 'active',
     priority: 'high',
     owner: 'Alice Brown',
     lastModified: '2025-01-11'
   },
   {
-    id: 'TD-156',
-    title: 'Outlook API Integration Design',
-    type: 'Technical Design',
+    id: 'TASK-234',
+    title: 'Implement Calendar API Integration',
+    type: 'Development Task',
+    workitemType: 'Tasks',
     status: 'in-progress',
     priority: 'high',
     owner: 'Bob Wilson',
@@ -91,6 +97,7 @@ const mockDownstreamLinks: LinkItem[] = [
     id: 'TC-234',
     title: 'Calendar Blocking Test Cases',
     type: 'Test Case',
+    workitemType: 'Test cases',
     status: 'missing',
     priority: 'medium',
     owner: 'Lisa Chen',
@@ -98,14 +105,35 @@ const mockDownstreamLinks: LinkItem[] = [
     riskLevel: 'medium'
   },
   {
-    id: 'DEF-078',
-    title: 'Calendar Sync Failure Defect',
-    type: 'Defect',
+    id: 'BUG-078',
+    title: 'Calendar Sync Failure Issue',
+    type: 'Bug',
+    workitemType: 'Issues',
     status: 'broken',
     priority: 'critical',
     owner: 'Tom Anderson',
     lastModified: '2025-01-12',
     riskLevel: 'high'
+  },
+  {
+    id: 'SIGN-045',
+    title: 'Security Review Signoff',
+    type: 'Approval',
+    workitemType: 'Signoffs',
+    status: 'in-progress',
+    priority: 'high',
+    owner: 'David Gray',
+    lastModified: '2025-01-09'
+  },
+  {
+    id: 'MEET-789',
+    title: 'Implementation Planning Meeting',
+    type: 'Meeting',
+    workitemType: 'Meetings',
+    status: 'active',
+    priority: 'medium',
+    owner: 'Emma White',
+    lastModified: '2025-01-08'
   }
 ];
 
@@ -130,6 +158,18 @@ export const LinksTab = ({ requirementId }: LinksTabProps) => {
       case 'test case': return <TestTube className="h-3 w-3" />;
       case 'defect': return <Bug className="h-3 w-3" />;
       case 'deployment': return <Rocket className="h-3 w-3" />;
+      default: return <FileText className="h-3 w-3" />;
+    }
+  };
+
+  const getWorkitemTypeIcon = (workitemType: string) => {
+    switch (workitemType) {
+      case 'Tasks': return <CheckSquare className="h-3 w-3" />;
+      case 'Test cases': return <TestTube className="h-3 w-3" />;
+      case 'Issues': return <Bug className="h-3 w-3" />;
+      case 'Signoffs': return <CheckCircle className="h-3 w-3" />;
+      case 'Meetings': return <Calendar className="h-3 w-3" />;
+      case 'Requirements': return <FileText className="h-3 w-3" />;
       default: return <FileText className="h-3 w-3" />;
     }
   };
@@ -176,9 +216,35 @@ export const LinksTab = ({ requirementId }: LinksTabProps) => {
     </div>
   );
 
+  const renderWorkitemTypeSection = (workitemType: string, links: LinkItem[], parentTitle: string) => {
+    if (links.length === 0) return null;
+    
+    return (
+      <div className="mb-4">
+        <div className="flex items-center gap-2 mb-2 px-3 py-2 bg-muted/30 rounded">
+          {getWorkitemTypeIcon(workitemType)}
+          <h4 className="text-sm font-medium text-foreground">{workitemType}</h4>
+          <Badge variant="secondary" className="text-xs h-4">
+            {links.length}
+          </Badge>
+        </div>
+        <div className="bg-white border border-border rounded-lg">
+          {links.map(renderLinkItem)}
+        </div>
+      </div>
+    );
+  };
+
   const renderSection = (title: string, links: LinkItem[], icon: React.ReactNode, description: string) => {
-    const riskCount = links.filter(link => link.riskLevel === 'high').length;
-    const issueCount = links.filter(link => link.status === 'missing' || link.status === 'broken').length;
+    const groupedLinks = links.reduce((acc, link) => {
+      if (!acc[link.workitemType]) {
+        acc[link.workitemType] = [];
+      }
+      acc[link.workitemType].push(link);
+      return acc;
+    }, {} as Record<string, LinkItem[]>);
+
+    const workitemTypes = ['Requirements', 'Tasks', 'Test cases', 'Issues', 'Signoffs', 'Meetings'];
 
     return (
       <div className="space-y-3 pt-4">
@@ -189,20 +255,6 @@ export const LinksTab = ({ requirementId }: LinksTabProps) => {
             <Badge variant="secondary" className="text-xs h-5">
               {links.length}
             </Badge>
-            {(riskCount > 0 || issueCount > 0) && (
-              <div className="flex items-center gap-1">
-                {riskCount > 0 && (
-                  <Badge variant="destructive" className="text-xs h-5">
-                    {riskCount} risk
-                  </Badge>
-                )}
-                {issueCount > 0 && (
-                  <Badge variant="outline" className="text-xs h-5 border-yellow-500 text-yellow-700">
-                    {issueCount} issues
-                  </Badge>
-                )}
-              </div>
-            )}
           </div>
           <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
             <Plus className="h-3 w-3 mr-1" />
@@ -212,13 +264,17 @@ export const LinksTab = ({ requirementId }: LinksTabProps) => {
         
         <p className="text-xs text-muted-foreground">{description}</p>
         
-        <div className="bg-white border border-border rounded-lg">
+        <div className="space-y-4">
           {links.length > 0 ? (
-            links.map(renderLinkItem)
+            workitemTypes.map(workitemType => 
+              renderWorkitemTypeSection(workitemType, groupedLinks[workitemType] || [], title)
+            )
           ) : (
-            <div className="text-center py-6 text-muted-foreground">
-              <FileText className="h-8 w-8 mx-auto mb-2 opacity-50" />
-              <p className="text-xs">No {title.toLowerCase()} found</p>
+            <div className="bg-white border border-border rounded-lg">
+              <div className="text-center py-6 text-muted-foreground">
+                <FileText className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <p className="text-xs">No {title.toLowerCase()} found</p>
+              </div>
             </div>
           )}
         </div>
