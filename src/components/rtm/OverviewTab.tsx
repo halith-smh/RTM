@@ -75,6 +75,8 @@ When users create calendar events from within SAP applications (such as scheduli
 - Support ticket reduction: 80% decrease in calendar-related issues
 - System response time: <2 seconds for calendar operations
 - User satisfaction score: >4.5/5.0 in post-implementation survey`);
+  const [originalDescription, setOriginalDescription] = useState('');
+  const [originalExpectedOutcome, setOriginalExpectedOutcome] = useState('');
   const [definedRequirement, setDefinedRequirement] = useState('');
   const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
   const [sourceOwner, setSourceOwner] = useState('');
@@ -86,7 +88,9 @@ When users create calendar events from within SAP applications (such as scheduli
   const [documentGenerated, setDocumentGenerated] = useState(false);
   const [isGeneratingDoc, setIsGeneratingDoc] = useState(false);
   const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({});
-  const [collapsedSections, setCollapsedSections] = useState<{ [key: string]: boolean }>({});
+  const [collapsedSections, setCollapsedSections] = useState<{ [key: string]: boolean }>({
+    originalContent: true // Start with original content collapsed
+  });
 
   const lifecycleStages = [
     { id: 'identification', name: 'Identification', icon: FileText, status: 'completed' },
@@ -116,8 +120,14 @@ When users create calendar events from within SAP applications (such as scheduli
   };
 
   const handleProceedWithAnalysis = () => {
+    // Store original values before replacing
+    setOriginalDescription(description);
+    setOriginalExpectedOutcome(expectedOutcome);
+    
+    // Replace with analyzed content
     setDescription(definedRequirement);
     setExpectedOutcome(acceptanceCriteria);
+    
     setIsAnalystMode(false);
     setHasAnalystData(true);
     // Mock: Set current user as analyst
@@ -237,35 +247,71 @@ When users create calendar events from within SAP applications (such as scheduli
             {/* Main Content - Description & Expected Outcome */}
             {!isAnalystMode && (
               <>
+                {/* Original Content - Collapsed when analyzed */}
+                {hasAnalystData && (
+                  <div className="mb-6 p-3 bg-muted/20 rounded-lg border border-dashed">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm font-medium text-muted-foreground">Original Submission</Label>
+                        <Badge variant="outline" className="text-xs bg-gray-50 text-gray-600 border-gray-300">
+                          Author Input
+                        </Badge>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground"
+                        onClick={() => toggleCollapse('originalContent')}
+                      >
+                        {collapsedSections.originalContent ? 'Show Original' : 'Hide Original'}
+                        {collapsedSections.originalContent ? <ChevronDown className="h-3 w-3 ml-1" /> : <ChevronUp className="h-3 w-3 ml-1" />}
+                      </Button>
+                    </div>
+                    
+                    {!collapsedSections.originalContent && (
+                      <div className="space-y-4">
+                        <div>
+                          <Label className="text-sm font-medium text-foreground mb-2 block">Original Description</Label>
+                          <div className="p-3 bg-white rounded border text-sm text-muted-foreground max-h-32 overflow-y-auto">
+                            <div dangerouslySetInnerHTML={{ __html: originalDescription.replace(/\n/g, '<br>') }} />
+                          </div>
+                        </div>
+                        <div>
+                          <Label className="text-sm font-medium text-foreground mb-2 block">Original Defined Output</Label>
+                          <div className="p-3 bg-white rounded border text-sm text-muted-foreground max-h-32 overflow-y-auto">
+                            <div dangerouslySetInnerHTML={{ __html: originalExpectedOutcome.replace(/\n/g, '<br>') }} />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Current Content */}
                 {/* Description Section */}
                 <div className={`mb-6 ${expandedSections.description ? 'fixed inset-0 z-50 bg-white p-4' : ''}`}>
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
-                      <Label className="text-base font-medium text-foreground">Description</Label>
+                      <Label className="text-base font-medium text-foreground">{hasAnalystData ? 'Defined Requirement' : 'Description'}</Label>
                       {hasAnalystData && (
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <div className="flex items-center gap-1 cursor-help">
                                 <Badge variant="secondary" className="text-xs bg-green-50 text-green-700 border-green-200">
-                                  Reviewed
+                                  Analyzed
                                 </Badge>
                                 <Info className="h-3 w-3 text-muted-foreground" />
                               </div>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>Reviewed by {analystInfo.name} on {analystInfo.date}</p>
+                              <p>Analyzed by {analystInfo.name} on {analystInfo.date}</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
                       )}
                     </div>
                     <div className="flex items-center gap-1">
-                      {hasAnalystData && (
-                        <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-foreground" title="View Original">
-                          <History className="h-3 w-3" />
-                        </Button>
-                      )}
                       <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-foreground" onClick={() => toggleExpand('description')}>
                         <Maximize2 className="h-3 w-3" />
                       </Button>
@@ -294,24 +340,19 @@ When users create calendar events from within SAP applications (such as scheduli
                             <TooltipTrigger asChild>
                               <div className="flex items-center gap-1 cursor-help">
                                 <Badge variant="secondary" className="text-xs bg-green-50 text-green-700 border-green-200">
-                                  Reviewed
+                                  Analyzed
                                 </Badge>
                                 <Info className="h-3 w-3 text-muted-foreground" />
                               </div>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>Reviewed by {analystInfo.name} on {analystInfo.date}</p>
+                              <p>Analyzed by {analystInfo.name} on {analystInfo.date}</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
                       )}
                     </div>
                     <div className="flex items-center gap-1">
-                      {hasAnalystData && (
-                        <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-foreground" title="View Original">
-                          <History className="h-3 w-3" />
-                        </Button>
-                      )}
                       <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-foreground" onClick={() => toggleExpand('expectedOutcome')}>
                         <Maximize2 className="h-3 w-3" />
                       </Button>
