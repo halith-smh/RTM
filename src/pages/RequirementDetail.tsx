@@ -11,20 +11,23 @@ import { LinksTab } from '@/components/rtm/LinksTab';
 import { FilesTab } from '@/components/rtm/FilesTab';
 import { DiscussionsPanel } from '@/components/rtm/DiscussionsPanel';
 import { StakeholdersTab } from '@/components/views/detail/StakeholdersTab';
+import { LifecycleTracker } from '@/components/rtm/LifecycleTracker';
 import { requirementsData, navigationData } from '@/data/mockData';
+import { requirementLifecycleStages, requirementStatuses } from '@/data/lifecycleData';
 
 const RequirementDetail = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState('Calendar and Events - Outlook calendar is not getting blocked when events are created from application');
   const [selectedStakeholder, setSelectedStakeholder] = useState('John Smith');
-  const [selectedState, setSelectedState] = useState('Preparation - Approve...');
+  const [selectedState, setSelectedState] = useState('Analysis Active');
   const [selectedParent, setSelectedParent] = useState('System Requirements');
   const [parentSearchTerm, setParentSearchTerm] = useState('');
   const [selectedArea, setSelectedArea] = useState('K4 - Product Development');
   const [activeTab, setActiveTab] = useState('Overview');
-  const tabs = ['Overview', 'Stakeholders', 'Links', 'Files'];
+  const tabs = ['Overview', 'Traces', 'Stakeholders', 'Files'];
   const [tags, setTags] = useState(['High Priority', 'Calendar', 'Integration']);
-  
+  const [isLinkSheetOpen, setIsLinkSheetOpen] = useState(false);
+
   // Get requirement data for REQ-001
   const currentRequirement = requirementsData.find(req => req.reqId === 'REQ-001');
   const removeTag = (tagToRemove) => {
@@ -37,16 +40,8 @@ const RequirementDetail = () => {
     { name: 'Lisa Wilson', initials: 'LW' }
   ];
   const getStateColor = (state) => {
-    switch (state) {
-      case 'Preparation - Approve...':
-        return 'bg-yellow-400';
-      case 'In Progress':
-        return 'bg-blue-500';
-      case 'Completed':
-        return 'bg-green-500';
-      default:
-        return 'bg-gray-400';
-    }
+    const statusObj = requirementStatuses.find(s => s.status === state);
+    return statusObj ? statusObj.color : '#6c8893';
   };
   const breadcrumb = ['MDLP FY25', 'RTM', 'Requirements', 'REQ-001'];
 
@@ -64,7 +59,7 @@ const RequirementDetail = () => {
   };
 
   const flatHierarchy = flattenHierarchy(navigationData[0]?.children || []);
-  const filteredHierarchy = flatHierarchy.filter(node => 
+  const filteredHierarchy = flatHierarchy.filter(node =>
     node.name.toLowerCase().includes(parentSearchTerm.toLowerCase())
   );
 
@@ -229,30 +224,29 @@ const RequirementDetail = () => {
                         <SelectTrigger className="min-w-28 h-7 px-2 py-1 text-sm border-transparent bg-transparent hover:border-border hover:bg-white [&>svg]:hidden focus:border-border focus:bg-white">
                           <SelectValue asChild>
                             <div className="flex items-center gap-1">
-                              <div className={`w-2 h-2 rounded-full ${getStateColor(selectedState)}`}></div>
+                              <div
+                                className="w-2 h-2 rounded-full"
+                                style={{ backgroundColor: getStateColor(selectedState) }}
+                              ></div>
                               <span className="text-sm">{selectedState}</span>
                             </div>
                           </SelectValue>
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Preparation - Approve...">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                              <span>Preparation - Approve...</span>
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="In Progress">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                              <span>In Progress</span>
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="Completed">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              <span>Completed</span>
-                            </div>
-                          </SelectItem>
+                          {requirementStatuses
+                            .filter(s => s.active)
+                            .sort((a, b) => a.order - b.order)
+                            .map(status => (
+                              <SelectItem key={status._id} value={status.status}>
+                                <div className="flex items-center gap-2">
+                                  <div
+                                    className="w-2 h-2 rounded-full"
+                                    style={{ backgroundColor: status.color }}
+                                  ></div>
+                                  <span>{status.status}</span>
+                                </div>
+                              </SelectItem>
+                            ))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -298,7 +292,7 @@ const RequirementDetail = () => {
                   </div>
 
                   {/* Tab Bar */}
-                  <div className="border-b border-gray-300">
+                  <div className="border-b border-gray-300 flex items-center justify-between pr-2">
                     <div className="flex gap-0">
                       {tabs.map((tab) => (
                         <Button
@@ -314,8 +308,29 @@ const RequirementDetail = () => {
                         </Button>
                       ))}
                     </div>
+                    {activeTab === 'Traces' && (
+                      <Button
+                        size="sm"
+                        className="gap-1 h-7 px-3 shadow-sm"
+                        onClick={() => setIsLinkSheetOpen(true)}
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                        <span className="hidden sm:inline">Link Item</span>
+                      </Button>
+                    )}
                   </div>
                 </div>
+
+                {/* Lifecycle Tracker - Only show on Overview tab */}
+                {/* {activeTab === 'Overview' && (
+                  <div className="px-4 mt-2">
+                    <LifecycleTracker 
+                      currentStatus={selectedState}
+                      lifecycleStages={requirementLifecycleStages}
+                      statuses={requirementStatuses}
+                    />
+                  </div>
+                )} */}
 
                 {/* Tab Content */}
                 <div className="flex-1 overflow-y-auto">
@@ -323,8 +338,12 @@ const RequirementDetail = () => {
                     <OverviewTab requirementId="13061" />
                   ) : activeTab === 'Stakeholders' ? (
                     <StakeholdersTab requirementId="13061" />
-                  ) : activeTab === 'Links' ? (
-                    <LinksTab requirementId="13061" />
+                  ) : activeTab === 'Traces' ? (
+                    <LinksTab
+                      requirementId="13061"
+                      isSheetOpen={isLinkSheetOpen}
+                      onOpenChange={setIsLinkSheetOpen}
+                    />
                   ) : activeTab === 'Files' ? (
                     <FilesTab requirementId="13061" />
                   ) : (
@@ -334,7 +353,7 @@ const RequirementDetail = () => {
                   )}
                 </div>
               </div>
-              
+
               {/* Discussions Panel - Right Side */}
               <div className="w-[25%] flex-shrink-0 h-full border-l border-t border-border rounded-[14px]">
                 <DiscussionsPanel requirementId="13061" />
